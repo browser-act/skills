@@ -23,19 +23,35 @@ Comprehensive collection of AI-powered skills for browser automation and data co
 
 | Skill | Description | Documentation |
 |-------|-------------|---------------|
-| [amazon-competitor-analyzer](./amazon-competitor-analyzer/SKILL.md) | Amazon product competitive analysis | [SKILL.md](./amazon-competitor-analyzer/SKILL.md) |
+| [amazon-competitor-analyzer](./amazon-competitor-analyzer/SKILL.md) | Amazon product competitive analysis (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./amazon-competitor-analyzer/SKILL.md) |
 
 ### 🗺️ Local Business Data
 
 | Skill | Description | Documentation |
 |-------|-------------|---------------|
-| [google-maps-search-api](./google-maps-search-api/SKILL.md) | Google Maps business data extraction | [SKILL.md](./google-maps-search-api/SKILL.md) |
+| [google-maps-search-api](./google-maps-search-api/SKILL.md) | Google Maps business data extraction (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./google-maps-search-api/SKILL.md) |
+
+### 📰 News & Media
+
+| Skill | Description | Documentation |
+|-------|-------------|---------------|
+| [google-news-api](./google-news-api/SKILL.md) | Google News scraping and monitoring (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./google-news-api/SKILL.md) |
 
 ### 💼 Professional Networks
 
 | Skill | Description | Documentation |
 |-------|-------------|---------------|
-| [linkedin-scraper](./linkedin-scraper/SKILL.md) | LinkedIn profile, company, and job scraping | [SKILL.md](./linkedin-scraper/SKILL.md) |
+| [linkedin-scraper](./linkedin-scraper/SKILL.md) | LinkedIn profile, company, and job scraping (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./linkedin-scraper/SKILL.md) |
+
+---
+
+## Why BrowserAct Skills?
+
+**🚀 Not Blocked by CAPTCHA or reCAPTCHA**
+- Advanced browser automation bypasses anti-bot detection
+- Real browser instances with stealth technology
+- No need for CAPTCHA solving services
+- Higher success rates compared to traditional scraping
 
 ---
 
@@ -61,13 +77,13 @@ export BROWSERACT_API_KEY="your-api-key-here"
 **For Claude Code:**
 ```bash
 mkdir -p ~/.claude/skills
-cp -r amazon-competitor-analyzer google-maps-search-api linkedin-scraper ~/.claude/skills/
+cp -r amazon-competitor-analyzer google-maps-search-api google-news-api linkedin-scraper ~/.claude/skills/
 ```
 
 **For Cursor:**
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-competitor-analyzer google-maps-search-api linkedin-scraper ~/.cursor/skills/
+cp -r amazon-competitor-analyzer google-maps-search-api google-news-api linkedin-scraper ~/.cursor/skills/
 ```
 
 ### Step 4: Start Using
@@ -81,6 +97,9 @@ python google-maps-search-api/scripts/google_maps_search_api.py "coffee shops"
 
 # Scrape LinkedIn profiles
 python linkedin-scraper/scripts/linkedin_scraper.py "https://www.linkedin.com/in/username"
+
+# Get Google News on any topic
+python google-news-api/scripts/google_news_api.py "AI technology" "past week" 30
 ```
 
 ---
@@ -170,14 +189,22 @@ cp -r amazon-competitor-analyzer ~/.cursor/skills/
 
 ```bash
 mkdir -p ~/.vscode/skills
-cp -r amazon-competitor-analyzer google-maps-search-api linkedin-scraper ~/.vscode/skills/
+cp -r amazon-competitor-analyzer google-maps-search-api google-news-api linkedin-scraper ~/.vscode/skills/
 ```
 
 ### For OpenCode
 
 ```bash
 mkdir -p ~/.opencode/skills
-cp -r amazon-competitor-analyzer google-maps-search-api linkedin-scraper ~/.opencode/skills/
+cp -r amazon-competitor-analyzer google-maps-search-api google-news-api linkedin-scraper ~/.opencode/skills/
+```
+
+### For Generic AI Assistants
+
+```bash
+mkdir -p ~/skills
+cp -r amazon-competitor-analyzer google-maps-search-api google-news-api linkedin-scraper ~/skills/
+export SKILLS_PATH=~/skills
 ```
 
 ### For Generic AI Assistants
@@ -194,7 +221,7 @@ export SKILLS_PATH=~/skills
 
 ### 📦 amazon-competitor-analyzer
 
-Amazon product competitive analysis with surgical precision.
+Amazon product competitive analysis with surgical precision. **Not blocked by CAPTCHA or reCAPTCHA.**
 
 **Features:**
 - ASIN data collection
@@ -233,7 +260,7 @@ python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG --api
 
 ### 🗺️ google-maps-search-api
 
-Extract business data and leads from Google Maps search results.
+Extract business data and leads from Google Maps search results. **Not blocked by CAPTCHA or reCAPTCHA.**
 
 **Features:**
 - Business name extraction
@@ -283,9 +310,57 @@ python google-maps-search-api/scripts/google_maps_search_api.py "cafes" "de" "de
 
 ---
 
+### 📰 google-news-api
+
+Scrape and monitor Google News for any topic, industry trends, or PR monitoring. **Not blocked by CAPTCHA or reCAPTCHA.**
+
+**Features:**
+- Keyword-based news search
+- Time range filtering (past hour, 24 hours, week, year)
+- Batch extraction (up to 100+ articles)
+- Multi-language support (15+ languages)
+- Author and source information extraction
+- Real-time news monitoring
+- Structured data output (JSON)
+
+**Quick Start:**
+
+```bash
+# Get latest news on a topic
+python google-news-api/scripts/google_news_api.py "AI technology" "past week" 30
+
+# Breaking news (past 24 hours)
+python google-news-api/scripts/google_news_api.py "Tesla" "past 24 hours" 20
+
+# Long-term research (past year)
+python google-news-api/scripts/google_news_api.py "climate change" "past year" 100
+```
+
+**Parameters:**
+| Parameter | Type | Default | Description |
+|----------|------|---------|-------------|
+| keywords | string | - | Search keywords or topic |
+| publish_date | string | past week | Time range (past hours, past 24 hours, past week, past year, any time) |
+| datelimit | number | 30 | Maximum articles to extract |
+
+**Documentation:**
+- [SKILL.md](./google-news-api/SKILL.md)
+
+**Workflow Template ID:** `77638424152140851`
+
+**Output Data:**
+- Headline/Title
+- Source publisher
+- Article URL
+- Published time
+- Author name
+- Full article content
+
+---
+
 ### 💼 linkedin-scraper
 
-Extract structured data from LinkedIn profiles, company pages, and job postings.
+Extract structured data from LinkedIn profiles, company pages, and job postings. **Not blocked by CAPTCHA or reCAPTCHA.**
 
 **Features:**
 - Profile scraping (personal info, experience, education, skills)
@@ -352,12 +427,23 @@ User Request → Extract ASINs → Submit Task → Poll Status → Retrieve Resu
 | `/v2/workflow/get-task-status` | GET | Check task status |
 | `/v2/workflow/get-task` | GET | Retrieve results |
 
+### Anti-Bot Bypass (Not Blocked by CAPTCHA/reCAPTCHA)
+
+BrowserAct skills use advanced browser automation technology to bypass anti-bot detection:
+
+- **Real Browser Instances**: Uses actual Chrome/Firefox browser sessions
+- **Stealth Technology**: Automatically handles fingerprinting, cookies, and headers
+- **CAPTCHA Bypass**: No need for CAPTCHA solving services - access content directly
+- **Human-like Behavior**: Randomized delays, scrolling, and interaction patterns
+- **High Success Rate**: Significantly higher success rate compared to traditional HTTP scraping
+
 ### Rate Limiting
 
 | Skill | Max Requests | Recommended Interval |
 |-------|-------------|---------------------|
 | amazon-competitor-analyzer | 30/hour | 5-10 seconds |
 | google-maps-search-api | 60/hour | 3-5 seconds |
+| google-news-api | 60/hour | 3-5 seconds |
 | linkedin-scraper | 10/hour | 2-5 seconds |
 
 ### Error Handling
@@ -433,6 +519,7 @@ skill-name/
 **Current Skills:**
 - amazon-competitor-analyzer
 - google-maps-search-api
+- google-news-api
 - linkedin-scraper
 
 ### Documentation Requirements
