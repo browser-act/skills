@@ -20,19 +20,22 @@ Comprehensive collection of AI-powered skills for browser automation and data co
 ## Available Skills
 
 ### 📊 Competitive Intelligence
-- amazon-competitor-analyzer
+
+| Skill | Description | Documentation |
+|-------|-------------|---------------|
+| [amazon-competitor-analyzer](./amazon-competitor-analyzer/SKILL.md) | Amazon product competitive analysis | [SKILL.md](./amazon-competitor-analyzer/SKILL.md) |
 
 ### 🗺️ Local Business Data
-- google-maps-search-api
+
+| Skill | Description | Documentation |
+|-------|-------------|---------------|
+| [google-maps-search-api](./google-maps-search-api/SKILL.md) | Google Maps business data extraction | [SKILL.md](./google-maps-search-api/SKILL.md) |
 
 ### 💼 Professional Networks
-- linkedin-scraper
 
-### 🔧 Browser Automation
-
-| Skill | Description | Version |
-|-------|-------------|---------|
-| [browser-use](https://github.com/browser-use/browser-use) | General browser automation | - |
+| Skill | Description | Documentation |
+|-------|-------------|---------------|
+| [linkedin-scraper](./linkedin-scraper/SKILL.md) | LinkedIn profile, company, and job scraping | [SKILL.md](./linkedin-scraper/SKILL.md) |
 
 ---
 
@@ -456,7 +459,6 @@ All skills must include:
 
 ### Related Repositories
 
-- [browser-use](https://github.com/browser-use/browser-use) - Browser automation
 - [seo-geo-claude-skills](https://github.com/aaron-he-zhu/seo-geo-claude-skills) - SEO and GEO skills
 
 ### Learning Resources
