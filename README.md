@@ -20,10 +20,10 @@ Comprehensive collection of AI-powered skills for browser automation and data co
 ## Available Skills
 
 ### 📊 Competitive Intelligence
+- amazon-competitor-analyzer
 
-| Skill | Description | Version |
-|-------|-------------|---------|
-| [amazon-competitor-analyzer](./amazon-competitor-analyzer/) | Amazon product competitive analysis with surgical precision | v1.0.0 |
+### 🗺️ Local Business Data
+- google-maps-search-api
 
 ### 🔧 Browser Automation
 
@@ -55,13 +55,13 @@ export BROWSERACT_API_KEY="your-api-key-here"
 **For Claude Code:**
 ```bash
 mkdir -p ~/.claude/skills
-cp -r amazon-competitor-analyzer ~/.claude/skills/
+cp -r amazon-competitor-analyzer google-maps-search-api ~/.claude/skills/
 ```
 
 **For Cursor:**
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-competitor-analyzer ~/.cursor/skills/
+cp -r amazon-competitor-analyzer google-maps-search-api ~/.cursor/skills/
 ```
 
 ### Step 4: Start Using
@@ -69,6 +69,9 @@ cp -r amazon-competitor-analyzer ~/.cursor/skills/
 ```bash
 # Analyze Amazon products
 python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG
+
+# Search Google Maps for businesses
+python google-maps-search-api/scripts/google_maps_search_api.py "coffee shops"
 ```
 
 ---
@@ -219,6 +222,58 @@ python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG --api
 
 ---
 
+### 🗺️ google-maps-search-api
+
+Extract business data and leads from Google Maps search results.
+
+**Features:**
+- Business name extraction
+- Address and contact information
+- Star ratings and reviews
+- Price levels and categories
+- Amenity tags and service options
+- Multi-language support (15+ languages)
+- Country-specific search bias
+- Batch data collection (up to 100 results)
+
+**Quick Start:**
+
+```bash
+# Search for businesses
+python google-maps-search-api/scripts/google_maps_search_api.py "coffee shops"
+
+# With custom language and country
+python google-maps-search-api/scripts/google_maps_search_api.py "restaurants" "en" "us" 50
+
+# Search in different language
+python google-maps-search-api/scripts/google_maps_search_api.py "cafes" "de" "de" 100
+```
+
+**Parameters:**
+| Parameter | Type | Default | Description |
+|----------|------|---------|-------------|
+| keywords | string | - | Business type or search query |
+| language | string | en | UI language (en, de, fr, es, etc.) |
+| country | string | us | Country bias (us, gb, ca, de, etc.) |
+| max_dates | number | 100 | Maximum results to extract |
+
+**Documentation:**
+- [README](./google-maps-search-api/)
+
+**Workflow Template ID:** `77805072070738748`
+
+**Output Data:**
+- Business name
+- Full address
+- Star rating
+- Review count
+- Price level
+- Cuisine/Category type
+- Amenity tags (Wi-Fi, outdoor seating, etc.)
+- Service options (Delivery, takeout, etc.)
+
+---
+
 ## Architecture
 
 ### BrowserAct API Integration
@@ -240,6 +295,7 @@ User Request → Extract ASINs → Submit Task → Poll Status → Retrieve Resu
 | Skill | Max Requests | Recommended Interval |
 |-------|-------------|---------------------|
 | amazon-competitor-analyzer | 30/hour | 5-10 seconds |
+| google-maps-search-api | 60/hour | 3-5 seconds |
 
 ### Error Handling
 
@@ -310,6 +366,10 @@ skill-name/
 ├── SKILL.md
 └── implementation.py
 ```
+
+**Current Skills:**
+- amazon-competitor-analyzer
+- google-maps-search-api
 
 ### Documentation Requirements
 
