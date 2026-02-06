@@ -1,8 +1,6 @@
 # BrowserAct Skills
 
-Comprehensive collection of AI-powered skills for browser automation and data collection using BrowserAct's API. These skills enhance AI assistants with specialized capabilities for web scraping, competitive analysis, news monitoring, and more.
-
-> BrowserAct 技能集 - 基于 BrowserAct API 的 AI 自动化工具集合
+Comprehensive collection of AI-powered skills for browser automation and data collection using BrowserAct's API. These skills enhance AI assistants with specialized capabilities for web scraping, competitive analysis, and more.
 
 ---
 
@@ -21,18 +19,11 @@ Comprehensive collection of AI-powered skills for browser automation and data co
 
 ## Available Skills
 
-### 🌐 Web Scraping & Data Collection
-
-| Skill | Description | Version |
-|-------|-------------|---------|
-| [google-news](./google-news/) | Automated news data collection from Google News | v1.0.0 |
-| [google-news-api](./google-news/) | Google News API integration for news scraping | v1.0.0 |
-
 ### 📊 Competitive Intelligence
 
 | Skill | Description | Version |
 |-------|-------------|---------|
-| [amazon-competitor-analyzer](./amazon-competitor-analyzer/) | Amazon product competitive analysis | v1.0.0 |
+| [amazon-competitor-analyzer](./amazon-competitor-analyzer/) | Amazon product competitive analysis with surgical precision | v1.0.0 |
 
 ### 🔧 Browser Automation
 
@@ -57,9 +48,6 @@ Comprehensive collection of AI-powered skills for browser automation and data co
 ```bash
 # Set API key (macOS/Linux)
 export BROWSERACT_API_KEY="your-api-key-here"
-
-# Or add to shell profile
-echo 'export BROWSERACT_API_KEY="your-api-key-here"' >> ~/.zshrc
 ```
 
 ### Step 3: Install Skills
@@ -67,13 +55,13 @@ echo 'export BROWSERACT_API_KEY="your-api-key-here"' >> ~/.zshrc
 **For Claude Code:**
 ```bash
 mkdir -p ~/.claude/skills
-cp -r amazon-competitor-analyzer google-news ~/.claude/skills/
+cp -r amazon-competitor-analyzer ~/.claude/skills/
 ```
 
 **For Cursor:**
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-competitor-analyzer google-news ~/.cursor/skills/
+cp -r amazon-competitor-analyzer ~/.cursor/skills/
 ```
 
 ### Step 4: Start Using
@@ -81,9 +69,6 @@ cp -r amazon-competitor-analyzer google-news ~/.cursor/skills/
 ```bash
 # Analyze Amazon products
 python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG
-
-# Scrape news articles
-python google-news/scripts/google_news_api.py "artificial intelligence"
 ```
 
 ---
@@ -114,14 +99,10 @@ $env:BROWSERACT_API_KEY = "your-api-key-here"
 
 #### Method B: .env File
 
-Create a `.env` file:
-
 ```bash
 # .env
 BROWSERACT_API_KEY=your-api-key-here
 ```
-
-Load in Python:
 
 ```python
 from dotenv import load_dotenv
@@ -162,89 +143,42 @@ os.environ["BROWSERACT_API_KEY"] = "your-api-key-here"
 ### For Claude Code
 
 ```bash
-# Create skills directory
 mkdir -p ~/.claude/skills
-
-# Clone all skills
 git clone https://github.com/browseract-com/skills.git ~/.claude/skills/browseract-skills
-
-# Or copy individual skills
-cp -r amazon-competitor-analyzer google-news ~/.claude/skills/
 ```
 
 ### For Cursor
 
 ```bash
-# Create skills directory
 mkdir -p ~/.cursor/skills
-
-# Copy skills
-cp -r amazon-competitor-analyzer google-news ~/.cursor/skills/
+cp -r amazon-competitor-analyzer ~/.cursor/skills/
 ```
 
 ### For VS Code (Copilot)
 
 ```bash
-# Create skills directory
 mkdir -p ~/.vscode/skills
-
-# Copy skills
-cp -r amazon-competitor-analyzer google-news ~/.vscode/skills/
+cp -r amazon-competitor-analyzer ~/.vscode/skills/
 ```
 
 ### For OpenCode
 
 ```bash
-# Create skills directory
 mkdir -p ~/.opencode/skills
-
-# Copy skills
-cp -r amazon-competitor-analyzer google-news ~/.opencode/skills/
+cp -r amazon-competitor-analyzer ~/.opencode/skills/
 ```
 
 ### For Generic AI Assistants
 
 ```bash
-# Create skills directory
 mkdir -p ~/skills
-
-# Copy skills
-cp -r amazon-competitor-analyzer google-news ~/skills/
-
-# Set environment variable
+cp -r amazon-competitor-analyzer ~/skills/
 export SKILLS_PATH=~/skills
 ```
 
 ---
 
 ## Skill Details
-
-### 📰 google-news
-
-Automated news data collection using Google News API.
-
-**Features:**
-- Keyword-based news search
-- Time range filtering (any time to past year)
-- Volume control (1-100 articles)
-- Structured JSON output
-- Multi-source aggregation
-
-**Quick Start:**
-```bash
-python google-news/scripts/google_news_api.py "AI technology"
-
-# With custom parameters
-python google-news/scripts/google_news_api.py "Tesla" "past week" 50
-```
-
-**Documentation:**
-- [README](./google-news/README.md)
-- [SKILL.md](./google-news/SKILL.md)
-
-**Workflow Template ID:** `77638424152140851`
-
----
 
 ### 📦 amazon-competitor-analyzer
 
@@ -261,12 +195,16 @@ Amazon product competitive analysis with surgical precision.
 - Structured reports (CSV, Markdown, JSON)
 
 **Quick Start:**
+
 ```bash
 # Analyze single ASIN
 python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG
 
 # Analyze multiple ASINs
 python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG B07ABC11111 -o ./output
+
+# With API key
+python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG --api-key your-api-key
 ```
 
 **Documentation:**
@@ -274,16 +212,19 @@ python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG B07AB
 
 **Workflow Template ID:** `77814333389670716`
 
+**Output Formats:**
+- CSV: Structured data table
+- Markdown: Comprehensive report
+- JSON: Raw data with analysis
+
 ---
 
 ## Architecture
 
 ### BrowserAct API Integration
 
-All skills use BrowserAct's workflow template system:
-
 ```
-User Request → Extract Parameters → Submit Task → Poll Status → Retrieve Results → Process Output
+User Request → Extract ASINs → Submit Task → Poll Status → Retrieve Results → LLM Analysis
 ```
 
 ### API Endpoints
@@ -296,23 +237,19 @@ User Request → Extract Parameters → Submit Task → Poll Status → Retrieve
 
 ### Rate Limiting
 
-Best practices for all skills:
-
 | Skill | Max Requests | Recommended Interval |
 |-------|-------------|---------------------|
-| google-news | 60/hour | 3-5 seconds |
 | amazon-competitor-analyzer | 30/hour | 5-10 seconds |
 
 ### Error Handling
 
 ```python
 try:
-    # Execute skill
-    result = skill_function(api_key, parameters)
+    result = analyzer.scrape_product("B09G9GB4MG")
 except requests.exceptions.ConnectionError:
     print("Network error - check connection")
 except requests.exceptions.Timeout:
-    print("Request timeout - increase timeout")
+    print("Request timeout")
 except Exception as e:
     print(f"Error: {e}")
 ```
@@ -335,23 +272,17 @@ except Exception as e:
 
 **Solutions:**
 1. Increase timeout parameter
-2. Reduce data volume
+2. Reduce number of ASINs
 3. Check BrowserAct service status
-4. Retry with smaller request
+4. Verify workflow template availability
 
 #### Issue: Incomplete Data
 
 **Solutions:**
-1. Verify target website accessibility
-2. Check API response for errors
-3. Retry with adjusted parameters
-
-#### Issue: Rate Limiting
-
-**Solutions:**
-1. Reduce request frequency
-2. Implement delay between requests
-3. Contact BrowserAct for quota increase
+1. Increase wait time for page load
+2. Check template updates
+3. Verify target page accessibility
+4. Review API response for errors
 
 ### Getting Help
 
@@ -367,19 +298,17 @@ except Exception as e:
 
 1. Create a new directory for your skill
 2. Add `SKILL.md` with full documentation
-3. Add implementation files (Python, etc.)
-4. Update this README with skill information
+3. Add implementation files
+4. Update this README
 5. Submit via Pull Request
 
 ### Skill Structure
 
 ```
 skill-name/
-├── README.md              # Quick start guide
-├── SKILL.md               # Full documentation
-├── implementation.py       # Main code
-└── scripts/
-    └── helper.py          # Helper scripts
+├── README.md
+├── SKILL.md
+└── implementation.py
 ```
 
 ### Documentation Requirements
@@ -435,17 +364,3 @@ MIT License
 **Last Updated**: 2026-02-06  
 **Repository**: [browseract-com/skills](https://github.com/browseract-com/skills)  
 **Organization**: [browseract-com](https://github.com/browseract-com)
-
----
-
-## Changelog
-
-### v1.0.0 (2026-02-06)
-
-**Initial Release**
-
-- amazon-competitor-analyzer: Amazon product competitive analysis
-- google-news: Automated news data collection
-- Comprehensive documentation
-- Multi-platform installation support
-- Complete API key configuration guide
