@@ -1,6 +1,6 @@
 ---
 name: google-news-api
-description: Scrape structured news data from Google News automatically. Use when the user asks for news on a topic, industry trends, or PR monitoring. Triggers on keywords like "find news about", "track trends", or "monitor PR".
+description: Scrape structured news data from Google News automatically (Not blocked by CAPTCHA or reCAPTCHA). Use when the user asks for news on a topic, industry trends, or PR monitoring. Triggers on keywords like "find news about", "track trends", or "monitor PR".
 ---
 
 # Google News Automation Scraper Skill
