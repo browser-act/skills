@@ -7,24 +7,6 @@ description: Scrapes Amazon product data from ASINs using browseract.com automat
 
 This skill scrapes Amazon product data from user-provided ASINs using browseract.com's browser automation API and performs deep competitive analysis. It compares specifications, pricing, review quality, and visual strategies to identify competitor moats and vulnerabilities.
 
-## ✨ Platform Compatibility
-
-**✅ Works Powerfully & Reliably On All Major AI Assistants**
-
-| Platform | Status | How to Install |
-|----------|--------|----------------|
-| **OpenCode** | ✅ Fully Supported | Copy skill folder to `~/.opencode/skills/` |
-| **Claude Code** | ✅ Fully Supported | Native skill support |
-| **Cursor** | ✅ Fully Supported | Copy to `~/.cursor/skills/` |
-| **OpenClaw** | ✅ Fully Supported | Compatible |
-
-**Why Choose BrowserAct Skills?**
-- 🚀 Stable & crash-free execution
-- ⚡ Fast response times
-- 🔧 No configuration headaches
-- 📦 Plug & play installation
-- 💬 Professional support
-
 ## When to Use This Skill
 
 - Competitive research: Input multiple ASINs to understand market landscape
@@ -46,6 +28,18 @@ This skill scrapes Amazon product data from user-provided ASINs using browseract
 6. **Moat Identification**: Identify core competitive advantages and barriers
 7. **Vulnerability Discovery**: Find competitor weaknesses and market opportunities
 8. **Structured Output**: Generate JSON and Markdown analysis reports
+
+## Features
+1. **No hallucinations, ensuring stable and accurate data extraction**: Pre-set workflows eliminate AI-generated hallucinations.
+2.
+**No CAPTCHA challenges**: Built-in bypass mechanisms eliminate the need to handle reCAPTCHA or other verification challenges.
+3.
+**No IP Access Restrictions or Geofencing**: Overcomes geographic IP limitations for stable global access.
+4.
+**Faster Execution Speed**: Tasks complete more rapidly than purely AI-driven browser automation solutions.
+5. **Exceptional Cost Efficiency**: Significantly reduces data acquisition costs compared to token-intensive AI solutions.
+
+
 
 ## Prerequisites
 
