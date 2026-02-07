@@ -41,23 +41,35 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 
 ## Available Skills
 
-### 📊 Competitive Intelligence
+### 📊 Amazon Shopping
 
 | Skill | Description | Documentation |
 |-------|-------------|---------------|
+| [amazon-asin-lookup-api-skill](./amazon-asin-lookup-api-skill/SKILL.md) | Look up Amazon product details by ASIN | [SKILL.md](./amazon-asin-lookup-api-skill/SKILL.md) |
+| [amazon-product-api-skill](./amazon-product-api-skill/SKILL.md) | Fetch Amazon product details and specifications | [SKILL.md](./amazon-product-api-skill/SKILL.md) |
+| [amazon-product-search-api-skill](./amazon-product-search-api-skill/SKILL.md) | Search Amazon products by keywords | [SKILL.md](./amazon-product-search-api-skill/SKILL.md) |
+| [amazon-reviews-api-skill](./amazon-reviews-api-skill/SKILL.md) | Extract Amazon product reviews | [SKILL.md](./amazon-reviews-api-skill/SKILL.md) |
 | [amazon-competitor-analyzer](./amazon-competitor-analyzer/SKILL.md) | Amazon product competitive analysis (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./amazon-competitor-analyzer/SKILL.md) |
 
-### 🗺️ Local Business Data
+### 🗺️ Google Maps
 
 | Skill | Description | Documentation |
 |-------|-------------|---------------|
-| [google-maps-search-api](./google-maps-search-api/SKILL.md) | Google Maps business data extraction (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./google-maps-search-api/SKILL.md) |
+| [google-maps-api-skill](./google-maps-api-skill/SKILL.md) | General Google Maps API integration | [SKILL.md](./google-maps-api-skill/SKILL.md) |
+| [google-maps-search-api-skill](./google-maps-search-api-skill/SKILL.md) | Search and extract Google Maps business data | [SKILL.md](./google-maps-search-api-skill/SKILL.md) |
+| [google-maps-reviews-api-skill](./google-maps-reviews-api-skill/SKILL.md) | Extract Google Maps business reviews | [SKILL.md](./google-maps-reviews-api-skill/SKILL.md) |
 
 ### 📰 News & Media
 
 | Skill | Description | Documentation |
 |-------|-------------|---------------|
-| [google-news-api](./google-news-api/SKILL.md) | Google News scraping and monitoring (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./google-news-api/SKILL.md) |
+| [google-news-api-skill](./google-news-api-skill/SKILL.md) | Google News scraping and monitoring (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./google-news-api-skill/SKILL.md) |
+
+### 🔍 SEO & Analytics
+
+| Skill | Description | Documentation |
+|-------|-------------|---------------|
+| [【ZH】comprehensive-seo-analyzer](./【ZH】comprehensive-seo-analyzer/SKILL.md) | Comprehensive SEO analysis and recommendations | [SKILL.md](./【ZH】comprehensive-seo-analyzer/SKILL.md) |
 
 ---
 
@@ -93,26 +105,38 @@ export BROWSERACT_API_KEY="your-api-key-here"
 **For Claude Code:**
 ```bash
 mkdir -p ~/.claude/skills
-cp -r amazon-competitor-analyzer google-maps-search-api google-news-api ~/.claude/skills/
+cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/.claude/skills/
 ```
 
 **For Cursor:**
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-competitor-analyzer google-maps-search-api google-news-api ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/.cursor/skills/
 ```
 
 ### Step 4: Start Using
 
 ```bash
-# Analyze Amazon products
+# Amazon ASIN Lookup
+python amazon-asin-lookup-api-skill/scripts/asin_lookup.py B09G9GB4MG
+
+# Amazon Product Search
+python amazon-product-search-api-skill/scripts/product_search.py "wireless headphones"
+
+# Amazon Reviews
+python amazon-reviews-api-skill/scripts/reviews.py B09G9GB4MG
+
+# Amazon Competitor Analysis
 python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG
 
-# Search Google Maps for businesses
-python google-maps-search-api/scripts/google_maps_search_api.py "coffee shops"
+# Google Maps Search
+python google-maps-search-api-skill/scripts/maps_search.py "restaurants"
 
-# Get Google News on any topic
-python google-news-api/scripts/google_news_api.py "AI technology" "past week" 30
+# Google Maps Reviews
+python google-maps-reviews-api-skill/scripts/reviews.py "restaurant-name"
+
+# Google News
+python google-news-api-skill/scripts/google_news.py "AI technology" "past week" 30
 ```
 
 ---
@@ -195,28 +219,28 @@ git clone https://github.com/browseract-com/skills.git ~/.claude/skills/browsera
 
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-competitor-analyzer ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/.cursor/skills/
 ```
 
 ### For VS Code (Copilot)
 
 ```bash
 mkdir -p ~/.vscode/skills
-cp -r amazon-competitor-analyzer google-maps-search-api google-news-api ~/.vscode/skills/
+cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/.vscode/skills/
 ```
 
 ### For OpenCode
 
 ```bash
 mkdir -p ~/.opencode/skills
-cp -r amazon-competitor-analyzer google-maps-search-api google-news-api ~/.opencode/skills/
+cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/.opencode/skills/
 ```
 
 ### For Generic AI Assistants
 
 ```bash
 mkdir -p ~/skills
-cp -r amazon-competitor-analyzer google-maps-search-api google-news-api ~/skills/
+cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/skills/
 export SKILLS_PATH=~/skills
 ```
 
@@ -224,100 +248,41 @@ export SKILLS_PATH=~/skills
 
 ## Skill Details
 
-### 📦 amazon-competitor-analyzer
+Click on any skill above to view its detailed documentation in the SKILL.md file.
 
-Amazon product competitive analysis with surgical precision. **Not blocked by CAPTCHA or reCAPTCHA.**
+### 📊 Amazon Shopping Skills
 
-**Features:**
-- ASIN data collection
-- Specification extraction
-- Review quality analysis
-- Visual strategy assessment
-- Multi-dimensional comparison
-- Moat identification
-- Vulnerability discovery
-- Structured reports (CSV, Markdown, JSON)
+| Skill | Template ID |
+|-------|-------------|
+| amazon-asin-lookup-api-skill | [View SKILL.md](./amazon-asin-lookup-api-skill/SKILL.md) |
+| amazon-product-api-skill | [View SKILL.md](./amazon-product-api-skill/SKILL.md) |
+| amazon-product-search-api-skill | [View SKILL.md](./amazon-product-search-api-skill/SKILL.md) |
+| amazon-reviews-api-skill | [View SKILL.md](./amazon-reviews-api-skill/SKILL.md) |
+| amazon-competitor-analyzer | [View SKILL.md](./amazon-competitor-analyzer/SKILL.md) |
 
-**Quick Start:**
+### 🗺️ Google Maps Skills
 
-```bash
-# Analyze single ASIN
-python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG
+| Skill | Template ID |
+|-------|-------------|
+| google-maps-api-skill | [View SKILL.md](./google-maps-api-skill/SKILL.md) |
+| google-maps-search-api-skill | [View SKILL.md](./google-maps-search-api-skill/SKILL.md) |
+| google-maps-reviews-api-skill | [View SKILL.md](./google-maps-reviews-api-skill/SKILL.md) |
 
-# Analyze multiple ASINs
-python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG B07ABC11111 -o ./output
+### 📰 News & Media
 
-# With API key
-python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG --api-key your-api-key
-```
+| Skill | Template ID |
+|-------|-------------|
+| google-news-api-skill | [View SKILL.md](./google-news-api-skill/SKILL.md) |
 
-**Documentation:**
-- [README](./amazon-competitor-analyzer/README.md)
+### 🔍 SEO & Analytics
 
-**Workflow Template ID:** `77814333389670716`
-
-**Output Formats:**
-- CSV: Structured data table
-- Markdown: Comprehensive report
-- JSON: Raw data with analysis
+| Skill | Template ID |
+|-------|-------------|
+| 【ZH】comprehensive-seo-analyzer | [View SKILL.md](./【ZH】comprehensive-seo-analyzer/SKILL.md) |
 
 ---
 
-### 🗺️ google-maps-search-api
-
-Extract business data and leads from Google Maps search results. **Not blocked by CAPTCHA or reCAPTCHA.**
-
-**Features:**
-- Business name extraction
-- Address and contact information
-- Star ratings and reviews
-- Price levels and categories
-- Amenity tags and service options
-- Multi-language support (15+ languages)
-- Country-specific search bias
-- Batch data collection (up to 100 results)
-
-**Quick Start:**
-
-```bash
-# Search for businesses
-python google-maps-search-api/scripts/google_maps_search_api.py "coffee shops"
-
-# With custom language and country
-python google-maps-search-api/scripts/google_maps_search_api.py "restaurants" "en" "us" 50
-
-# Search in different language
-python google-maps-search-api/scripts/google_maps_search_api.py "cafes" "de" "de" 100
-```
-
-**Parameters:**
-| Parameter | Type | Default | Description |
-|----------|------|---------|-------------|
-| keywords | string | - | Business type or search query |
-| language | string | en | UI language (en, de, fr, es, etc.) |
-| country | string | us | Country bias (us, gb, ca, de, etc.) |
-| max_dates | number | 100 | Maximum results to extract |
-
-**Documentation:**
-- [README](./google-maps-search-api/)
-
-**Workflow Template ID:** `77805072070738748`
-
-**Output Data:**
-- Business name
-- Full address
-- Star rating
-- Review count
-- Price level
-- Cuisine/Category type
-- Amenity tags (Wi-Fi, outdoor seating, etc.)
-- Service options (Delivery, takeout, etc.)
-
----
-
-### 📰 google-news-api
-
-Scrape and monitor Google News for any topic, industry trends, or PR monitoring. **Not blocked by CAPTCHA or reCAPTCHA.**
+## Rate Limiting
 
 **Features:**
 - Keyword-based news search
@@ -469,9 +434,16 @@ skill-name/
 ```
 
 **Current Skills:**
+- amazon-asin-lookup-api-skill
+- amazon-product-api-skill
+- amazon-product-search-api-skill
+- amazon-reviews-api-skill
 - amazon-competitor-analyzer
-- google-maps-search-api
-- google-news-api
+- google-maps-api-skill
+- google-maps-search-api-skill
+- google-maps-reviews-api-skill
+- google-news-api-skill
+- 【ZH】comprehensive-seo-analyzer
 
 ### Documentation Requirements
 
