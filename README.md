@@ -65,12 +65,6 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 |-------|-------------|---------------|
 | [google-news-api-skill](./google-news-api-skill/SKILL.md) | Google News scraping and monitoring (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./google-news-api-skill/SKILL.md) |
 
-### 🔍 SEO & Analytics
-
-| Skill | Description | Documentation |
-|-------|-------------|---------------|
-| [【ZH】comprehensive-seo-analyzer](./【ZH】comprehensive-seo-analyzer/SKILL.md) | Comprehensive SEO analysis and recommendations | [SKILL.md](./【ZH】comprehensive-seo-analyzer/SKILL.md) |
-
 ---
 
 ## Why BrowserAct Skills?
@@ -105,13 +99,13 @@ export BROWSERACT_API_KEY="your-api-key-here"
 **For Claude Code:**
 ```bash
 mkdir -p ~/.claude/skills
-cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/.claude/skills/
+cp -r amazon-* google-maps-* google-news-api-skill ~/.claude/skills/
 ```
 
 **For Cursor:**
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-news-api-skill ~/.cursor/skills/
 ```
 
 ### Step 4: Start Using
@@ -226,21 +220,21 @@ cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-ana
 
 ```bash
 mkdir -p ~/.vscode/skills
-cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/.vscode/skills/
+cp -r amazon-* google-maps-* google-news-api-skill ~/.vscode/skills/
 ```
 
 ### For OpenCode
 
 ```bash
 mkdir -p ~/.opencode/skills
-cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/.opencode/skills/
+cp -r amazon-* google-maps-* google-news-api-skill ~/.opencode/skills/
 ```
 
 ### For Generic AI Assistants
 
 ```bash
 mkdir -p ~/skills
-cp -r amazon-* google-maps-* google-news-api-skill 【ZH】comprehensive-seo-analyzer ~/skills/
+cp -r amazon-* google-maps-* google-news-api-skill ~/skills/
 export SKILLS_PATH=~/skills
 ```
 
@@ -273,12 +267,6 @@ Click on any skill above to view its detailed documentation in the SKILL.md file
 | Skill | Template ID |
 |-------|-------------|
 | google-news-api-skill | [View SKILL.md](./google-news-api-skill/SKILL.md) |
-
-### 🔍 SEO & Analytics
-
-| Skill | Template ID |
-|-------|-------------|
-| 【ZH】comprehensive-seo-analyzer | [View SKILL.md](./【ZH】comprehensive-seo-analyzer/SKILL.md) |
 
 ---
 
@@ -443,7 +431,6 @@ skill-name/
 - google-maps-search-api-skill
 - google-maps-reviews-api-skill
 - google-news-api-skill
-- 【ZH】comprehensive-seo-analyzer
 
 ### Documentation Requirements
 
