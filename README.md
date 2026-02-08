@@ -65,6 +65,12 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 |-------|-------------|---------------|
 | [google-news-api-skill](./google-news-api-skill/SKILL.md) | Google News scraping and monitoring (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./google-news-api-skill/SKILL.md) |
 
+### 🔬 Research & Intelligence
+
+| Skill | Description | Documentation |
+|-------|-------------|---------------|
+| [web-research-assistant](./web-research-assistant/SKILL.md) | Web research assistant for OpenClaw & Claude Code - supplements restricted web access | [SKILL.md](./web-research-assistant/SKILL.md) |
+
 ---
 
 ## Why BrowserAct Skills?
@@ -99,13 +105,19 @@ export BROWSERACT_API_KEY="your-api-key-here"
 **For Claude Code:**
 ```bash
 mkdir -p ~/.claude/skills
-cp -r amazon-* google-maps-* google-news-api-skill ~/.claude/skills/
+cp -r amazon-* google-maps-* google-news-api-skill web-research-assistant ~/.claude/skills/
+```
+
+**For OpenClaw:**
+```bash
+mkdir -p ~/.openclaw/skills
+cp -r web-research-assistant ~/.openclaw/skills/
 ```
 
 **For Cursor:**
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-* google-maps-* google-news-api-skill ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-news-api-skill web-research-assistant ~/.cursor/skills/
 ```
 
 ### Step 4: Start Using
@@ -128,6 +140,9 @@ python google-maps-search-api-skill/scripts/maps_search.py "restaurants"
 
 # Google Maps Reviews
 python google-maps-reviews-api-skill/scripts/reviews.py "restaurant-name"
+
+# Web Research (when web access is restricted)
+python web-research-assistant/scripts/research.py "AI technology trends" --max-results 15
 ```
 
 ---
@@ -355,6 +370,8 @@ skill-name/
 - google-maps-api-skill
 - google-maps-search-api-skill
 - google-maps-reviews-api-skill
+- google-news-api-skill
+- web-research-assistant
 
 ### Documentation Requirements
 
