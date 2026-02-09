@@ -1,7 +1,7 @@
----
+```
 name: amazon-asin-lookup-api-skill
-description: "This skill helps users extract structured product details from Amazon using a specific ASIN (Amazon Standard Identification Number). Use this skill when the user asks to: 1. Get Amazon product details by ASIN; 2. Lookup Amazon product title and price using ASIN; 3. Extract Amazon product ratings and reviews count for a specific ASIN; 4. Check Amazon product availability and current price; 5. Get Amazon product description and features via ASIN; 6. Enrich product catalog with Amazon data using ASIN; 7. Monitor Amazon product price changes for specific ASINs; 8. Retrieve Amazon product brand and material information; 9. Fetch Amazon product images and specifications by ASIN; 10. Validate Amazon ASIN and get product metadata."
----
+description: This skill helps users extract structured product details from Amazon using a specific ASIN (Amazon Standard Identification Number). Use this skill when the user asks to: 1. Get Amazon product details by ASIN; 2. Lookup Amazon product title and price using ASIN; 3. Extract Amazon product ratings and reviews count for a specific ASIN; 4. Check Amazon product availability and current price; 5. Get Amazon product description and features via ASIN; 6. Enrich product catalog with Amazon data using ASIN; 7. Monitor Amazon product price changes for specific ASINs; 8. Retrieve Amazon product brand and material information; 9. Fetch Amazon product images and specifications by ASIN; 10. Validate Amazon ASIN and get product metadata.
+```
 
 # Amazon ASIN Lookup Skill
 
