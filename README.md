@@ -34,8 +34,7 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 4. [Installation Guide](#installation-guide)
 5. [Skill Details](#skill-details)
 6. [Architecture](#architecture)
-7. [Contributing](#contributing)
-8. [License](#license)
+7. [License](#license)
 
 ---
 
@@ -339,50 +338,6 @@ except Exception as e:
 - [GitHub Issues](https://github.com/browseract-com/skills/issues)
 - [BrowserAct Documentation](https://browseract.com/docs)
 - [Discord Community](https://discord.gg/browseract)
-
----
-
-## Contributing
-
-### Adding New Skills
-
-1. Create a new directory for your skill
-2. Add `SKILL.md` with full documentation
-3. Add implementation files
-4. Update this README
-5. Submit via Pull Request
-
-### Skill Structure
-
-```
-skill-name/
-├── README.md
-├── SKILL.md
-└── implementation.py
-```
-
-**Current Skills:**
-- amazon-asin-lookup-api-skill
-- amazon-product-api-skill
-- amazon-product-search-api-skill
-- amazon-reviews-api-skill
-- amazon-competitor-analyzer
-- google-maps-api-skill
-- google-maps-search-api-skill
-- google-maps-reviews-api-skill
-- google-news-api-skill
-- web-research-assistant
-
-### Documentation Requirements
-
-All skills must include:
-
-- YAML frontmatter with name and description
-- Input parameters documentation
-- Output format specification
-- Usage examples
-- API key setup instructions
-- Troubleshooting section
 
 ---
 
