@@ -1,6 +1,6 @@
 ---
 name: amazon-product-api-skill
-description: Extract structured product listings from Amazon, including titles, ASINs, prices, ratings, and specifications. Use this skill when users want to: 1) "Search for [product] on Amazon", 2) "Find the best selling [brand] products", 3) "Track price changes for [item]", 4) "Get a list of [category] with high ratings", 5) "Compare [brand A] and [brand B] products on Amazon", 6) "Extract Amazon product data for market research", 7) "Look for [product] in a specific language/marketplace", 8) "Analyze competitor pricing for [keywords]", 9) "Find featured products for [search term]", 10) "Get technical specifications like material or color for [product list]".
+description: Extract structured product listings from Amazon, including titles, ASINs, prices, ratings, and specifications. Use this skill when users want to search for products on Amazon, find the best selling brand products, track price changes for items, get a list of categories with high ratings, compare different brand products on Amazon, extract Amazon product data for market research, look for products in a specific language or marketplace, analyze competitor pricing for keywords, find featured products for search terms, get technical specifications like material or color for product lists.
 ---
 
 # Amazon Product API Skill

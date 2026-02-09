@@ -1,6 +1,6 @@
 ---
 name: google-news-api-skill
-description: This skill automates the extraction of structured news data from Google News via BrowserAct API. Use this skill when the user asks for tasks such as: 1. Searching for news about a specific topic; 2. Tracking industry trends; 3. Monitoring public relations or sentiment; 4. Collecting competitor updates; 5. Getting the latest reports on specific keywords; 6. Monitoring brand exposure in media; 7. Researching market hot topics; 8. Summarizing daily industry news; 9. Tracking media activities of specific individuals; 10. Retrieving hot events from the past 24 hours; 11. Extracting structured data for market research; 12. Monitoring global breaking news.
+description: This skill automates the extraction of structured news data from Google News via BrowserAct API. Use this skill when the user asks for tasks such as searching for news about a specific topic, tracking industry trends, monitoring public relations or sentiment, collecting competitor updates, getting the latest reports on specific keywords, monitoring brand exposure in media, researching market hot topics, summarizing daily industry news, tracking media activities of specific individuals, retrieving hot events from the past 24 hours, extracting structured data for market research, monitoring global breaking news.
 ---
 
 # Google News Automation Skill
