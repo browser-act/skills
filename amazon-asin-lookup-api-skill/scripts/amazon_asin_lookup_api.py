@@ -38,7 +38,7 @@ def run_amazon_asin_lookup(api_key, asin):
 
     if "id" not in res:
         # Check for authorization error
-        if res.get("message") == "Invalid authorization":
+        if "Invalid authorization" in str(res):
             print(f"Error: Invalid authorization. Please check your BrowserAct API Key.", flush=True)
         else:
             print(f"Error: Could not start task. Response: {res}", flush=True)
@@ -48,14 +48,7 @@ def run_amazon_asin_lookup(api_key, asin):
     print(f"Task started. ID: {task_id}", flush=True)
     
     # 2. Poll for Completion
-    start_time = time.time()
-    max_wait = 1800 # 30 minutes
-    
     while True:
-        if time.time() - start_time > max_wait:
-            print(f"Error: Task timed out after {max_wait/60} minutes.", flush=True)
-            return None
-            
         try:
             status_res = requests.get(f"{API_BASE_URL}/get-task-status?task_id={task_id}", headers=headers).json()
             status = status_res.get("status")
@@ -87,10 +80,7 @@ def run_amazon_asin_lookup(api_key, asin):
             return result_string
         else:
             # Fallback to returning the JSON representation of data
-            data = task_info.get("data")
-            if data:
-                return json.dumps(data, ensure_ascii=False, indent=2)
-            return json.dumps(task_info, ensure_ascii=False, indent=2)
+            return json.dumps(task_info, ensure_ascii=False)
             
     except Exception as e:
         print(f"Error: Failed to retrieve results - {e}", flush=True)
@@ -116,6 +106,4 @@ if __name__ == "__main__":
     
     result = run_amazon_asin_lookup(api_key, asin)
     if result:
-        print("\n--- Result Data ---", flush=True)
         print(result, flush=True)
-        print("--- End of Result ---", flush=True)

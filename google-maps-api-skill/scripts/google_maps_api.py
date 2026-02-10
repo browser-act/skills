@@ -34,7 +34,7 @@ def run_google_maps_task(api_key, keywords, language="en", country="us"):
         return None
 
     if "id" not in res:
-        # Check for invalid authorization in the error response
+        # Check for authorization error
         if "Invalid authorization" in str(res):
              print(f"Error: Invalid authorization. Please check your API key.", flush=True)
         else:

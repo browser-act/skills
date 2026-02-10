@@ -38,7 +38,11 @@ def run_google_maps_reviews_task(api_key, keywords, language="en", country="us")
         return None
 
     if "id" not in res:
-        print(f"Error: Could not start task. Response: {res}", flush=True)
+        # Check for authorization error
+        if "Invalid authorization" in str(res):
+             print(f"Error: Invalid authorization. Please check your API key.", flush=True)
+        else:
+             print(f"Error: Could not start task. Response: {res}", flush=True)
         return None
     
     task_id = res["id"]

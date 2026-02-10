@@ -1,6 +1,6 @@
 ---
 name: amazon-product-search-api-skill
-description: This skill is designed to help users automatically extract product data from Amazon search results. The Agent should proactively apply this skill when users request searching for products related to keywords, finding best-selling items from specific brands, monitoring product prices and availability on Amazon, extracting product listings for market research, collecting product ratings and review counts for competitive analysis, finding specific products with a maximum count, searching Amazon in different languages for localized results, tracking monthly sales estimates for brand products, gathering product URLs and titles for a product catalog, scanning Amazon for Best Seller tags in a specific category, monitoring shipping and delivery information for brand items, building a structured dataset of Amazon search results.
+description: "This skill is designed to help users automatically extract product data from Amazon search results. The Agent should proactively apply this skill when users request searching for products related to keywords, finding best-selling items from specific brands, monitoring product prices and availability on Amazon, extracting product listings for market research, collecting product ratings and review counts for competitive analysis, finding specific products with a maximum count, searching Amazon in different languages for localized results, tracking monthly sales estimates for brand products, gathering product URLs and titles for a product catalog, scanning Amazon for Best Seller tags in a specific category, monitoring shipping and delivery information for brand items, building a structured dataset of Amazon search results."
 ---
 
 # Amazon Product Search Automation Skill
@@ -49,7 +49,7 @@ The Agent should execute the following independent script to achieve "one-line c
 
 ```bash
 # Example Call
-python -u ./.cursor/skills/amazon-product-search-api-skill/scripts/amazon_product_search_api.py "Keywords" "Brand" Quantity "language"
+python -u ./scripts/amazon_product_search_api.py "Keywords" "Brand" Quantity "language"
 ```
 
 ### ⏳ Running Status Monitoring

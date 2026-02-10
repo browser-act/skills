@@ -1,68 +1,97 @@
 ---
 name: amazon-product-api-skill
-description: Extract structured product listings from Amazon, including titles, ASINs, prices, ratings, and specifications. Use this skill when users want to search for products on Amazon, find the best selling brand products, track price changes for items, get a list of categories with high ratings, compare different brand products on Amazon, extract Amazon product data for market research, look for products in a specific language or marketplace, analyze competitor pricing for keywords, find featured products for search terms, get technical specifications like material or color for product lists.
+description: "This skill helps users extract structured product listings from Amazon, including titles, ASINs, prices, ratings, and specifications. Use this skill when users want to search for products on Amazon, find the best selling brand products, track price changes for items, get a list of categories with high ratings, compare different brand products on Amazon, extract Amazon product data for market research, look for products in a specific language or marketplace, analyze competitor pricing for keywords, find featured products for search terms, get technical specifications like material or color for product lists."
 ---
 
-# Amazon Product API Skill
+# Amazon Product Search Skill
 
-This skill allows you to extract structured product data from Amazon search results using a single API request, eliminating the need for complex scrapers or manual data entry.
+## 📖 Introduction
+This skill utilizes BrowserAct's Amazon Product API template to extract structured product listings from Amazon search results. It provides detailed information including titles, ASINs, prices, ratings, and product specifications, enabling efficient market research and product monitoring without manual data collection.
 
 ## ✨ Features
+1. **No Hallucinations, Reliable Data**: Uses a pre-defined workflow to ensure accurate data extraction without AI-generated errors.
+2. **No CAPTCHA Challenges**: Built-in mechanisms bypass reCAPTCHA and other bot detection systems.
+3. **Global Access, No Geo-fencing**: Overcomes IP restrictions to ensure stable access from any location.
+4. **Fast Execution**: More efficient than general-purpose AI browser automation.
+5. **Cost-Effective**: Reduces data acquisition costs compared to high-token consumption AI models.
 
-- **One-call integration**: Send product results directly into your pricing database, BI dashboards, competitor trackers, or automation workflows via API.
-- **Zero maintenance**: No scraping scripts, proxy setup, or anti-bot handling required.
-- **Production-ready output**: Consistent, structured responses designed for automated processing and monitoring.
-- **Built for workflows**: Perfect for competitive pricing, product research, catalog monitoring, and merchandising insights.
+## 🔑 API Key Workflow
+Before running the skill, the `BROWSERACT_API_KEY` environment variable must be checked. If it is not set, do not proceed; instead, request the key from the user.
+**Agent Instruction**:
+> "Since you haven't configured the BrowserAct API Key yet, please go to the [BrowserAct Console](https://www.browseract.com/reception/integrations) to get your Key and provide it here."
 
-## 🔑 API Key Setup
+## 🛠️ Input Parameters
+The agent should configure the following parameters based on user requirements:
 
-This skill requires a `BROWSERACT_API_KEY`. 
+1. **KeyWords**
+   - **Type**: `string`
+   - **Description**: Search keywords used to find products on Amazon.
+   - **Required**: Yes
+   - **Example**: `laptop`, `wireless earbuds`
 
-### Environment Variable Check
-The associated script will automatically check for the `BROWSERACT_API_KEY` environment variable.
+2. **Brand**
+   - **Type**: `string`
+   - **Description**: Filter products by brand name.
+   - **Default**: `Apple`
+   - **Example**: `Dell`, `Samsung`
 
-### How to get an API Key
-1. Register/Login at [BrowserAct](https://www.browseract.com/).
-2. Go to the [API & Integrations](https://www.browseract.com/reception/integrations) section to get your key.
-3. Set it in your environment:
-   ```powershell
-   $env:BROWSERACT_API_KEY = "your-api-key-here"
-   ```
+3. **Maximum_number_of_page_turns**
+   - **Type**: `number`
+   - **Description**: Number of search result pages to paginate through.
+   - **Default**: `1`
 
-## 📥 Input Parameters
+4. **language**
+   - **Type**: `string`
+   - **Description**: UI language for the Amazon browsing session.
+   - **Default**: `en`
+   - **Example**: `zh-CN`, `de`
 
-| Parameter | Type | Description | Example |
-|-----------|------|-------------|---------|
-| `KeyWords` | string | Search keywords used to find products on Amazon. | `phone`, `wireless earbuds` |
-| `Brand` | string | Filter products by brand name. | `Apple`, `Samsung`, `Sony` |
-| `Maximum_number_of_page_turns` | number | Number of search result pages to paginate through. | `1`, `3` |
-| `language` | string | UI language for the Amazon browsing session. | `en`, `de`, `zh-CN` |
-
-## 🚀 How to Call
-
-You can trigger this skill using the provided Python script:
+## 🚀 Usage (Recommended)
+The agent should execute the following script to get results in one command:
 
 ```bash
-python -u .cursor/skills/amazon-product-api-skill/scripts/amazon_product_api.py --keywords "laptop" --brand "Dell" --pages 1 --lang "en"
+# Example Usage
+python -u ./scripts/amazon_product_api.py "keywords" "brand" pages "language"
 ```
 
-## 📊 Output Data
+### ⏳ Progress Monitoring
+Since this task involves automated browser operations, it may take a few minutes. The script outputs real-time timestamped status logs (e.g., `[14:30:05] Task Status: running`).
+**Agent Note**:
+- Monitor the terminal output while waiting for results.
+- As long as new status logs are appearing, the task is running normally.
+- Only consider retrying if the status remains unchanged for a long period or the script stops without output.
 
-The script returns a JSON array of products with the following fields:
-
-- `product_title`: The product name.
-- `asin`: Amazon Standard Identification Number (unique ID).
-- `product_url`: The product detail page URL.
+## 📊 Output Data Description
+Upon success, the script parses and prints the structured product data from the API response, which includes:
+- `product_title`: Full title of the product.
+- `asin`: Amazon Standard Identification Number.
+- `product_url`: URL of the Amazon product page.
 - `brand`: Brand name.
-- `price_current_amount`: Current selling price.
-- `price_original_amount`: Original price (if available).
+- `price_current_amount`: Current price.
+- `price_original_amount`: Original price (if applicable).
 - `rating_average`: Average star rating.
 - `rating_count`: Total number of ratings.
-- `featured`: Whether it's a sponsored/featured item.
+- `featured`: Badges like "Best Seller" or "Amazon's Choice".
 - `color`, `material`, `style`: Product attributes (if available).
 
-## 🛠 Error Handling & Retries
+## ⚠️ Error Handling & Retry Mechanism
+If an error occurs during execution, the agent should follow this logic:
 
-- **Invalid Authorization**: If the API key is incorrect or expired, the script will catch the "Invalid authorization" error and prompt you to check your configuration.
-- **Network Issues**: The script includes built-in retry logic for common network timeouts.
-- **Task Failures**: If the workflow fails on the server side, the script will report the failure status and any available error details.
+1. **Check Output**:
+   - If the output contains `"Invalid authorization"`, the API Key is invalid. **Do not retry**; ask the user to provide a valid key.
+   - If the output does not contain `"Invalid authorization"` but the task fails (e.g., output starts with `Error:` or returns empty results), the agent should **automatically retry once**.
+
+2. **Retry Limit**:
+   - Automatic retry is limited to **once**. If it fails again, stop and report the error to the user.
+
+## 🌟 Typical Use Cases
+1. **Market Research**: Search for a specific product category to analyze top brands and pricing.
+2. **Competitor Monitoring**: Track product listings and price changes for specific competitor brands.
+3. **Product Catalog Enrichment**: Extract structured details like ASINs and specifications to build or update a product database.
+4. **Rating Analysis**: Find high-rated products for specific keywords to identify market leaders.
+5. **Localized Research**: Search Amazon in different languages to analyze international markets.
+6. **Price Tracking**: Monitor current and original prices to identify discount trends.
+7. **Brand Performance**: Evaluate the presence of a specific brand in search results across multiple pages.
+8. **Attribute Extraction**: Gather technical specifications like material or color for a list of products.
+9. **Lead Generation**: Identify popular products and their manufacturers for business outreach.
+10. **Automated Data Feed**: Periodically pull Amazon search results into external BI tools or dashboards.

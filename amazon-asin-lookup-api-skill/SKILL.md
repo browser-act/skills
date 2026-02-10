@@ -1,6 +1,6 @@
 ---
 name: amazon-asin-lookup-api-skill
-description: This skill helps users extract structured product details from Amazon using a specific ASIN (Amazon Standard Identification Number). Use this skill when the user asks to get Amazon product details by ASIN, lookup Amazon product title and price using ASIN, extract Amazon product ratings and reviews count for a specific ASIN, check Amazon product availability and current price, get Amazon product description and features via ASIN, enrich product catalog with Amazon data using ASIN, monitor Amazon product price changes for specific ASINs, retrieve Amazon product brand and material information, fetch Amazon product images and specifications by ASIN, validate Amazon ASIN and get product metadata.
+description: "This skill helps users extract structured product details from Amazon using a specific ASIN (Amazon Standard Identification Number). Use this skill when the user asks to get Amazon product details by ASIN, lookup Amazon product title and price using ASIN, extract Amazon product ratings and reviews count for a specific ASIN, check Amazon product availability and current price, get Amazon product description and features via ASIN, enrich product catalog with Amazon data using ASIN, monitor Amazon product price changes for specific ASINs, retrieve Amazon product brand and material information, fetch Amazon product images and specifications by ASIN, validate Amazon ASIN and get product metadata."
 ---
 
 # Amazon ASIN Lookup Skill
@@ -34,7 +34,7 @@ The agent should execute the following script to get results in one command:
 
 ```bash
 # Example Usage
-python -u ./.cursor/skills/amazon-asin-lookup-api-skill/scripts/amazon_asin_lookup_api.py "ASIN_VALUE"
+python -u ./scripts/amazon_asin_lookup_api.py "ASIN_VALUE"
 ```
 
 ### ⏳ Progress Monitoring
@@ -72,3 +72,15 @@ If an error occurs during execution, the agent should follow this logic:
 
 2. **Retry Limit**:
    - Automatic retry is limited to **once**. If it fails again, stop and report the error to the user.
+
+## 🌟 Typical Use Cases
+1. **Product Data Enrichment**: Retrieve full details for a list of ASINs to update an e-commerce database.
+2. **Price Comparison**: Lookup current Amazon prices for specific ASINs to compare with other retailers.
+3. **Review Monitoring**: Track changes in rating averages and review counts for key products.
+4. **Availability Checks**: Automatically verify if a specific product is currently in stock on Amazon.
+5. **Brand Analysis**: Identify the brand and manufacturer of products identified by ASIN.
+6. **Detailed Specifications**: Fetch material, style, and color information for catalog management.
+7. **Feature Highlighting**: Extract "special features" and detailed descriptions for marketing copy.
+8. **Compatibility Verification**: Check "compatible devices" for electronics or accessories.
+9. **Market Research**: Analyze featured badges like "Amazon's Choice" for specific product IDs.
+10. **URL Resolution**: Convert a list of ASINs into full Amazon product page URLs.

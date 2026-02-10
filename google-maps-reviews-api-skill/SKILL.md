@@ -1,6 +1,6 @@
 ---
 name: google-maps-reviews-api-skill
-description: This skill is designed to help users automatically extract reviews from Google Maps via the Google Maps Reviews API. Agent should proactively apply this skill when users request to find reviews for local businesses (e.g., coffee shops, clinics), monitor customer feedback for a specific brand or location, analyze sentiment of reviews for competitors, extract reviews for a chain of stores or services, track reputation of a local restaurant, gather user testimonials for a specific venue, conduct market research on service quality of local businesses, monitor reviews for a new retail location, collect feedback on public attractions or parks, identify common complaints for a specific service provider, research the best-rated places in a city, analyze recurring themes in reviews for a specific industry.
+description: "This skill is designed to help users automatically extract reviews from Google Maps via the Google Maps Reviews API. Agent should proactively apply this skill when users request to find reviews for local businesses (e.g., coffee shops, clinics), monitor customer feedback for a specific brand or location, analyze sentiment of reviews for competitors, extract reviews for a chain of stores or services, track reputation of a local restaurant, gather user testimonials for a specific venue, conduct market research on service quality of local businesses, monitor reviews for a new retail location, collect feedback on public attractions or parks, identify common complaints for a specific service provider, research the best-rated places in a city, analyze recurring themes in reviews for a specific industry."
 ---
 
 # Google Maps Reviews Automation Skill
@@ -8,7 +8,7 @@ description: This skill is designed to help users automatically extract reviews 
 ## 📖 Introduction
 This skill provides a one-stop review collection service using BrowserAct's Google Maps Reviews API template. It can extract structured review data directly from Google Maps search results. Simply provide the search keywords, language, and country to get clean, usable review data.
 
-## ✨ Capability Features
+## ✨ Features
 1. **No Hallucination, Precision Data Extraction**: Uses preset workflows to avoid AI-generated hallucinations.
 2. **No CAPTCHA Issues**: Built-in mechanisms to bypass reCAPTCHA or other verification challenges.
 3. **No IP Restrictions or Geo-fencing**: Breaks through regional IP limits to ensure stable access worldwide.
@@ -45,7 +45,7 @@ The Agent should execute the following script to get results:
 
 ```bash
 # Example call
-python -u ./.cursor/skills/google-maps-reviews-api-skill/scripts/google_maps_reviews_api.py "Keywords" "Language" "Country"
+python -u ./scripts/google_maps_reviews_api.py "Keywords" "Language" "Country"
 ```
 
 ### ⏳ Running Status Monitoring

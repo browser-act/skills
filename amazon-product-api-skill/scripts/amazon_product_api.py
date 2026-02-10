@@ -1,135 +1,114 @@
 import os
 import time
-import json
 import requests
-import argparse
+import json
 import sys
+import datetime
+import io
 
-# ============ Configuration Area ============
-# Template ID for Amazon Product API
+# Force UTF-8 encoding for standard output and error streams to handle multi-language content
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
+# API Configuration
+# Amazon Product API Template ID
 TEMPLATE_ID = "77670107419143475"
-
-# API configuration
 API_BASE_URL = "https://api.browseract.com/v2/workflow"
-POLL_INTERVAL = 5  # seconds
-MAX_WAIT_TIME = 1800  # 30 minutes
-# ============================================
 
-def get_api_key():
-    api_key = os.getenv("BROWSERACT_API_KEY")
-    if not api_key:
-        print("Error: BROWSERACT_API_KEY environment variable not set.", flush=True)
-        sys.exit(1)
-    return api_key
-
-def run_task_by_template(api_key, keywords, brand, pages, lang):
-    """Start a task using template"""
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    
-    input_parameters = [
-        {"name": "KeyWords", "value": keywords},
-        {"name": "Brand", "value": brand},
-        {"name": "Maximum_number_of_page_turns", "value": str(pages)},
-        {"name": "language", "value": lang}
-    ]
-    
-    data = {
+def run_amazon_product_task(api_key, keywords, brand="Apple", pages=1, language="en"):
+    """
+    Executes an Amazon Product search task via BrowserAct API.
+    """
+    headers = {"Authorization": f"Bearer {api_key}"}
+    payload = {
         "workflow_template_id": TEMPLATE_ID,
-        "input_parameters": input_parameters,
+        "input_parameters": [
+            {"name": "KeyWords", "value": keywords},
+            {"name": "Brand", "value": brand},
+            {"name": "Maximum_number_of_page_turns", "value": str(pages)},
+            {"name": "language", "value": language}
+        ]
     }
-    
-    api_url = f"{API_BASE_URL}/run-task-by-template"
+
+    # 1. Start Task
+    print(f"Starting Amazon Product search task for keywords: {keywords}", flush=True)
     try:
-        response = requests.post(api_url, json=data, headers=headers)
-        if response.status_code == 200:
-            result = response.json()
-            task_id = result.get("id")
-            print(f"Task started, Task ID: {task_id}", flush=True)
-            return task_id
-        elif response.status_code == 401:
-            print(f"Error: Invalid authorization. Please check your BROWSERACT_API_KEY.", flush=True)
-            sys.exit(1)
+        response = requests.post(f"{API_BASE_URL}/run-task-by-template", json=payload, headers=headers)
+        res = response.json()
+    except Exception as e:
+        print(f"Error: Connection to API failed - {e}", flush=True)
+        return None
+
+    if "id" not in res:
+        # Check for authorization error
+        if "Invalid authorization" in str(res):
+            print(f"Error: Invalid authorization. Please check your BrowserAct API Key.", flush=True)
         else:
-            print(f"Failed to start task: {response.text}", flush=True)
-            return None
-    except Exception as e:
-        print(f"Exception occurred: {str(e)}", flush=True)
+            print(f"Error: Could not start task. Response: {res}", flush=True)
         return None
-
-def get_task_status(api_key, task_id):
-    """Get task status"""
-    headers = {"Authorization": f"Bearer {api_key}"}
-    api_url = f"{API_BASE_URL}/get-task-status?task_id={task_id}"
-    try:
-        response = requests.get(api_url, headers=headers, timeout=30)
-        if response.status_code == 200:
-            return response.json().get("status")
-        return None
-    except:
-        return None
-
-def get_task_results(api_key, task_id):
-    """Get detailed task results"""
-    headers = {"Authorization": f"Bearer {api_key}"}
-    api_url = f"{API_BASE_URL}/get-task?task_id={task_id}"
-    try:
-        response = requests.get(api_url, headers=headers, timeout=30)
-        if response.status_code == 200:
-            return response.json()
-        return None
-    except Exception as e:
-        print(f"Warning: Error fetching results: {str(e)}", flush=True)
-        return None
-
-def main():
-    parser = argparse.ArgumentParser(description="Amazon Product API Skill Script")
-    parser.add_argument("--keywords", required=True, help="Search keywords")
-    parser.add_argument("--brand", default="Apple", help="Filter by brand")
-    parser.add_argument("--pages", type=int, default=1, help="Number of pages")
-    parser.add_argument("--lang", default="en", help="Language")
     
-    args = parser.parse_args()
+    task_id = res["id"]
+    print(f"Task started. ID: {task_id}", flush=True)
     
-    api_key = get_api_key()
-    
-    print(f"Initializing Amazon Product search for: '{args.keywords}' (Brand: {args.brand})", flush=True)
-    
-    task_id = run_task_by_template(api_key, args.keywords, args.brand, args.pages, args.lang)
-    if not task_id:
-        sys.exit(1)
-        
-    start_time = time.time()
-    print(f"Waiting for task to complete...", flush=True)
-    
+    # 2. Poll for Completion
     while True:
-        if time.time() - start_time > MAX_WAIT_TIME:
-            print("Error: Timeout reached.", flush=True)
-            sys.exit(1)
+        try:
+            status_res = requests.get(f"{API_BASE_URL}/get-task-status?task_id={task_id}", headers=headers).json()
+            status = status_res.get("status")
             
-        status = get_task_status(api_key, task_id)
-        if status == "finished":
-            print("\nTask completed!", flush=True)
-            break
-        elif status == "failed":
-            print("\nTask failed.", flush=True)
-            sys.exit(1)
-        elif status == "canceled":
-            print("\nTask canceled.", flush=True)
-            sys.exit(1)
-        else:
-            print(f"[{time.strftime('%H:%M:%S')}] Task Status: {status or 'unknown'}", flush=True)
+            timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+            print(f"[{timestamp}] Task Status: {status}", flush=True)
             
-        time.sleep(POLL_INTERVAL)
+            if status == "finished":
+                print(f"[{timestamp}] Task finished successfully.", flush=True)
+                break
+            elif status in ["failed", "canceled"]:
+                print(f"Error: Task {status}. Please check your BrowserAct dashboard.", flush=True)
+                return None
+        except Exception as e:
+            timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+            print(f"[{timestamp}] Polling error: {e}. Retrying...", flush=True)
+            
+        time.sleep(10)
+    
+    # 3. Get Results
+    try:
+        task_info = requests.get(f"{API_BASE_URL}/get-task?task_id={task_id}", headers=headers).json()
         
-    results = get_task_results(api_key, task_id)
-    if results:
-        # According to standard, results should be printed to console
-        print(json.dumps(results, indent=2, ensure_ascii=False), flush=True)
-    else:
-        print("Warning: No results found.", flush=True)
+        # Extract data from output["string"] or the whole result
+        output = task_info.get("output", {})
+        result_string = output.get("string")
+        
+        if result_string:
+            return result_string
+        else:
+            return json.dumps(task_info, ensure_ascii=False)
+            
+    except Exception as e:
+        print(f"Error: Failed to retrieve results - {e}", flush=True)
+        return None
 
 if __name__ == "__main__":
-    main()
+    # Get API key from environment variable
+    api_key = os.getenv("BROWSERACT_API_KEY")
+    
+    if len(sys.argv) < 2:
+        print("Usage: python amazon_product_api.py <keywords> [brand] [pages] [language]", flush=True)
+        sys.exit(1)
+        
+    if not api_key:
+        print("\n[!] ERROR: BrowserAct API Key is missing.", flush=True)
+        print("Please follow these steps:", flush=True)
+        print("1. Go to: https://www.browseract.com/reception/integrations", flush=True)
+        print("2. Copy your API Key.", flush=True)
+        print("3. Set it as an environment variable (BROWSERACT_API_KEY) or provide it in the chat.", flush=True)
+        sys.exit(1)
+        
+    keywords = sys.argv[1]
+    brand = sys.argv[2] if len(sys.argv) > 2 else "Apple"
+    pages = sys.argv[3] if len(sys.argv) > 3 else 1
+    language = sys.argv[4] if len(sys.argv) > 4 else "en"
+    
+    result = run_amazon_product_task(api_key, keywords, brand, pages, language)
+    if result:
+        print(result, flush=True)

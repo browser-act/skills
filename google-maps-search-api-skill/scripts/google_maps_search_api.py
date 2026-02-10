@@ -36,8 +36,8 @@ def run_google_maps_search_task(api_key, keywords, language="en", country="us", 
 
     if "id" not in res:
         # Check for authorization error
-        if res.get("message") == "Invalid authorization":
-            print(f"Error: Invalid authorization. Please check your API key.", flush=True)
+        if "Invalid authorization" in str(res):
+            print(f"Error: Invalid authorization. Please check your BrowserAct API Key.", flush=True)
         else:
             print(f"Error: Could not start task. Response: {res}", flush=True)
         return None

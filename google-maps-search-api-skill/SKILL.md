@@ -1,6 +1,6 @@
 ---
 name: google-maps-search-api-skill
-description: This skill is designed to help users automatically extract business data from Google Maps search results. The Agent should proactively apply this skill when the user makes the following requests searching for coffee shops in a specific city, finding dentists or medical clinics nearby, tracking competitors' locations in a certain area, extracting business leads from Google Maps lists, gathering restaurant data for market research, finding hotels or accommodation options in a region, locating specific services like coworking spaces or gyms, monitoring new business openings in a neighborhood, collecting contact information and addresses for sales prospecting, analyzing price ranges and cuisines of local eateries, getting ratings and review counts for a list of businesses, exporting local business data into a CRM or database.
+description: "This skill is designed to help users automatically extract business data from Google Maps search results. The Agent should proactively apply this skill when the user makes the following requests searching for coffee shops in a specific city, finding dentists or medical clinics nearby, tracking competitors' locations in a certain area, extracting business leads from Google Maps lists, gathering restaurant data for market research, finding hotels or accommodation options in a region, locating specific services like coworking spaces or gyms, monitoring new business openings in a neighborhood, collecting contact information and addresses for sales prospecting, analyzing price ranges and cuisines of local eateries, getting ratings and review counts for a list of businesses, exporting local business data into a CRM or database."
 ---
 
 # Google Maps Search Automation Skill
@@ -50,7 +50,7 @@ The Agent should execute the following independent script to achieve "one line c
 
 ```bash
 # Example call
-python -u ./.cursor/skills/google-maps-search-api-skill/scripts/google_maps_search_api.py "search keywords" "language" "country" count
+python -u ./scripts/google_maps_search_api.py "search keywords" "language" "country" count
 ```
 
 ### ⏳ Execution Status Monitoring

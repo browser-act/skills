@@ -1,6 +1,6 @@
 ---
 name: google-news-api-skill
-description: This skill automates the extraction of structured news data from Google News via BrowserAct API. Use this skill when the user asks for tasks such as searching for news about a specific topic, tracking industry trends, monitoring public relations or sentiment, collecting competitor updates, getting the latest reports on specific keywords, monitoring brand exposure in media, researching market hot topics, summarizing daily industry news, tracking media activities of specific individuals, retrieving hot events from the past 24 hours, extracting structured data for market research, monitoring global breaking news.
+description: "This skill automates the extraction of structured news data from Google News via BrowserAct API. Use this skill when the user asks for tasks such as searching for news about a specific topic, tracking industry trends, monitoring public relations or sentiment, collecting competitor updates, getting the latest reports on specific keywords, monitoring brand exposure in media, researching market hot topics, summarizing daily industry news, tracking media activities of specific individuals, retrieving hot events from the past 24 hours, extracting structured data for market research, monitoring global breaking news."
 ---
 
 # Google News Automation Skill
@@ -50,7 +50,7 @@ The Agent should execute the following command to get results:
 
 ```bash
 # Example call
-python -u ./.cursor/skills/google-news-api-skill/scripts/google_news_api.py "search keywords" "time range" limit
+python -u ./scripts/google_news_api.py "search keywords" "time range" limit
 ```
 
 ### ⏳ Progress Monitoring

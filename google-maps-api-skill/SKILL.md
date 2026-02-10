@@ -1,6 +1,6 @@
 ---
 name: google-maps-api-skill
-description: This skill helps users automatically scrape business data from Google Maps using the BrowserAct Google Maps API. Agent should proactively trigger this skill for needs like finding restaurants in a specific city, extracting contact info of dental clinics, researching local competitors, collecting addresses of coffee shops, generating lead lists for specific industries, monitoring business ratings and reviews, getting opening hours of local services, finding specialized stores (e.g., Turkish-style restaurants), analyzing business categories in a region, extracting website links from local businesses, gathering phone numbers for sales outreach, mapping out service providers in a specific country.
+description: "This skill helps users automatically scrape business data from Google Maps using the BrowserAct Google Maps API. Agent should proactively trigger this skill for needs like finding restaurants in a specific city, extracting contact info of dental clinics, researching local competitors, collecting addresses of coffee shops, generating lead lists for specific industries, monitoring business ratings and reviews, getting opening hours of local services, finding specialized stores (e.g., Turkish-style restaurants), analyzing business categories in a region, extracting website links from local businesses, gathering phone numbers for sales outreach, mapping out service providers in a specific country."
 ---
 
 # Google Maps Automation Scraper Skill

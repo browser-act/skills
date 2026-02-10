@@ -35,7 +35,11 @@ def run_amazon_product_search_task(api_key, keywords, brand="Apple", limit=50, l
         return None
 
     if "id" not in res:
-        print(f"Error: Could not start task. Response: {res}", flush=True)
+        # Check for authorization error
+        if "Invalid authorization" in str(res):
+            print(f"Error: Invalid authorization. Please check your BrowserAct API Key.", flush=True)
+        else:
+            print(f"Error: Could not start task. Response: {res}", flush=True)
         return None
     
     task_id = res["id"]
