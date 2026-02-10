@@ -18,11 +18,11 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 | **OpenClaw** | ✅ Fully Supported | Compatible |
 
 **Key Benefits:**
-- ✅ **Stable & Reliable**: No crashes, no unexpected behavior
-- ✅ **Plug & Play**: Works immediately after installation
-- ✅ **Cross-Platform**: Consistent performance across all AI assistants
-- ✅ **Regular Updates**: Maintained for compatibility with latest platform versions
-- ✅ **Professional Support**: Responsive help and documentation
+- ✅ **Stable & Reliable**: No crashes, no unexpected behavior.
+- ✅ **Plug & Play**: Works immediately after installation.
+- ✅ **Cross-Platform**: Consistent performance across all AI assistants.
+- ✅ **Regular Updates**: Maintained for compatibility with latest platform versions.
+- ✅ **Professional Support**: Responsive help and documentation.
 
 ---
 
