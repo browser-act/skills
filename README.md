@@ -10,14 +10,15 @@ Comprehensive collection of AI-powered skills for browser automation and data co
 
 BrowserAct skills are designed to work **powerfully and reliably** on all leading AI coding platforms:
 
-| Platform | Status | Installation |
-|----------|--------|--------------|
-| **OpenCode** | ✅ Fully Supported | Direct integration |
+| Platform        | Status             | Installation         |
+| --------------- | ------------------ | -------------------- |
+| **OpenCode**    | ✅ Fully Supported | Direct integration   |
 | **Claude Code** | ✅ Fully Supported | Native skill support |
-| **Cursor** | ✅ Fully Supported | Works out of the box |
-| **OpenClaw** | ✅ Fully Supported | Compatible |
+| **Cursor**      | ✅ Fully Supported | Works out of the box |
+| **OpenClaw**    | ✅ Fully Supported | Compatible           |
 
 **Key Benefits:**
+
 - ✅ **Stable & Reliable**: No crashes, no unexpected behavior.
 - ✅ **Plug & Play**: Works immediately after installation.
 - ✅ **Cross-Platform**: Consistent performance across all AI assistants.
@@ -42,32 +43,48 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 
 ### 📊 Amazon Shopping
 
-| Skill | Description | Documentation |
-|-------|-------------|---------------|
-| [amazon-asin-lookup-api-skill](./amazon-asin-lookup-api-skill/SKILL.md) | Look up Amazon product details by ASIN | [SKILL.md](./amazon-asin-lookup-api-skill/SKILL.md) |
-| [amazon-product-api-skill](./amazon-product-api-skill/SKILL.md) | Fetch Amazon product details and specifications | [SKILL.md](./amazon-product-api-skill/SKILL.md) |
-| [amazon-product-search-api-skill](./amazon-product-search-api-skill/SKILL.md) | Search Amazon products by keywords | [SKILL.md](./amazon-product-search-api-skill/SKILL.md) |
-| [amazon-reviews-api-skill](./amazon-reviews-api-skill/SKILL.md) | Extract Amazon product reviews | [SKILL.md](./amazon-reviews-api-skill/SKILL.md) |
-| [amazon-competitor-analyzer](./amazon-competitor-analyzer/SKILL.md) | Amazon product competitive analysis (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./amazon-competitor-analyzer/SKILL.md) |
+| Skill                                                                         | Description                                                            | Documentation                                          |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------ |
+| [amazon-asin-lookup-api-skill](./amazon-asin-lookup-api-skill/SKILL.md)       | Look up Amazon product details by ASIN                                 | [SKILL.md](./amazon-asin-lookup-api-skill/SKILL.md)    |
+| [amazon-product-api-skill](./amazon-product-api-skill/SKILL.md)               | Fetch Amazon product details and specifications                        | [SKILL.md](./amazon-product-api-skill/SKILL.md)        |
+| [amazon-product-search-api-skill](./amazon-product-search-api-skill/SKILL.md) | Search Amazon products by keywords                                     | [SKILL.md](./amazon-product-search-api-skill/SKILL.md) |
+| [amazon-reviews-api-skill](./amazon-reviews-api-skill/SKILL.md)               | Extract Amazon product reviews                                         | [SKILL.md](./amazon-reviews-api-skill/SKILL.md)        |
+| [amazon-competitor-analyzer](./amazon-competitor-analyzer/SKILL.md)           | Amazon product competitive analysis (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./amazon-competitor-analyzer/SKILL.md)      |
 
 ### 🗺️ Google Maps
 
-| Skill | Description | Documentation |
-|-------|-------------|---------------|
-| [google-maps-api-skill](./google-maps-api-skill/SKILL.md) | General Google Maps API integration | [SKILL.md](./google-maps-api-skill/SKILL.md) |
-| [google-maps-search-api-skill](./google-maps-search-api-skill/SKILL.md) | Search and extract Google Maps business data | [SKILL.md](./google-maps-search-api-skill/SKILL.md) |
-| [google-maps-reviews-api-skill](./google-maps-reviews-api-skill/SKILL.md) | Extract Google Maps business reviews | [SKILL.md](./google-maps-reviews-api-skill/SKILL.md) |
+| Skill                                                                     | Description                                  | Documentation                                        |
+| ------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------------------- |
+| [google-maps-api-skill](./google-maps-api-skill/SKILL.md)                 | General Google Maps API integration          | [SKILL.md](./google-maps-api-skill/SKILL.md)         |
+| [google-maps-search-api-skill](./google-maps-search-api-skill/SKILL.md)   | Search and extract Google Maps business data | [SKILL.md](./google-maps-search-api-skill/SKILL.md)  |
+| [google-maps-reviews-api-skill](./google-maps-reviews-api-skill/SKILL.md) | Extract Google Maps business reviews         | [SKILL.md](./google-maps-reviews-api-skill/SKILL.md) |
+
+### 🖼️ Google Images
+
+| Skill                                                       | Description                                                                         | Documentation                                 |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------- |
+| [google-image-api-skill](./google-image-api-skill/SKILL.md) | Extract structured image data from Google Images (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./google-image-api-skill/SKILL.md) |
 
 ### 📰 News & Media
 
-| Skill | Description | Documentation |
-|-------|-------------|---------------|
+| Skill                                                     | Description                                                            | Documentation                                |
+| --------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------- |
 | [google-news-api-skill](./google-news-api-skill/SKILL.md) | Google News scraping and monitoring (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./google-news-api-skill/SKILL.md) |
+
+### 🎬 YouTube
+
+| Skill                                                               | Description                                                         | Documentation                                     |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------- |
+| [youtube-api-skill](./youtube-api-skill/SKILL.md)                   | Extract detailed video metrics and channel info by keyword search   | [SKILL.md](./youtube-api-skill/SKILL.md)          |
+| [youtube-channel-api-skill](./youtube-channel-api-skill/SKILL.md)   | Search and extract YouTube channel data                             | [SKILL.md](./youtube-channel-api-skill/SKILL.md)  |
+| [youtube-comments-api-skill](./youtube-comments-api-skill/SKILL.md) | Extract video list and comment data from YouTube                    | [SKILL.md](./youtube-comments-api-skill/SKILL.md) |
+| [youtube-search-api-skill](./youtube-search-api-skill/SKILL.md)     | Extract structured data from YouTube search results                 | [SKILL.md](./youtube-search-api-skill/SKILL.md)   |
+| [youtube-video-api-skill](./youtube-video-api-skill/SKILL.md)       | Extract channel-level and video detail data from a specific channel | [SKILL.md](./youtube-video-api-skill/SKILL.md)    |
 
 ### 🔬 Research & Intelligence
 
-| Skill | Description | Documentation |
-|-------|-------------|---------------|
+| Skill                                                       | Description                                                                           | Documentation                                 |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------- |
 | [web-research-assistant](./web-research-assistant/SKILL.md) | Web research assistant for OpenClaw & Claude Code - supplements restricted web access | [SKILL.md](./web-research-assistant/SKILL.md) |
 
 ---
@@ -75,6 +92,7 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 ## Why BrowserAct Skills?
 
 **🚀 Not Blocked by CAPTCHA or reCAPTCHA**
+
 - Advanced browser automation bypasses anti-bot detection
 - Real browser instances with stealth technology
 - No need for CAPTCHA solving services
@@ -102,21 +120,24 @@ export BROWSERACT_API_KEY="your-api-key-here"
 ### Step 3: Install Skills
 
 **For Claude Code:**
+
 ```bash
 mkdir -p ~/.claude/skills
-cp -r amazon-* google-maps-* google-news-api-skill web-research-assistant ~/.claude/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* web-research-assistant ~/.claude/skills/
 ```
 
 **For OpenClaw:**
+
 ```bash
 mkdir -p ~/.openclaw/skills
 cp -r web-research-assistant ~/.openclaw/skills/
 ```
 
 **For Cursor:**
+
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-* google-maps-* google-news-api-skill web-research-assistant ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* web-research-assistant ~/.cursor/skills/
 ```
 
 ### Step 4: Start Using
@@ -140,6 +161,24 @@ python google-maps-search-api-skill/scripts/maps_search.py "restaurants"
 # Google Maps Reviews
 python google-maps-reviews-api-skill/scripts/reviews.py "restaurant-name"
 
+# Google Image Search
+python google-image-api-skill/scripts/google_image_api.py "tesla" "us" "en" 5 50
+
+# YouTube Video Search
+python youtube-search-api-skill/scripts/youtube_search_api.py "AI agent" "Videos" 20
+
+# YouTube Channel Search
+python youtube-channel-api-skill/scripts/youtube_channel_api.py "tech reviews" "Any time"
+
+# YouTube Video Details (by keyword)
+python youtube-api-skill/scripts/youtube_api.py "browser automation" "This week"
+
+# YouTube Channel Videos (by channel URL)
+python youtube-video-api-skill/scripts/youtube_video_api.py "https://www.youtube.com/@BrowserAct" "Popular"
+
+# YouTube Comments
+python youtube-comments-api-skill/scripts/youtube_comments_api.py "AI" 10 2
+
 # Web Research (when web access is restricted)
 python web-research-assistant/scripts/research.py "AI technology trends" --max-results 15
 ```
@@ -150,10 +189,10 @@ python web-research-assistant/scripts/research.py "AI technology trends" --max-r
 
 ### Environment Variables
 
-| Variable | Required | Description |
-|----------|-----------|-------------|
-| `BROWSERACT_API_KEY` | Yes | Your BrowserAct API key |
-| `WORKFLOW_TEMPLATE_ID` | No | Custom workflow template ID |
+| Variable               | Required | Description                 |
+| ---------------------- | -------- | --------------------------- |
+| `BROWSERACT_API_KEY`   | Yes      | Your BrowserAct API key     |
+| `WORKFLOW_TEMPLATE_ID` | No       | Custom workflow template ID |
 
 ### Configuration Methods
 
@@ -224,28 +263,28 @@ git clone https://github.com/browseract-com/skills.git ~/.claude/skills/browsera
 
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-* google-maps-* ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* web-research-assistant ~/.cursor/skills/
 ```
 
 ### For VS Code (Copilot)
 
 ```bash
 mkdir -p ~/.vscode/skills
-cp -r amazon-* google-maps-* ~/.vscode/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* web-research-assistant ~/.vscode/skills/
 ```
 
 ### For OpenCode
 
 ```bash
 mkdir -p ~/.opencode/skills
-cp -r amazon-* google-maps-* ~/.opencode/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* web-research-assistant ~/.opencode/skills/
 ```
 
 ### For Generic AI Assistants
 
 ```bash
 mkdir -p ~/skills
-cp -r amazon-* google-maps-* ~/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* web-research-assistant ~/skills/
 export SKILLS_PATH=~/skills
 ```
 
@@ -261,11 +300,11 @@ User Request → Extract ASINs → Submit Task → Poll Status → Retrieve Resu
 
 ### API Endpoints
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/v2/workflow/run-task-by-template` | POST | Submit scraping task |
-| `/v2/workflow/get-task-status` | GET | Check task status |
-| `/v2/workflow/get-task` | GET | Retrieve results |
+| Endpoint                            | Method | Purpose              |
+| ----------------------------------- | ------ | -------------------- |
+| `/v2/workflow/run-task-by-template` | POST   | Submit scraping task |
+| `/v2/workflow/get-task-status`      | GET    | Check task status    |
+| `/v2/workflow/get-task`             | GET    | Retrieve results     |
 
 ### Anti-Bot Bypass (Not Blocked by CAPTCHA/reCAPTCHA)
 
@@ -279,16 +318,23 @@ BrowserAct skills use advanced browser automation technology to bypass anti-bot 
 
 ### Rate Limiting
 
-| Skill | Max Requests | Recommended Interval |
-|-------|-------------|---------------------|
-| amazon-asin-lookup-api-skill | 60/hour | 3-5 seconds |
-| amazon-product-api-skill | 60/hour | 3-5 seconds |
-| amazon-product-search-api-skill | 60/hour | 3-5 seconds |
-| amazon-reviews-api-skill | 30/hour | 5-10 seconds |
-| amazon-competitor-analyzer | 30/hour | 5-10 seconds |
-| google-maps-api-skill | 60/hour | 3-5 seconds |
-| google-maps-search-api-skill | 60/hour | 3-5 seconds |
-| google-maps-reviews-api-skill | 60/hour | 3-5 seconds |
+| Skill                           | Max Requests | Recommended Interval |
+| ------------------------------- | ------------ | -------------------- |
+| amazon-asin-lookup-api-skill    | 60/hour      | 3-5 seconds          |
+| amazon-product-api-skill        | 60/hour      | 3-5 seconds          |
+| amazon-product-search-api-skill | 60/hour      | 3-5 seconds          |
+| amazon-reviews-api-skill        | 30/hour      | 5-10 seconds         |
+| amazon-competitor-analyzer      | 30/hour      | 5-10 seconds         |
+| google-maps-api-skill           | 60/hour      | 3-5 seconds          |
+| google-maps-search-api-skill    | 60/hour      | 3-5 seconds          |
+| google-maps-reviews-api-skill   | 60/hour      | 3-5 seconds          |
+| google-image-api-skill          | 60/hour      | 3-5 seconds          |
+| google-news-api-skill           | 60/hour      | 3-5 seconds          |
+| youtube-api-skill               | 60/hour      | 3-5 seconds          |
+| youtube-channel-api-skill       | 60/hour      | 3-5 seconds          |
+| youtube-comments-api-skill      | 30/hour      | 5-10 seconds         |
+| youtube-search-api-skill        | 60/hour      | 3-5 seconds          |
+| youtube-video-api-skill         | 60/hour      | 3-5 seconds          |
 
 ### Error Handling
 
@@ -312,6 +358,7 @@ except Exception as e:
 #### Issue: API Call Failed
 
 **Solutions:**
+
 1. Verify API key: `echo $BROWSERACT_API_KEY`
 2. Check account quota in BrowserAct dashboard
 3. Verify network connectivity
@@ -320,6 +367,7 @@ except Exception as e:
 #### Issue: Task Timeout
 
 **Solutions:**
+
 1. Increase timeout parameter
 2. Reduce number of ASINs
 3. Check BrowserAct service status
@@ -328,6 +376,7 @@ except Exception as e:
 #### Issue: Incomplete Data
 
 **Solutions:**
+
 1. Increase wait time for page load
 2. Check template updates
 3. Verify target page accessibility
@@ -349,7 +398,6 @@ except Exception as e:
 - [BrowserAct Documentation](https://browseract.com/docs)
 - [BrowserAct API Console](https://www.browseract.com/reception/integrations)
 - [Workflow Templates](https://www.browseract.com/template?platformType=0)
-
 
 ### Learning Resources
 
@@ -373,7 +421,7 @@ MIT License
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: 2026-02-06  
+**Version**: 1.1.0  
+**Last Updated**: 2026-03-03  
 **Repository**: [browseract-com/skills](https://github.com/browseract-com/skills)  
 **Organization**: [browseract-com](https://github.com/browseract-com)
