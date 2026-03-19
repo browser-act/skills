@@ -43,13 +43,14 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 
 ### 📊 Amazon Shopping
 
-| Skill                                                                         | Description                                                            | Documentation                                          |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------ |
-| [amazon-asin-lookup-api-skill](./amazon-asin-lookup-api-skill/SKILL.md)       | Look up Amazon product details by ASIN                                 | [SKILL.md](./amazon-asin-lookup-api-skill/SKILL.md)    |
-| [amazon-product-api-skill](./amazon-product-api-skill/SKILL.md)               | Fetch Amazon product details and specifications                        | [SKILL.md](./amazon-product-api-skill/SKILL.md)        |
-| [amazon-product-search-api-skill](./amazon-product-search-api-skill/SKILL.md) | Search Amazon products by keywords                                     | [SKILL.md](./amazon-product-search-api-skill/SKILL.md) |
-| [amazon-reviews-api-skill](./amazon-reviews-api-skill/SKILL.md)               | Extract Amazon product reviews                                         | [SKILL.md](./amazon-reviews-api-skill/SKILL.md)        |
-| [amazon-competitor-analyzer](./amazon-competitor-analyzer/SKILL.md)           | Amazon product competitive analysis (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./amazon-competitor-analyzer/SKILL.md)      |
+| Skill                                                                                                     | Description                                                            | Documentation                                                        |
+| --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [amazon-asin-lookup-api-skill](./amazon-asin-lookup-api-skill/SKILL.md)                                   | Look up Amazon product details by ASIN                                 | [SKILL.md](./amazon-asin-lookup-api-skill/SKILL.md)                  |
+| [amazon-product-api-skill](./amazon-product-api-skill/SKILL.md)                                           | Fetch Amazon product details and specifications                        | [SKILL.md](./amazon-product-api-skill/SKILL.md)                      |
+| [amazon-product-search-api-skill](./amazon-product-search-api-skill/SKILL.md)                             | Search Amazon products by keywords                                     | [SKILL.md](./amazon-product-search-api-skill/SKILL.md)               |
+| [amazon-reviews-api-skill](./amazon-reviews-api-skill/SKILL.md)                                           | Extract Amazon product reviews                                         | [SKILL.md](./amazon-reviews-api-skill/SKILL.md)                      |
+| [amazon-best-selling-products-finder-api-skill](./amazon-best-selling-products-finder-api-skill/SKILL.md) | Extract best-selling product data from Amazon by keywords              | [SKILL.md](./amazon-best-selling-products-finder-api-skill/SKILL.md) |
+| [amazon-competitor-analyzer](./amazon-competitor-analyzer/SKILL.md)                                       | Amazon product competitive analysis (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./amazon-competitor-analyzer/SKILL.md)                    |
 
 ### 🗺️ Google Maps
 
@@ -73,19 +74,26 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 
 ### 🎬 YouTube
 
-| Skill                                                               | Description                                                         | Documentation                                     |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------- |
-| [youtube-api-skill](./youtube-api-skill/SKILL.md)                   | Extract detailed video metrics and channel info by keyword search   | [SKILL.md](./youtube-api-skill/SKILL.md)          |
-| [youtube-channel-api-skill](./youtube-channel-api-skill/SKILL.md)   | Search and extract YouTube channel data                             | [SKILL.md](./youtube-channel-api-skill/SKILL.md)  |
-| [youtube-comments-api-skill](./youtube-comments-api-skill/SKILL.md) | Extract video list and comment data from YouTube                    | [SKILL.md](./youtube-comments-api-skill/SKILL.md) |
-| [youtube-search-api-skill](./youtube-search-api-skill/SKILL.md)     | Extract structured data from YouTube search results                 | [SKILL.md](./youtube-search-api-skill/SKILL.md)   |
-| [youtube-video-api-skill](./youtube-video-api-skill/SKILL.md)       | Extract channel-level and video detail data from a specific channel | [SKILL.md](./youtube-video-api-skill/SKILL.md)    |
+| Skill                                                                                 | Description                                                         | Documentation                                              |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------- |
+| [youtube-api-skill](./youtube-api-skill/SKILL.md)                                     | Extract detailed video metrics and channel info by keyword search   | [SKILL.md](./youtube-api-skill/SKILL.md)                   |
+| [youtube-channel-api-skill](./youtube-channel-api-skill/SKILL.md)                     | Search and extract YouTube channel data                             | [SKILL.md](./youtube-channel-api-skill/SKILL.md)           |
+| [youtube-comments-api-skill](./youtube-comments-api-skill/SKILL.md)                   | Extract video list and comment data from YouTube                    | [SKILL.md](./youtube-comments-api-skill/SKILL.md)          |
+| [youtube-search-api-skill](./youtube-search-api-skill/SKILL.md)                       | Extract structured data from YouTube search results                 | [SKILL.md](./youtube-search-api-skill/SKILL.md)            |
+| [youtube-video-api-skill](./youtube-video-api-skill/SKILL.md)                         | Extract channel-level and video detail data from a specific channel | [SKILL.md](./youtube-video-api-skill/SKILL.md)             |
+| [youtube-influencer-finder-api-skill](./youtube-influencer-finder-api-skill/SKILL.md) | Find YouTube influencer profiles, social links, and channel stats   | [SKILL.md](./youtube-influencer-finder-api-skill/SKILL.md) |
 
 ### 💬 WeChat
 
 | Skill                                                                         | Description                                                                               | Documentation                                          |
 | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | [wechat-article-search-api-skill](./wechat-article-search-api-skill/SKILL.md) | Extract full WeChat article contents by keyword search (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./wechat-article-search-api-skill/SKILL.md) |
+
+### 🗨️ Reddit
+
+| Skill                                                                                   | Description                                                          | Documentation                                               |
+| --------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- |
+| [reddit-competitor-analysis-api-skill](./reddit-competitor-analysis-api-skill/SKILL.md) | Extract Reddit posts and comments for competitor and market analysis | [SKILL.md](./reddit-competitor-analysis-api-skill/SKILL.md) |
 
 ### 🔬 Research & Intelligence
 
@@ -129,7 +137,7 @@ export BROWSERACT_API_KEY="your-api-key-here"
 
 ```bash
 mkdir -p ~/.claude/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* web-research-assistant ~/.claude/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.claude/skills/
 ```
 
 **For OpenClaw:**
@@ -143,7 +151,7 @@ cp -r web-research-assistant ~/.openclaw/skills/
 
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* web-research-assistant ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.cursor/skills/
 ```
 
 ### Step 4: Start Using
@@ -157,6 +165,9 @@ python amazon-product-search-api-skill/scripts/product_search.py "wireless headp
 
 # Amazon Reviews
 python amazon-reviews-api-skill/scripts/reviews.py B09G9GB4MG
+
+# Amazon Best Selling Products
+python amazon-best-selling-products-finder-api-skill/scripts/amazon_best_selling_products_finder_api.py "gaming mouse" 10 "https://www.amazon.com"
 
 # Amazon Competitor Analysis
 python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG
@@ -184,6 +195,12 @@ python youtube-video-api-skill/scripts/youtube_video_api.py "https://www.youtube
 
 # YouTube Comments
 python youtube-comments-api-skill/scripts/youtube_comments_api.py "AI" 10 2
+
+# YouTube Influencer Finder
+python youtube-influencer-finder-api-skill/scripts/youtube_influencer_finder_api.py "tech reviewer" "This Month"
+
+# Reddit Competitor Analysis
+python reddit-competitor-analysis-api-skill/scripts/reddit_competitor_analysis_api.py "openclaw" "Past week" "Relevance" "Best" 10
 
 # WeChat Article Search
 python wechat-article-search-api-skill/scripts/wechat_article_search_api.py "AI agent" 10 "3月11日"
@@ -272,28 +289,28 @@ git clone https://github.com/browseract-com/skills.git ~/.claude/skills/browsera
 
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* web-research-assistant ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.cursor/skills/
 ```
 
 ### For VS Code (Copilot)
 
 ```bash
 mkdir -p ~/.vscode/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* web-research-assistant ~/.vscode/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.vscode/skills/
 ```
 
 ### For OpenCode
 
 ```bash
 mkdir -p ~/.opencode/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* web-research-assistant ~/.opencode/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.opencode/skills/
 ```
 
 ### For Generic AI Assistants
 
 ```bash
 mkdir -p ~/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* web-research-assistant ~/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/skills/
 export SKILLS_PATH=~/skills
 ```
 
@@ -327,24 +344,27 @@ BrowserAct skills use advanced browser automation technology to bypass anti-bot 
 
 ### Rate Limiting
 
-| Skill                           | Max Requests | Recommended Interval |
-| ------------------------------- | ------------ | -------------------- |
-| amazon-asin-lookup-api-skill    | 60/hour      | 3-5 seconds          |
-| amazon-product-api-skill        | 60/hour      | 3-5 seconds          |
-| amazon-product-search-api-skill | 60/hour      | 3-5 seconds          |
-| amazon-reviews-api-skill        | 30/hour      | 5-10 seconds         |
-| amazon-competitor-analyzer      | 30/hour      | 5-10 seconds         |
-| google-maps-api-skill           | 60/hour      | 3-5 seconds          |
-| google-maps-search-api-skill    | 60/hour      | 3-5 seconds          |
-| google-maps-reviews-api-skill   | 60/hour      | 3-5 seconds          |
-| google-image-api-skill          | 60/hour      | 3-5 seconds          |
-| google-news-api-skill           | 60/hour      | 3-5 seconds          |
-| youtube-api-skill               | 60/hour      | 3-5 seconds          |
-| youtube-channel-api-skill       | 60/hour      | 3-5 seconds          |
-| youtube-comments-api-skill      | 30/hour      | 5-10 seconds         |
-| youtube-search-api-skill        | 60/hour      | 3-5 seconds          |
-| youtube-video-api-skill         | 60/hour      | 3-5 seconds          |
-| wechat-article-search-api-skill | 60/hour      | 3-5 seconds          |
+| Skill                                         | Max Requests | Recommended Interval |
+| --------------------------------------------- | ------------ | -------------------- |
+| amazon-asin-lookup-api-skill                  | 60/hour      | 3-5 seconds          |
+| amazon-product-api-skill                      | 60/hour      | 3-5 seconds          |
+| amazon-product-search-api-skill               | 60/hour      | 3-5 seconds          |
+| amazon-reviews-api-skill                      | 30/hour      | 5-10 seconds         |
+| amazon-competitor-analyzer                    | 30/hour      | 5-10 seconds         |
+| google-maps-api-skill                         | 60/hour      | 3-5 seconds          |
+| google-maps-search-api-skill                  | 60/hour      | 3-5 seconds          |
+| google-maps-reviews-api-skill                 | 60/hour      | 3-5 seconds          |
+| google-image-api-skill                        | 60/hour      | 3-5 seconds          |
+| google-news-api-skill                         | 60/hour      | 3-5 seconds          |
+| youtube-api-skill                             | 60/hour      | 3-5 seconds          |
+| youtube-channel-api-skill                     | 60/hour      | 3-5 seconds          |
+| youtube-comments-api-skill                    | 30/hour      | 5-10 seconds         |
+| youtube-search-api-skill                      | 60/hour      | 3-5 seconds          |
+| youtube-video-api-skill                       | 60/hour      | 3-5 seconds          |
+| youtube-influencer-finder-api-skill           | 60/hour      | 3-5 seconds          |
+| wechat-article-search-api-skill               | 60/hour      | 3-5 seconds          |
+| reddit-competitor-analysis-api-skill          | 60/hour      | 3-5 seconds          |
+| amazon-best-selling-products-finder-api-skill | 60/hour      | 3-5 seconds          |
 
 ### Error Handling
 
@@ -431,7 +451,7 @@ MIT License
 
 ---
 
-**Version**: 1.2.0  
-**Last Updated**: 2026-03-03  
+**Version**: 1.3.0  
+**Last Updated**: 2026-03-19  
 **Repository**: [browseract-com/skills](https://github.com/browseract-com/skills)  
 **Organization**: [browseract-com](https://github.com/browseract-com)
