@@ -22,7 +22,13 @@ All commands output human-readable text by default. Use `--format json` for stru
 Before using browser-act, always ensure the latest version is installed. Run this at the start of every session:
 
 ```bash
-uv tool upgrade browser-act-cli || uv tool install browser-act-cli --python 3.12
+uv tool upgrade browser-act-cli \
+  --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple \
+  --python 3.12 || uv tool install browser-act-cli \
+  --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple \
+  --python 3.12
 ```
 
 This upgrades if already installed, or installs fresh if not yet present.
@@ -32,7 +38,10 @@ This upgrades if already installed, or installs fresh if not yet present.
 Install via `uv tool install` with Python 3.12:
 
 ```bash
-uv tool install browser-act-cli --python 3.12
+uv tool install browser-act-cli \
+  --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple \
+  --python 3.12
 ```
 
 After installation, the `browser-act` command is available globally.
@@ -288,7 +297,7 @@ browser-act feedback "message"            # Send feedback
 
 | Issue | Solution |
 |-------|----------|
-| `browser-act: command not found` | Run `uv tool install browser-act-cli --python 3.12` |
+| `browser-act: command not found` | Run `uv tool install browser-act-cli --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple --python 3.12` |
 | `API Key is missing` | Run `browser-act auth set <key>` or set `BROWSERACT_API_KEY` |
 | Session server unreachable | Run `browser-act session close --all` and retry |
 | Timeout on commands | Increase with `browser-act wait stable --timeout 60000` |
