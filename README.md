@@ -89,6 +89,12 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | [wechat-article-search-api-skill](./wechat-article-search-api-skill/SKILL.md) | Extract full WeChat article contents by keyword search (Not blocked by CAPTCHA/reCAPTCHA) | [SKILL.md](./wechat-article-search-api-skill/SKILL.md) |
 
+### 📘 Zhihu
+
+| Skill                                                             | Description                                                             | Documentation                                  |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------- |
+| [zhihu-search-api-skill](./zhihu-search-api-skill/SKILL.md)     | Extract Zhihu article details and full content by keyword search        | [SKILL.md](./zhihu-search-api-skill/SKILL.md) |
+
 ### 🗨️ Reddit
 
 | Skill                                                                                   | Description                                                          | Documentation                                               |
@@ -97,9 +103,10 @@ BrowserAct skills are designed to work **powerfully and reliably** on all leadin
 
 ### 🔬 Research & Intelligence
 
-| Skill                                                       | Description                                                                           | Documentation                                 |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------- |
-| [web-research-assistant](./web-research-assistant/SKILL.md) | Web research assistant for OpenClaw & Claude Code - supplements restricted web access | [SKILL.md](./web-research-assistant/SKILL.md) |
+| Skill                                                                           | Description                                                                           | Documentation                                         |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [web-research-assistant](./web-research-assistant/SKILL.md)                     | Web research assistant for OpenClaw & Claude Code - supplements restricted web access | [SKILL.md](./web-research-assistant/SKILL.md)         |
+| [web-search-scraper-api-skill](./web-search-scraper-api-skill/SKILL.md)         | Extract complete Markdown content from any website URL                                | [SKILL.md](./web-search-scraper-api-skill/SKILL.md)  |
 
 ---
 
@@ -137,7 +144,7 @@ export BROWSERACT_API_KEY="your-api-key-here"
 
 ```bash
 mkdir -p ~/.claude/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.claude/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* zhihu-* reddit-* web-search-scraper-api-skill web-research-assistant ~/.claude/skills/
 ```
 
 **For OpenClaw:**
@@ -151,7 +158,7 @@ cp -r web-research-assistant ~/.openclaw/skills/
 
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* zhihu-* reddit-* web-search-scraper-api-skill web-research-assistant ~/.cursor/skills/
 ```
 
 ### Step 4: Start Using
@@ -204,6 +211,12 @@ python reddit-competitor-analysis-api-skill/scripts/reddit_competitor_analysis_a
 
 # WeChat Article Search
 python wechat-article-search-api-skill/scripts/wechat_article_search_api.py "AI agent" 10 "3月11日"
+
+# Zhihu Article Search
+python zhihu-search-api-skill/scripts/zhihu_search_api.py "AI agent" "7d" 10
+
+# Web Page Scraper (URL to Markdown)
+python web-search-scraper-api-skill/scripts/web_search_scraper_api.py "https://www.browseract.com"
 
 # Web Research (when web access is restricted)
 python web-research-assistant/scripts/research.py "AI technology trends" --max-results 15
@@ -289,28 +302,28 @@ git clone https://github.com/browseract-com/skills.git ~/.claude/skills/browsera
 
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.cursor/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* zhihu-* reddit-* web-search-scraper-api-skill web-research-assistant ~/.cursor/skills/
 ```
 
 ### For VS Code (Copilot)
 
 ```bash
 mkdir -p ~/.vscode/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.vscode/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* zhihu-* reddit-* web-search-scraper-api-skill web-research-assistant ~/.vscode/skills/
 ```
 
 ### For OpenCode
 
 ```bash
 mkdir -p ~/.opencode/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/.opencode/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* zhihu-* reddit-* web-search-scraper-api-skill web-research-assistant ~/.opencode/skills/
 ```
 
 ### For Generic AI Assistants
 
 ```bash
 mkdir -p ~/skills
-cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* reddit-* web-research-assistant ~/skills/
+cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtube-* wechat-* zhihu-* reddit-* web-search-scraper-api-skill web-research-assistant ~/skills/
 export SKILLS_PATH=~/skills
 ```
 
@@ -365,6 +378,8 @@ BrowserAct skills use advanced browser automation technology to bypass anti-bot 
 | wechat-article-search-api-skill               | 60/hour      | 3-5 seconds          |
 | reddit-competitor-analysis-api-skill          | 60/hour      | 3-5 seconds          |
 | amazon-best-selling-products-finder-api-skill | 60/hour      | 3-5 seconds          |
+| zhihu-search-api-skill                        | 60/hour      | 3-5 seconds          |
+| web-search-scraper-api-skill                  | 60/hour      | 3-5 seconds          |
 
 ### Error Handling
 
@@ -451,7 +466,7 @@ MIT License
 
 ---
 
-**Version**: 1.3.0  
-**Last Updated**: 2026-03-19  
+**Version**: 1.4.0  
+**Last Updated**: 2026-03-24  
 **Repository**: [browseract-com/skills](https://github.com/browseract-com/skills)  
 **Organization**: [browseract-com](https://github.com/browseract-com)
