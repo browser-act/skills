@@ -1,12 +1,6 @@
 ---
 name: browser-act-cli
 description: "Guide for installing and using the browser-act CLI tool — a Python command-line interface for browser automation with stealth browsing, captcha bypass, and multi-browser support. Use this skill whenever the user wants to automate browsers via CLI, control web pages programmatically, scrape websites with anti-detection, manage stealth browser sessions, or interact with page elements from the terminal. Also trigger when users mention browser-act, browser-act-cli, or ask about headless browser automation with Python CLI tools."
-metadata:
-  clawdbot:
-    emoji: "🖥️"
-    requires:
-      bins: ["uv"]
-      env: ["BROWSERACT_API_KEY"]
 env:
   - BROWSERACT_API_KEY
 ---
@@ -74,10 +68,6 @@ export BROWSERACT_API_KEY=your_api_key
 
 Get your API key at: https://www.browseract.com
 
-To verify setup:
-```bash
-browser-act doctor
-```
 
 ## Global Options
 
@@ -239,7 +229,7 @@ browser-act session list
 
 # Close a session
 browser-act session close
-browser-act session close my-session
+browser-act session close scraper
 browser-act session close --all
 ```
 
@@ -267,8 +257,9 @@ browser-act --session site-b state
 browser-act --session site-b click 5
 browser-act --session site-b get markdown
 
-# Step 4: Clean up all sessions when done
-browser-act session close --all
+# Step 4: Clean up sessions when done
+browser-act session close site-a
+browser-act session close site-b
 ```
 
 Key points for parallel usage:
@@ -281,23 +272,12 @@ Key points for parallel usage:
 ## System Commands
 
 ```bash
-browser-act doctor                        # Run diagnostic checks
 browser-act report-log                    # Upload logs to help the browser-act team diagnose issues
 browser-act feedback "message"            # Send feedback
 ```
 
-## Error Handling
-
-- If API key is missing for stealth commands, the CLI prints instructions to set it up
-- On failure, commands output error messages in text by default (use `--format json` for structured `{"error": "..."}` responses)
-- Session server auto-shuts down after 30 minutes of inactivity (configurable)
-- Use `browser-act doctor` to diagnose configuration issues
-
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| `browser-act: command not found` | Run `uv tool install browser-act-cli --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple --python 3.12` |
-| `API Key is missing` | Run `browser-act auth set <key>` or set `BROWSERACT_API_KEY` |
-| Session server unreachable | Run `browser-act session close --all` and retry |
-| Timeout on commands | Increase with `browser-act wait stable --timeout 60000` |
+- **`browser-act: command not found`** — Run `uv tool install browser-act-cli --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple --python 3.12`
+- **`API Key is missing`** — Run `browser-act auth set <key>` or set `BROWSERACT_API_KEY`
+- **Session server idle shutdown** — Server auto-shuts down after 30 min of inactivity; re-run any command to restart
