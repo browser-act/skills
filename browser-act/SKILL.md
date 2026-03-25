@@ -1,8 +1,7 @@
 ---
-name: browser-act-cli
-description: "Guide for installing and using the browser-act CLI tool — a Python command-line interface for browser automation with stealth browsing, captcha bypass, and multi-browser support. Use this skill whenever the user wants to automate browsers via CLI, control web pages programmatically, scrape websites with anti-detection, manage stealth browser sessions, or interact with page elements from the terminal. Also trigger when users mention browser-act, browser-act-cli, or ask about headless browser automation with Python CLI tools."
-env:
-  - BROWSERACT_API_KEY
+name: browser-act
+description: "Guide for installing and using the browser-act CLI tool — a Python command-line interface for browser automation with stealth browsing, captcha bypass, and multi-browser support. Use this skill whenever the user wants to automate browsers via CLI, control web pages programmatically, scrape websites with anti-detection, manage stealth browser sessions, interact with page elements, or extract information from web pages. Also trigger when users mention browser-act, browser-act-cli, or ask about browser automation with Python CLI tools."
+allowed-tools: Bash(browser-act:*)
 ---
 
 # browser-act CLI
