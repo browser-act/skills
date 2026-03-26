@@ -4,7 +4,7 @@ description: "Guide for installing and using the browser-act CLI tool — a Pyth
 allowed-tools: Bash(browser-act:*)
 ---
 
-# browser-act CLI
+# Browser Automation with browser-act CLI
 
 `browser-act` is a CLI for browser automation with stealth and captcha bypass capabilities. It supports two browser types (Stealth and Real Chrome) and provides commands for navigation, page interaction, data extraction, tab/session management, and more.
 
@@ -75,7 +75,7 @@ Every command accepts these options:
 
 ### Stealth Browser (requires API key)
 
-Cloud-hosted browsers with anti-detection fingerprinting. Ideal for sites with bot detection.
+Local browsers with anti-detection fingerprinting. Ideal for sites with bot detection.
 
 ```bash
 # List your stealth browsers
@@ -84,15 +84,31 @@ browser-act browser list
 # Create a stealth browser
 browser-act browser create "my-browser" --desc "For scraping"
 
+# Create with proxy
+browser-act browser create "my-browser" --proxy socks5://host:port
+
+# Create in private mode (fresh environment each launch, no saved cache/login)
+browser-act browser create "my-browser" --mode private
+
+# Update browser settings
+browser-act browser update <browser_id> --name "new-name" --desc "Updated description"
+browser-act browser update <browser_id> --proxy http://proxy:8080
+browser-act browser update <browser_id> --mode private
+
 # Open a URL in stealth browser
 browser-act browser open <browser_id> https://example.com
-
-# Open with visible UI (headed mode)
-browser-act browser open <browser_id> https://example.com --headed
 
 # Delete a stealth browser
 browser-act browser delete <browser_id>
 ```
+
+**Create / Update options:**
+
+| Option | Description |
+|--------|-------------|
+| `--desc` | Browser description |
+| `--proxy <url>` | Proxy address with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://host:port` |
+| `--mode <normal\|private>` | Privacy mode. `normal` (default): persists cache, cookies, and login sessions across launches. `private`: starts a fresh environment every launch with no saved state |
 
 ### Real Chrome
 
