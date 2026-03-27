@@ -50,6 +50,7 @@ def run_amazon_asin_lookup(api_key, asin):
     # 2. Poll for Completion
     max_poll_time = 300
     poll_start = time.time()
+    finished = False
     while time.time() - poll_start < max_poll_time:
         try:
             status_res = requests.get(f"{API_BASE_URL}/get-task-status?task_id={task_id}", headers=headers, timeout=30).json()
@@ -60,6 +61,7 @@ def run_amazon_asin_lookup(api_key, asin):
             
             if status == "finished":
                 print(f"[{timestamp}] Task finished successfully.", flush=True)
+                finished = True
                 break
             elif status in ["failed", "canceled"]:
                 print(f"Error: Task {status}. Please check your BrowserAct dashboard.", flush=True)
@@ -69,8 +71,10 @@ def run_amazon_asin_lookup(api_key, asin):
             print(f"[{timestamp}] Polling error: {e}. Retrying...", flush=True)
             
         time.sleep(10)
-    print(f"Error: Task polling timed out after {max_poll_time} seconds.", flush=True)
-    return None
+    
+    if not finished:
+        print(f"Error: Task polling timed out after {max_poll_time} seconds.", flush=True)
+        return None
     
     # 3. Get Results
     try:
