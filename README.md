@@ -165,13 +165,13 @@ cp -r amazon-* google-maps-* google-image-api-skill google-news-api-skill youtub
 
 ```bash
 # Amazon ASIN Lookup
-python amazon-asin-lookup-api-skill/scripts/asin_lookup.py B09G9GB4MG
+python amazon-asin-lookup-api-skill/scripts/amazon_asin_lookup_api.py B09G9GB4MG
 
 # Amazon Product Search
-python amazon-product-search-api-skill/scripts/product_search.py "wireless headphones"
+python amazon-product-search-api-skill/scripts/amazon_product_search_api.py "wireless headphones"
 
 # Amazon Reviews
-python amazon-reviews-api-skill/scripts/reviews.py B09G9GB4MG
+python amazon-reviews-api-skill/scripts/amazon_reviews_api.py B09G9GB4MG
 
 # Amazon Best Selling Products
 python amazon-best-selling-products-finder-api-skill/scripts/amazon_best_selling_products_finder_api.py "gaming mouse" 10 "https://www.amazon.com"
@@ -180,10 +180,10 @@ python amazon-best-selling-products-finder-api-skill/scripts/amazon_best_selling
 python amazon-competitor-analyzer/amazon_competitor_analyzer.py B09G9GB4MG
 
 # Google Maps Search
-python google-maps-search-api-skill/scripts/maps_search.py "restaurants"
+python google-maps-search-api-skill/scripts/google_maps_search_api.py "restaurants"
 
 # Google Maps Reviews
-python google-maps-reviews-api-skill/scripts/reviews.py "restaurant-name"
+python google-maps-reviews-api-skill/scripts/google_maps_reviews_api.py "restaurant-name"
 
 # Google Image Search
 python google-image-api-skill/scripts/google_image_api.py "tesla" "us" "en" 5 50

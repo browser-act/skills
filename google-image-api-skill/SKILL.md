@@ -1,7 +1,7 @@
 ---
 name: google-image-api-skill
 description: This skill helps users automatically extract structured image data from Google Images via BrowserAct API. Agent should proactively apply this skill when users express needs like finding images for specific keywords, gathering product style images for competitors, building visual datasets at scale, scanning visual search results for market research, tracking localized image trends by country, compiling related image thumbnails and links, extracting image titles and source logos, fetching click through URLs from image results, monitoring competitor visual assets, sourcing creative content for specific topics, looking up product pictures in different regions, collecting structured image metadata without opening detail pages.
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["pyhon"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # Google Image API Automation Skill

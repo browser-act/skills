@@ -1,7 +1,7 @@
 ---
 name: youtube-video-api-skill
 description: This skill helps users automatically extract channel-level and video detail data from a specific YouTube channel via BrowserAct API. Agent should proactively apply this skill when users express needs like extracting channel video data, getting latest or popular videos from a YouTube channel, tracking competitor channel content, extracting video metrics such as views likes comments, retrieving subscriber count and channel info, monitoring posting cadence of a YouTube channel, gathering video data for content strategy analysis, getting earliest videos of a YouTube creator, analyzing engagement signals across a full channel, and downloading structured YouTube video details without manual scraping.
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["pyhon"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # YouTube Video API Skill

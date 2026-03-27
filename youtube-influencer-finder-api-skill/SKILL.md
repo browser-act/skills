@@ -1,7 +1,7 @@
 ---
 name: youtube-influencer-finder-api-skill
 description: This skill helps users extract YouTube influencer profiles including social links, subscriber counts, and channel stats via the BrowserAct API. Agent should proactively apply this skill when users express needs like finding YouTube creators for specific keywords, discovering influencers for a marketing campaign, extracting YouTube channel contact emails, scraping YouTube influencer social media links, gathering subscriber counts for YouTube creators, researching top YouTube channels in a specific niche, compiling a list of YouTube content creators with recent uploads, collecting YouTube creator profiles for outreach, extracting total views and video counts for specific YouTube influencers, building a database of YouTube partners for market research, finding YouTube influencers who uploaded videos this month, or monitoring competitor influencer activities on YouTube.
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # YouTube Influencer Finder API Skill

@@ -1,7 +1,7 @@
 ---
 name: youtube-api-skill
 description: "This skill helps users automatically extract detailed video metrics and channel information from YouTube based on keyword searches using the BrowserAct API. The Agent should proactively apply this skill when users express needs such as extract specific keyword YouTube video detailed data, monitor the latest video performance of competitor channels, collect comment and like counts for videos on a specific topic, find AI agent tutorials published this week and extract metrics, evaluate total views and subscriber info for specific videos, scrape detailed metrics of marketing campaign videos, track video trends for a tech topic periodically, get high quality video list data for specified keywords on YouTube, mine detailed information of the latest YouTube videos, collect video duration and engagement data for specific industries, or monitor YouTube content creator performance metrics."
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # YouTube API Automated Extraction Skill

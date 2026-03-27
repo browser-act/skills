@@ -38,7 +38,7 @@ def run_google_news_task(api_key, keywords, date_range="past week", limit=30):
     # 1. Start Task
     print(f"Starting task via BrowserAct API...", flush=True)
     try:
-        response = requests.post(f"{API_BASE_URL}/run-task-by-template", json=payload, headers=headers)
+        response = requests.post(f"{API_BASE_URL}/run-task-by-template", json=payload, headers=headers, timeout=30)
         res = response.json()
     except Exception as e:
         print(f"Error: Connection to API failed - {e}", flush=True)
@@ -57,9 +57,11 @@ def run_google_news_task(api_key, keywords, date_range="past week", limit=30):
     
     # 2. Poll for Completion
     print(f"Waiting for task completion...", flush=True)
-    while True:
+    max_poll_time = 300
+    poll_start = time.time()
+    while time.time() - poll_start < max_poll_time:
         try:
-            status_response = requests.get(f"{API_BASE_URL}/get-task-status?task_id={task_id}", headers=headers)
+            status_response = requests.get(f"{API_BASE_URL}/get-task-status?task_id={task_id}", headers=headers, timeout=30)
             status_res = status_response.json()
             status = status_res.get("status")
             
@@ -77,11 +79,13 @@ def run_google_news_task(api_key, keywords, date_range="past week", limit=30):
             print(f"[{timestamp}] Polling error: {e}. Retrying in 10s...", flush=True)
             
         time.sleep(10)
+    print(f"Error: Task polling timed out after {max_poll_time} seconds.", flush=True)
+    return None
     
     # 3. Get Results
     print(f"Retrieving results...", flush=True)
     try:
-        task_info_response = requests.get(f"{API_BASE_URL}/get-task?task_id={task_id}", headers=headers)
+        task_info_response = requests.get(f"{API_BASE_URL}/get-task?task_id={task_id}", headers=headers, timeout=30)
         task_info = task_info_response.json()
         
         # Extract structured data from API response

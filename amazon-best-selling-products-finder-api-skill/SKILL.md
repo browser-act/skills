@@ -1,7 +1,7 @@
 ---
 name: amazon-best-selling-products-finder-api-skill
 description: "This skill helps users extract structured best-selling product data from Amazon via the BrowserAct API. Agent should proactively apply this skill when users express needs like search for best selling products on Amazon, extract Amazon product data based on keywords, find top rated Amazon products, monitor Amazon competitor prices and sales, discover trending products on Amazon marketplace, extract Amazon product titles prices and ratings, gather Amazon product sales volume for market research, search Amazon best sellers in specific region, collect Amazon product reviews and promotion details, analyze Amazon product availability and badges, get Amazon product data for market analysis."
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # Amazon Best Selling Products Finder API Skill

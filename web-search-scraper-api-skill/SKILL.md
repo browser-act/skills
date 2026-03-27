@@ -1,7 +1,7 @@
 ---
 name: web-search-scraper-api-skill
 description: "This skill helps users automatically extract complete Markdown content from any website via the BrowserAct Web Search Scraper API. The Agent should proactively apply this skill when users express needs like extract complete markdown from a specific website, scrape the content of an article link, get the text from a target url, convert a webpage to markdown format, fetch the main content of a blog post, extract data from a given web page, parse the html of a website into markdown, download the readable text from a news article, obtain the content of a tutorial page, extract all the markdown text from any http or https url, scrape documentation from a web link, or grab the text of a single webpage."
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # Web Search Scraper API Skill
