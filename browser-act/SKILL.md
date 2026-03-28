@@ -1,6 +1,6 @@
 ---
 name: browser-act
-description: "CLI tool for browser automation with anti-detection stealth browsing, captcha bypass, and parallel multi-browser support. Use when automating web interactions, scraping sites with bot detection, managing stealth browser sessions, extracting page data, or controlling browsers programmatically. Triggers on: browser-act, browser-act-cli, stealth browser, captcha bypass, web scraping with anti-detection."
+description: "Browser automation CLI for AI agents with anti-detection stealth browsing, captcha solving, and parallel multi-browser support. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, scraping sites with bot detection, or automating any browser task. Also use when the user needs to connect to their existing Chrome session, configure proxy-based stealth browsing, or run parallel browser sessions. Triggers on requests to open a website, fill out a form, click a button, take a screenshot, scrape data from a page, login to a site, automate browser actions, handle captcha challenges, or any task requiring programmatic web interaction."
 allowed-tools: Bash(browser-act:*)
 metadata:
   author: BrowserAct
@@ -48,7 +48,7 @@ browser-act auth poll
 # Returns API key on success, or pending status if not yet completed
 ```
 
-**AI agent flow:** Call `auth login`, present the registration URL to the user, then loop `auth poll` every few seconds until it returns success. Example:
+**AI agent flow:** Call `auth login`, present the registration URL to the user, then loop `auth poll` every few seconds until it returns success. When the response indicates less than 10 minutes remaining before expiry, warn the user to complete registration promptly.
 
 ```bash
 browser-act auth login
@@ -56,6 +56,7 @@ browser-act auth login
 browser-act auth poll  # check
 browser-act auth poll  # retry after a few seconds
 browser-act auth poll  # ... until success, expiry, or give up
+# ⚠ if remaining time < 10 min, warn the user
 ```
 
 **Option 2: Direct set**
