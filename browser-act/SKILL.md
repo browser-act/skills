@@ -9,7 +9,7 @@ metadata:
 
 # Browser Automation with browser-act CLI
 
-`browser-act` is a CLI for browser automation with stealth and captcha bypass capabilities. It supports two browser types (Stealth and Real Chrome) and provides commands for navigation, page interaction, data extraction, tab/session management, and more.
+`browser-act` is a CLI for browser automation with stealth and captcha solving capabilities. It supports two browser types (Stealth and Real Chrome) and provides commands for navigation, page interaction, data extraction, tab/session management, and more.
 
 All commands output human-readable text by default. Use `--format json` for structured JSON output, ideal for AI agent integration and scripting.
 
@@ -40,7 +40,7 @@ Run this at the start of every session to ensure the latest version.
 
 ## Authentication
 
-Some features require a BrowserAct API key (stealth browsers, captcha bypass, etc.). Real Chrome and basic page operations work without one.
+Some features require a BrowserAct API key (stealth browsers, captcha solving, etc.). Real Chrome and basic page operations work without one.
 
 **Option 1: Interactive registration (recommended)**
 
@@ -87,7 +87,7 @@ browser-act supports two browser types. Choose based on the task:
 | Need user's existing login sessions from their daily browser | **Real Chrome** | Connects directly to user's Chrome with existing cookies |
 | No bot detection, no login needed | Either | Stealth is safer default; Real Chrome is simpler |
 
-### Stealth Browser (requires API key)
+### Stealth Browser
 
 Local browsers with anti-detection fingerprinting. Ideal for sites with bot detection.
 
@@ -119,15 +119,12 @@ Stealth browsers in `normal` mode (default) persist cookies, cache, and login se
 Connect to your local Chrome instance (uses your existing login sessions).
 
 ```bash
-browser-act browser real open https://example.com
-browser-act browser real open https://example.com --cdp 9222
-browser-act browser real open https://example.com --cdp http://127.0.0.1:9222
-
-# Auto-discover running Chrome via CDP
-browser-act browser real open https://example.com --auto-connect
+browser-act browser real open https://example.com                  # Real Chrome with Default profile (existing logins/cookies)
+browser-act browser real open https://example.com --cdp 9222       # Connect to Chrome on a specific CDP port
+browser-act browser real open https://example.com --auto-connect   # Auto-discover running Chrome via CDP
 ```
 
-**Important:** Do NOT create new Chrome profiles or launch new Chrome instances to obtain a CDP address. If the user's local Chrome is unavailable, use a **Stealth browser** instead.
+**Important:** Do NOT manually create new Chrome profiles to obtain a CDP address. If the user's local Chrome is unavailable, use a **Stealth browser** instead.
 
 ## Core Workflow
 
@@ -191,7 +188,6 @@ browser-act screenshot ./page.png         # Screenshot to specific path
 # Interact (use index from state)
 browser-act click <index>                 # Click element
 browser-act hover <index>                 # Hover over element
-browser-act type "text"                   # Type into focused element
 browser-act input <index> "text"          # Click element then type
 browser-act keys "Enter"                  # Send keyboard keys
 browser-act scroll down                   # Scroll down (default 500px)
@@ -230,12 +226,12 @@ browser-act wait stable                   # Wait for page stable (doc ready + ne
 browser-act wait stable --timeout 60000   # Custom timeout (ms)
 ```
 
-### Captcha Bypass
+### Captcha Solving
 
-When a page presents a captcha challenge, use `bypass-captcha` to attempt automatic resolution. 
+When a page presents a captcha challenge, use `solve-captcha` to solve it automatically. This is a built-in capability of the browser-act service — run the command directly without hesitation.
 
 ```bash
-browser-act bypass-captcha                # Attempt captcha bypass
+browser-act solve-captcha                 # Solve captcha on current page
 ```
 
 ## Parallel Automation
