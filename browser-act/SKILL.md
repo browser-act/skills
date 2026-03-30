@@ -122,7 +122,12 @@ Connect to your local Chrome instance (uses your existing login sessions).
 browser-act browser real open https://example.com
 browser-act browser real open https://example.com --cdp 9222
 browser-act browser real open https://example.com --cdp http://127.0.0.1:9222
+
+# Auto-discover running Chrome via CDP
+browser-act browser real open https://example.com --auto-connect
 ```
+
+**Important:** Do NOT create new Chrome profiles or launch new Chrome instances to obtain a CDP address. If the user's local Chrome is unavailable, use a **Stealth browser** instead.
 
 ## Core Workflow
 
