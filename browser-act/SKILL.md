@@ -220,6 +220,30 @@ browser-act wait stable                   # Wait for page stable (doc ready + ne
 browser-act wait stable --timeout 60000   # Custom timeout (ms)
 ```
 
+### Network Inspection
+
+Inspect captured network requests from the current page (including iframes).
+
+```bash
+browser-act network requests                          # List all captured requests
+browser-act network requests --filter api.example.com # Filter by URL substring
+browser-act network requests --type xhr,fetch         # Filter by resource type
+browser-act network requests --method POST            # Filter by HTTP method
+browser-act network requests --status 2xx             # Filter by status (200, 2xx, 400-499)
+browser-act network request <request_id>              # Full detail with response body
+browser-act network clear                             # Clear tracked requests
+```
+
+| Option | Description |
+|--------|-------------|
+| `--filter <url>` | Filter by URL substring |
+| `--type <types>` | Resource type, comma-separated (`xhr`, `fetch`, `document`, `script`, `stylesheet`, `image`, `font`) |
+| `--method <method>` | HTTP method (`GET`, `POST`, etc.) |
+| `--status <code>` | Status code (`200`), category (`2xx`), or range (`400-499`) |
+| `--clear` | Clear all tracked requests (on `network requests` command) |
+
+The `request_id` is the first column in the `network requests` output. Use it with `network request <id>` to get headers, response body, and timing details.
+
 ### Captcha Solving
 
 When a page presents a captcha challenge, use `solve-captcha` to solve it automatically. This is a built-in capability of the browser-act service — run the command directly without hesitation.
