@@ -244,6 +244,36 @@ browser-act network clear                             # Clear tracked requests
 
 The `request_id` is the first column in the `network requests` output. Use it with `network request <id>` to get headers, response body, and timing details.
 
+### Network Simulation
+
+Simulate network disconnection to test offline behavior, error handling, and recovery flows.
+
+```bash
+browser-act set offline on                # Simulate disconnect (all requests fail)
+browser-act set offline off               # Restore network connection
+```
+
+When offline mode is enabled:
+- All network requests fail with `ERR_INTERNET_DISCONNECTED`
+- `navigator.onLine` returns `false`
+- The browser fires the `offline` event
+- Service Worker cached responses still work
+
+When offline mode is disabled:
+- Network is fully restored
+- `navigator.onLine` returns `true`
+- The browser fires the `online` event
+
+**Verification example:**
+
+```bash
+browser-act eval "navigator.onLine"       # true
+browser-act set offline on
+browser-act eval "navigator.onLine"       # false
+browser-act set offline off
+browser-act eval "navigator.onLine"       # true
+```
+
 ### Captcha Solving
 
 When a page presents a captcha challenge, use `solve-captcha` to solve it automatically. This is a built-in capability of the browser-act service — run the command directly without hesitation.
