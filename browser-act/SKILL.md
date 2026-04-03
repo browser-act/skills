@@ -110,15 +110,20 @@ Stealth browsers in `normal` mode (default) persist cookies, cache, and login se
 
 ### Real Chrome
 
-Connect to your local Chrome instance (uses your existing login sessions).
+Connect to your local Chrome instance (auto-discovers running Chrome with CDP enabled).
 
 ```bash
-browser-act browser real open https://example.com                  # Real Chrome with Default profile (existing logins/cookies)
-browser-act browser real open https://example.com --cdp 9222       # Connect to Chrome on a specific CDP port
-browser-act browser real open https://example.com --auto-connect   # Auto-discover running Chrome via CDP
+browser-act browser real open https://example.com                  # Auto-connect to your real Chrome with Default profile (existing logins/cookies)
+browser-act browser real open https://example.com --ba-kernel      # Use BrowserAct-provided browser kernel
 ```
 
-**Important:** Do NOT manually create new Chrome profiles to obtain a CDP address. If the user's local Chrome is unavailable, use a **Stealth browser** instead.
+Both browser types support `--headed` to show the browser UI. Use for debugging to see what the browser is doing:
+
+```bash
+browser-act browser open <browser_id> https://example.com --headed
+browser-act browser real open https://example.com  --ba-kernel --headed
+```
+
 
 ## Core Workflow
 
@@ -251,11 +256,11 @@ Use `network request <request_id>` to get full detail for a single request. The 
 
 ### Network Simulation
 
-Simulate network disconnection to test offline behavior, error handling, and recovery flows. Uses CDP `Network.emulateNetworkConditions` under the hood — works consistently across headless, headed, and incognito modes. Proxy configuration has no impact (requests are blocked before reaching the proxy).
+Simulate network disconnection to test offline behavior, error handling, and recovery flows. 
 
 ```bash
-browser-act set offline on                # Simulate disconnect (all requests fail)
-browser-act set offline off               # Restore network connection
+browser-act network offline on                # Simulate disconnect (all requests fail)
+browser-act network offline off               # Restore network connection
 ```
 
 When offline mode is enabled:
@@ -273,9 +278,9 @@ When offline mode is disabled:
 
 ```bash
 browser-act eval "navigator.onLine"       # true
-browser-act set offline on
+browser-act network offline on
 browser-act eval "navigator.onLine"       # false
-browser-act set offline off
+browser-act network offline off
 browser-act eval "navigator.onLine"       # true
 ```
 
