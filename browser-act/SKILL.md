@@ -110,15 +110,20 @@ Stealth browsers in `normal` mode (default) persist cookies, cache, and login se
 
 ### Real Chrome
 
-Connect to your local Chrome instance (uses your existing login sessions).
+Connect to your local Chrome instance (auto-discovers running Chrome with CDP enabled).
 
 ```bash
-browser-act browser real open https://example.com                  # Real Chrome with Default profile (existing logins/cookies)
-browser-act browser real open https://example.com --cdp 9222       # Connect to Chrome on a specific CDP port
-browser-act browser real open https://example.com --auto-connect   # Auto-discover running Chrome via CDP
+browser-act browser real open https://example.com                  # Auto-connect to your real Chrome with Default profile (existing logins/cookies)
+browser-act browser real open https://example.com --ba-kernel      # Use BrowserAct-provided browser kernel
 ```
 
-**Important:** Do NOT manually create new Chrome profiles to obtain a CDP address. If the user's local Chrome is unavailable, use a **Stealth browser** instead.
+Both browser types support `--headed` to show the browser UI. Use for debugging to see what the browser is doing:
+
+```bash
+browser-act browser open <browser_id> https://example.com --headed
+browser-act browser real open https://example.com  --ba-kernel --headed
+```
+
 
 ## Core Workflow
 
@@ -218,6 +223,65 @@ browser-act tab close <tab_id>            # Close specific tab
 ```bash
 browser-act wait stable                   # Wait for page stable (doc ready + network idle)
 browser-act wait stable --timeout 60000   # Custom timeout (ms)
+```
+
+### Network Inspection
+
+Inspect captured network requests across all open tabs and iframes in the browser session. Requests are tracked globally — switching tabs does not reset or filter the captured data. Use `--filter` to narrow results to a specific page or API.
+
+```bash
+browser-act network requests                          # List all captured requests (all tabs)
+browser-act network requests --filter api.example.com # Filter by URL substring
+browser-act network requests --type xhr,fetch         # Filter by resource type
+browser-act network requests --method POST            # Filter by HTTP method
+browser-act network requests --status 2xx             # Filter by status (200, 2xx, 400-499)
+browser-act network request <request_id>              # Full detail with response body
+browser-act network clear                             # Clear tracked requests
+```
+
+| Option | Description |
+|--------|-------------|
+| `--filter <url>` | Filter by URL substring |
+| `--type <types>` | Resource type, comma-separated (`xhr`, `fetch`, `document`, `script`, `stylesheet`, `image`, `font`, `media`, `websocket`, `ping`, `preflight`, `other`) |
+| `--method <method>` | HTTP method (`GET`, `POST`, etc.) |
+| `--status <code>` | Status code (`200`), category (`2xx`), or range (`400-499`) |
+| `--clear` | Clear all tracked requests (on `network requests` command) |
+
+Use `network request <request_id>` to get full detail for a single request. The detail view includes: request headers, post data (for POST/PUT), response headers, and response body. Binary responses show a `[base64, N chars]` placeholder instead of raw content.
+
+**Scope notes:**
+- Requests from **all tabs and iframes** flow into a single tracker (up to 1,000 entries).
+- Closing a tab does **not** remove its previously captured requests. Use `network clear` to reset.
+- When working with multiple tabs, use `--filter` with a domain or path to isolate the tab you care about.
+
+### Network Simulation
+
+Simulate network disconnection to test offline behavior, error handling, and recovery flows. 
+
+```bash
+browser-act network offline on                # Simulate disconnect (all requests fail)
+browser-act network offline off               # Restore network connection
+```
+
+When offline mode is enabled:
+- All network requests fail with `ERR_INTERNET_DISCONNECTED`
+- `navigator.onLine` returns `false`
+- The browser fires the `offline` event
+- Service Worker cached responses and Cache API reads still work (they bypass the network layer)
+
+When offline mode is disabled:
+- Network is fully restored
+- `navigator.onLine` returns `true`
+- The browser fires the `online` event
+
+**Verification example:**
+
+```bash
+browser-act eval "navigator.onLine"       # true
+browser-act network offline on
+browser-act eval "navigator.onLine"       # false
+browser-act network offline off
+browser-act eval "navigator.onLine"       # true
 ```
 
 ### Captcha Solving
