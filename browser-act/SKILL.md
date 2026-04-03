@@ -222,10 +222,10 @@ browser-act wait stable --timeout 60000   # Custom timeout (ms)
 
 ### Network Inspection
 
-Inspect captured network requests from the current page (including iframes).
+Inspect captured network requests across all open tabs and iframes in the browser session. Requests are tracked globally — switching tabs does not reset or filter the captured data. Use `--filter` to narrow results to a specific page or API.
 
 ```bash
-browser-act network requests                          # List all captured requests
+browser-act network requests                          # List all captured requests (all tabs)
 browser-act network requests --filter api.example.com # Filter by URL substring
 browser-act network requests --type xhr,fetch         # Filter by resource type
 browser-act network requests --method POST            # Filter by HTTP method
@@ -237,16 +237,21 @@ browser-act network clear                             # Clear tracked requests
 | Option | Description |
 |--------|-------------|
 | `--filter <url>` | Filter by URL substring |
-| `--type <types>` | Resource type, comma-separated (`xhr`, `fetch`, `document`, `script`, `stylesheet`, `image`, `font`) |
+| `--type <types>` | Resource type, comma-separated (`xhr`, `fetch`, `document`, `script`, `stylesheet`, `image`, `font`, `media`, `websocket`, `ping`, `preflight`, `other`) |
 | `--method <method>` | HTTP method (`GET`, `POST`, etc.) |
 | `--status <code>` | Status code (`200`), category (`2xx`), or range (`400-499`) |
 | `--clear` | Clear all tracked requests (on `network requests` command) |
 
-The `request_id` is the first column in the `network requests` output. Use it with `network request <id>` to get headers, response body, and timing details.
+Use `network request <request_id>` to get full detail for a single request. The detail view includes: request headers, post data (for POST/PUT), response headers, and response body. Binary responses show a `[base64, N chars]` placeholder instead of raw content.
+
+**Scope notes:**
+- Requests from **all tabs and iframes** flow into a single tracker (up to 1,000 entries).
+- Closing a tab does **not** remove its previously captured requests. Use `network clear` to reset.
+- When working with multiple tabs, use `--filter` with a domain or path to isolate the tab you care about.
 
 ### Network Simulation
 
-Simulate network disconnection to test offline behavior, error handling, and recovery flows.
+Simulate network disconnection to test offline behavior, error handling, and recovery flows. Uses CDP `Network.emulateNetworkConditions` under the hood — works consistently across headless, headed, and incognito modes. Proxy configuration has no impact (requests are blocked before reaching the proxy).
 
 ```bash
 browser-act set offline on                # Simulate disconnect (all requests fail)
@@ -257,7 +262,7 @@ When offline mode is enabled:
 - All network requests fail with `ERR_INTERNET_DISCONNECTED`
 - `navigator.onLine` returns `false`
 - The browser fires the `offline` event
-- Service Worker cached responses still work
+- Service Worker cached responses and Cache API reads still work (they bypass the network layer)
 
 When offline mode is disabled:
 - Network is fully restored
