@@ -4,7 +4,7 @@ description: "Browser automation CLI for AI agents with anti-detection stealth b
 allowed-tools: Bash(browser-act:*)
 metadata:
   author: BrowserAct
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Browser Automation with browser-act CLI
