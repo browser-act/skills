@@ -29,6 +29,7 @@ Run this at the start of every session to ensure the latest version.
 | `--session <name>` | `default` | Session name (isolates browser state) |
 | `--format <text\|json>` | `text` | Output format |
 | `--intent <desc>` | none | Caller intent for analytics |
+| `--no-auto-dialog` | off | Disable automatic JavaScript dialog handling (alerts, confirms, prompts) |
 | `--version` | | Show version |
 | `-h, --help` | | Show help |
 
@@ -65,6 +66,12 @@ browser-act auth poll  # ... until success, expiry, or give up
 browser-act auth set <your_api_key>
 ```
 
+**Remove API key:**
+
+```bash
+browser-act auth clear
+```
+
 Get your API key at: https://www.browseract.com
 
 You do **not** need to set up the API key upfront. When a command requires authentication, the CLI returns a structured error with setup instructions.
@@ -95,7 +102,8 @@ browser-act browser update <browser_id> --name "new-name"
 browser-act browser update <browser_id> --proxy http://proxy:8080 --mode private
 
 # List / Delete / Clear profile
-browser-act browser list
+browser-act browser list                                    # List all stealth browsers
+browser-act browser list --page 2 --page-size 10            # Paginated listing
 browser-act browser delete <browser_id>
 browser-act browser clear-profile <browser_id>
 ```
@@ -110,18 +118,19 @@ Stealth browsers in `normal` mode (default) persist cookies, cache, and login se
 
 ### Real Chrome
 
-Connect to your local Chrome instance (auto-discovers running Chrome with CDP enabled).
+Two modes: auto-connect to your running Chrome (default), or use a BrowserAct-managed kernel.
 
 ```bash
-browser-act browser real open https://example.com                  # Auto-connect to your real Chrome with Default profile (existing logins/cookies)
+browser-act browser real open https://example.com                  # Auto-connect to running Chrome (existing logins/cookies)
 browser-act browser real open https://example.com --ba-kernel      # Use BrowserAct-provided browser kernel
 ```
 
-Both browser types support `--headed` to show the browser UI. Use for debugging to see what the browser is doing:
+Both browser types support `--headed` to show the browser UI (default: headless). Use for debugging:
 
 ```bash
 browser-act browser open <browser_id> https://example.com --headed
-browser-act browser real open https://example.com  --ba-kernel --headed
+browser-act browser real open https://example.com --headed
+browser-act browser real open https://example.com --ba-kernel --headed
 ```
 
 
@@ -183,11 +192,13 @@ browser-act reload              # Reload page
 browser-act state                         # Interactive elements with index numbers
 browser-act screenshot                    # Screenshot (auto path)
 browser-act screenshot ./page.png         # Screenshot to specific path
+browser-act screenshot --full             # Full page screenshot
 
 # Interact (use index from state)
 browser-act click <index>                 # Click element
 browser-act hover <index>                 # Hover over element
-browser-act input <index> "text"          # Click element then type
+browser-act type "text"                   # Type text into currently focused element
+browser-act input <index> "text"          # Click element, then type text
 browser-act keys "Enter"                  # Send keyboard keys
 browser-act scroll down                   # Scroll down (default 500px)
 browser-act scroll up --amount 1000       # Scroll up 1000px
@@ -221,7 +232,7 @@ browser-act tab close <tab_id>            # Close specific tab
 ### Wait
 
 ```bash
-browser-act wait stable                   # Wait for page stable (doc ready + network idle)
+browser-act wait stable                   # Wait for page stable (doc ready + network idle, default 30s)
 browser-act wait stable --timeout 60000   # Custom timeout (ms)
 ```
 
@@ -283,6 +294,31 @@ browser-act eval "navigator.onLine"       # false
 browser-act network offline off
 browser-act eval "navigator.onLine"       # true
 ```
+
+### Dialog Management
+
+Handle JavaScript dialogs (alert, confirm, prompt). By default, browser-act auto-accepts dialogs. Use `--no-auto-dialog` to disable this and handle them manually.
+
+```bash
+browser-act dialog status                 # Check if a dialog is currently open
+browser-act dialog accept                 # Accept (OK) the current dialog
+browser-act dialog accept "some text"     # Accept with text input (for prompt dialogs)
+browser-act dialog dismiss                # Dismiss (Cancel) the current dialog
+```
+
+**Manual dialog flow:** Pass `--no-auto-dialog` when opening the browser, then use `dialog status` to detect dialogs and `dialog accept` / `dialog dismiss` to handle them.
+
+### HAR Recording
+
+Capture network traffic as HAR (HTTP Archive) files for debugging, analysis, or replay.
+
+```bash
+browser-act network har start             # Start recording network traffic
+browser-act network har stop              # Stop and save to default path (~/.browseract/har/)
+browser-act network har stop ./trace.har  # Stop and save to specific path
+```
+
+Start recording before navigating to the target page. Stop when done — the HAR file contains all requests/responses captured during the recording period.
 
 ### Captcha Solving
 
