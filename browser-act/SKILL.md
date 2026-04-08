@@ -4,7 +4,7 @@ description: "Browser automation CLI for AI agents with anti-detection stealth b
 allowed-tools: Bash(browser-act:*)
 metadata:
   author: BrowserAct
-  version: "1.0.1"
+  version: "1.1.0"
 ---
 
 # Browser Automation with browser-act CLI
@@ -32,49 +32,6 @@ Run this at the start of every session to ensure the latest version.
 | `--no-auto-dialog` | off | Disable automatic JavaScript dialog handling (alerts, confirms, prompts) |
 | `--version` | | Show version |
 | `-h, --help` | | Show help |
-
-## Authentication
-
-Some features require a BrowserAct API key (stealth browsers, captcha solving, etc.). Real Chrome and basic page operations work without one.
-
-**Option 1: Interactive registration (recommended)**
-
-```bash
-# Step 1: Get registration URL
-browser-act auth login
-# Output: registration URL + instructions
-
-# Step 2: Check registration status (single check, not a loop)
-browser-act auth poll
-# Returns API key on success, or pending status if not yet completed
-```
-
-**AI agent flow:** Call `auth login`, present the registration URL to the user, then loop `auth poll` every few seconds until it returns success. When the response indicates less than 10 minutes remaining before expiry, warn the user to complete registration promptly.
-
-```bash
-browser-act auth login
-# → show URL to user, ask them to register
-browser-act auth poll  # check
-browser-act auth poll  # retry after a few seconds
-browser-act auth poll  # ... until success, expiry, or give up
-# ⚠ if remaining time < 10 min, warn the user
-```
-
-**Option 2: Direct set**
-
-```bash
-browser-act auth set <your_api_key>
-```
-
-**Remove API key:**
-
-```bash
-browser-act auth clear
-```
-
-Get your API key at: https://www.browseract.com
-
-You do **not** need to set up the API key upfront. When a command requires authentication, the CLI returns a structured error with setup instructions.
 
 ## Browser Selection
 
@@ -104,7 +61,7 @@ browser-act browser update <browser_id> --proxy http://proxy:8080 --mode private
 # List / Delete / Clear profile
 browser-act browser list                                    # List all stealth browsers
 browser-act browser list --page 2 --page-size 10            # Paginated listing
-browser-act browser delete <browser_id>
+browser-act browser delete <browser_id>                     # ⚠ Destructive: always confirm with user before deleting
 browser-act browser clear-profile <browser_id>
 ```
 
@@ -129,7 +86,6 @@ Both browser types support `--headed` to show the browser UI (default: headless)
 
 ```bash
 browser-act browser open <browser_id> https://example.com --headed
-browser-act browser real open https://example.com --headed
 browser-act browser real open https://example.com --ba-kernel --headed
 ```
 
@@ -192,12 +148,10 @@ browser-act reload              # Reload page
 browser-act state                         # Interactive elements with index numbers
 browser-act screenshot                    # Screenshot (auto path)
 browser-act screenshot ./page.png         # Screenshot to specific path
-browser-act screenshot --full             # Full page screenshot
 
 # Interact (use index from state)
 browser-act click <index>                 # Click element
 browser-act hover <index>                 # Hover over element
-browser-act type "text"                   # Type text into currently focused element
 browser-act input <index> "text"          # Click element, then type text
 browser-act keys "Enter"                  # Send keyboard keys
 browser-act scroll down                   # Scroll down (default 500px)
@@ -238,25 +192,19 @@ browser-act wait stable --timeout 60000   # Custom timeout (ms)
 
 ### Network Inspection
 
-Inspect captured network requests across all open tabs and iframes in the browser session. Requests are tracked globally — switching tabs does not reset or filter the captured data. Use `--filter` to narrow results to a specific page or API.
 
 ```bash
 browser-act network requests                          # List all captured requests (all tabs)
 browser-act network requests --filter api.example.com # Filter by URL substring
-browser-act network requests --type xhr,fetch         # Filter by resource type
-browser-act network requests --method POST            # Filter by HTTP method
-browser-act network requests --status 2xx             # Filter by status (200, 2xx, 400-499)
-browser-act network request <request_id>              # Full detail with response body
+browser-act network requests --type xhr,fetch         # Resource type: xhr,fetch,document,script,stylesheet,image,font,media,websocket,ping,preflight,other
+browser-act network requests --method POST            # HTTP method: GET, POST, PUT, DELETE, etc.
+browser-act network requests --status 2xx             # Filter by http status code (200, 2xx, 400-499)
+browser-act network request <request_id>              # View full detail: headers, post data, response headers & body
 browser-act network clear                             # Clear tracked requests
+browser-act network har start                         # Start HAR recording
+browser-act network har stop                          # Stop and save to default path (~/.browseract/har/)
+browser-act network har stop ./trace.har              # Stop and save to specific path
 ```
-
-| Option | Description |
-|--------|-------------|
-| `--filter <url>` | Filter by URL substring |
-| `--type <types>` | Resource type, comma-separated (`xhr`, `fetch`, `document`, `script`, `stylesheet`, `image`, `font`, `media`, `websocket`, `ping`, `preflight`, `other`) |
-| `--method <method>` | HTTP method (`GET`, `POST`, etc.) |
-| `--status <code>` | Status code (`200`), category (`2xx`), or range (`400-499`) |
-| `--clear` | Clear all tracked requests (on `network requests` command) |
 
 Use `network request <request_id>` to get full detail for a single request. The detail view includes: request headers, post data (for POST/PUT), response headers, and response body. Binary responses show a `[base64, N chars]` placeholder instead of raw content.
 
@@ -307,18 +255,6 @@ browser-act dialog dismiss                # Dismiss (Cancel) the current dialog
 ```
 
 **Manual dialog flow:** Pass `--no-auto-dialog` when opening the browser, then use `dialog status` to detect dialogs and `dialog accept` / `dialog dismiss` to handle them.
-
-### HAR Recording
-
-Capture network traffic as HAR (HTTP Archive) files for debugging, analysis, or replay.
-
-```bash
-browser-act network har start             # Start recording network traffic
-browser-act network har stop              # Stop and save to default path (~/.browseract/har/)
-browser-act network har stop ./trace.har  # Stop and save to specific path
-```
-
-Start recording before navigating to the target page. Stop when done — the HAR file contains all requests/responses captured during the recording period.
 
 ### Captcha Solving
 
