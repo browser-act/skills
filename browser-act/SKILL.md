@@ -14,7 +14,7 @@ metadata:
   sensitive-capabilities:
     - "Downloads and runs external CLI from PyPI (browser-act-cli)"
     - "Stealth mode: creates persistent browser profiles with cookies/login state"
-    - "Real Chrome mode: connects to user's running Chrome via CDP, accessing existing sessions/cookies"
+    - "Real Chrome mode: connects to user's running Chrome via CDP, reusing existing login sessions"
 ---
 
 # Browser Automation with browser-act CLI
@@ -54,7 +54,7 @@ browser-act supports two browser types. Choose based on the task:
 | Target site has bot detection / anti-scraping | **Stealth** | Anti-detection fingerprinting bypasses bot checks |
 | Need proxy or privacy mode | **Stealth** | Real Chrome does not support `--proxy` / `--mode` |
 | Need multiple browsers in parallel | **Stealth** | Each Stealth browser is independent; create multiple and run in parallel sessions |
-| Need user's existing login sessions from their daily browser | **Real Chrome** | Connects directly to user's Chrome with existing cookies |
+| Need user's existing login sessions from their daily browser | **Real Chrome** | Connects directly to user's Chrome, reusing existing login sessions |
 | No bot detection, no login needed | Either | Stealth is safer default; Real Chrome is simpler |
 
 ### Stealth Browser
@@ -92,7 +92,7 @@ Stealth browsers in `normal` mode (default) persist cookies, cache, and login se
 Two modes: auto-connect to your running Chrome (default), or use a BrowserAct-managed kernel.
 
 ```bash
-browser-act browser real open https://example.com                  # Auto-connect to running Chrome (existing logins/cookies)
+browser-act browser real open https://example.com                  # Auto-connect to running Chrome (reuses existing login sessions)
 browser-act browser real open https://example.com --ba-kernel      # Use BrowserAct-provided browser kernel
 ```
 
@@ -207,7 +207,7 @@ browser-act wait stable --timeout 60000   # Custom timeout (ms)
 ### Network Inspection
 
 ```bash
-browser-act network requests                          # List all captured requests (all tabs)
+browser-act network requests                          # List all captured requests 
 browser-act network requests --filter api.example.com # Filter by URL substring
 browser-act network requests --type xhr,fetch         # Resource type: xhr,fetch,document,script,stylesheet,image,font,media,websocket,ping,preflight,other
 browser-act network requests --method POST            # HTTP method: GET, POST, PUT, DELETE, etc.
@@ -217,44 +217,11 @@ browser-act network clear                             # Clear tracked requests
 browser-act network har start                         # Start HAR recording
 browser-act network har stop                          # Stop and save to default path (~/.browseract/har/)
 browser-act network har stop ./trace.har              # Stop and save to specific path
+browser-act network offline on                        # Simulate disconnect for current tab (all requests fail with ERR_INTERNET_DISCONNECTED)
+browser-act network offline off                       # Restore network connection for current tab
 ```
 
 Use `network request <request_id>` to get full detail for a single request. The detail view includes: request headers, post data (for POST/PUT), response headers, and response body. Binary responses show a `[base64, N chars]` placeholder instead of raw content.
-
-**Scope notes:**
-- Requests from **all tabs and iframes** flow into a single tracker (up to 1,000 entries).
-- Closing a tab does **not** remove its previously captured requests. Use `network clear` to reset.
-- When working with multiple tabs, use `--filter` with a domain or path to isolate the tab you care about.
-
-### Network Simulation
-
-Simulate network disconnection to test offline behavior, error handling, and recovery flows. 
-
-```bash
-browser-act network offline on                # Simulate disconnect (all requests fail)
-browser-act network offline off               # Restore network connection
-```
-
-When offline mode is enabled:
-- All network requests fail with `ERR_INTERNET_DISCONNECTED`
-- `navigator.onLine` returns `false`
-- The browser fires the `offline` event
-- Service Worker cached responses and Cache API reads still work (they bypass the network layer)
-
-When offline mode is disabled:
-- Network is fully restored
-- `navigator.onLine` returns `true`
-- The browser fires the `online` event
-
-**Verification example:**
-
-```bash
-browser-act eval "navigator.onLine"       # true
-browser-act network offline on
-browser-act eval "navigator.onLine"       # false
-browser-act network offline off
-browser-act eval "navigator.onLine"       # true
-```
 
 ### Dialog Management
 
