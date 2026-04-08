@@ -5,6 +5,16 @@ allowed-tools: Bash(browser-act:*)
 metadata:
   author: BrowserAct
   version: "1.1.0"
+  install: "uv tool install browser-act-cli --python 3.12"
+  source: "https://pypi.org/project/browser-act-cli/"
+  data-paths:
+    - "~/Library/Application Support/browseract/ (macOS)"
+    - "%APPDATA%\\browseract (Windows)"
+    - "${XDG_DATA_HOME:-~/.local/share}/browseract (Linux)"
+  sensitive-capabilities:
+    - "Downloads and runs external CLI from PyPI (browser-act-cli)"
+    - "Stealth mode: creates persistent browser profiles with cookies/login state"
+    - "Real Chrome mode: connects to user's running Chrome via CDP, accessing existing sessions/cookies"
 ---
 
 # Browser Automation with browser-act CLI
@@ -14,6 +24,8 @@ metadata:
 All commands output human-readable text by default. Use `--format json` for structured JSON output, ideal for AI agent integration and scripting.
 
 ## Installation
+
+Source: [browser-act-cli on PyPI](https://pypi.org/project/browser-act-cli/)
 
 ```bash
 # Upgrade if installed, otherwise install fresh
@@ -71,7 +83,9 @@ browser-act browser clear-profile <browser_id>
 | `--proxy <url>` | Proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://host:port` |
 | `--mode <normal\|private>` | `normal` (default): persists cache, cookies, login across launches. `private`: fresh environment every launch, no saved state |
 
-Stealth browsers in `normal` mode (default) persist cookies, cache, and login sessions across launches — you can log in once and reuse the session, similar to a regular browser profile.
+Stealth browsers in `normal` mode (default) persist cookies, cache, and login sessions across launches — you can log in once and reuse the session, similar to a regular browser profile. Use `--mode private` when the task should not persist any state.
+
+**Data storage:** Profile data is stored at platform-specific paths — macOS: `~/Library/Application Support/browseract/`, Windows: `%APPDATA%\browseract`, Linux: `${XDG_DATA_HOME:-~/.local/share}/browseract`.
 
 ### Real Chrome
 
@@ -191,7 +205,6 @@ browser-act wait stable --timeout 60000   # Custom timeout (ms)
 ```
 
 ### Network Inspection
-
 
 ```bash
 browser-act network requests                          # List all captured requests (all tabs)
