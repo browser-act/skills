@@ -1,0 +1,17 @@
+[project]
+name = "tmp_u24kv9f"
+version = "0.1.0"
+description = ""
+requires-python = ">=3.9"
+dependencies = []
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+select = ["E", "F", "I", "UP", "B", "SIM", "PTH"]
+
+[tool.ruff.isort]
+known-first-party = ["tmp_u24kv9f"]
+
+[tool.black]
+line-length = 88
