@@ -6,15 +6,21 @@ metadata:
   author: BrowserAct
   version: "1.1.0"
   install: "uv tool install browser-act-cli --python 3.12"
-  source: "https://pypi.org/project/browser-act-cli/"
-  data-paths:
-    - "~/Library/Application Support/browseract/ (macOS)"
-    - "%APPDATA%\\browseract (Windows)"
-    - "${XDG_DATA_HOME:-~/.local/share}/browseract (Linux)"
-  sensitive-capabilities:
-    - "Downloads and runs external CLI from PyPI (browser-act-cli)"
-    - "Stealth mode: creates persistent browser profiles with cookies/login state"
-    - "Real Chrome mode: connects to user's running Chrome via CDP, reusing existing login sessions"
+  homepage: "https://www.browseract.com"
+  requires:
+    runtime: "Python 3.12+, uv package manager"
+    binaries: "Stealth mode: Chromium bundled by the CLI. Real Chrome mode: user's local Chrome/Chromium installation."
+  data-paths: "macOS: ~/Library/Application Support/browseract/ | Windows: %APPDATA%\\browseract | Linux: ${XDG_DATA_HOME:-~/.local/share}/browseract"
+  config-files:
+    - "<data-path>/config.json — CLI credentials and settings, managed internally. No env vars required."
+  permissions:
+    - "Network access — required for: CLI install from PyPI, captcha solving and stealth browser management via BrowserAct cloud API"
+    - "Filesystem read/write at <data-path> — required for: storing browser profiles (cookies, cache), config.json (credentials), and session logs"
+    - "CDP connection to local Chrome — required for: Real Chrome mode only, to control the user's running browser instance"
+  data-privacy:
+    local-only: "All cookies, login sessions, page content, credentials, and browser profile data are stored locally only — never uploaded."
+  user-confirmation-required:
+    - "First-time install (uv tool install): downloads and runs external package"
 ---
 
 # Browser Automation with browser-act CLI
@@ -25,14 +31,14 @@ All commands output human-readable text by default. Use `--format json` for stru
 
 ## Installation
 
-Source: [browser-act-cli on PyPI](https://pypi.org/project/browser-act-cli/)
+Source: [browser-act-cli on PyPI](https://pypi.org/project/browser-act-cli/) · [Homepage](https://www.browseract.com)
 
 ```bash
 # Upgrade if installed, otherwise install fresh
 uv tool upgrade browser-act-cli || uv tool install browser-act-cli --python 3.12
 ```
 
-Run this at the start of every session to ensure the latest version.
+The CLI is an open-source package published to PyPI by [BrowserAct](https://www.browseract.com). Run the install command at the start of every session to ensure the latest version.
 
 **Global options** available on every command:
 
@@ -40,7 +46,6 @@ Run this at the start of every session to ensure the latest version.
 |--------|---------|-------------|
 | `--session <name>` | `default` | Session name (isolates browser state) |
 | `--format <text\|json>` | `text` | Output format |
-| `--intent <desc>` | none | Caller intent for analytics |
 | `--no-auto-dialog` | off | Disable automatic JavaScript dialog handling (alerts, confirms, prompts) |
 | `--version` | | Show version |
 | `-h, --help` | | Show help |
@@ -85,14 +90,14 @@ browser-act browser clear-profile <browser_id>
 
 Stealth browsers in `normal` mode (default) persist cookies, cache, and login sessions across launches — you can log in once and reuse the session, similar to a regular browser profile. Use `--mode private` when the task should not persist any state.
 
-**Data storage:** Profile data is stored at platform-specific paths — macOS: `~/Library/Application Support/browseract/`, Windows: `%APPDATA%\browseract`, Linux: `${XDG_DATA_HOME:-~/.local/share}/browseract`.
+**Data storage:** Profile data is stored at platform-specific paths — macOS: `~/Library/Application Support/browseract/`, Windows: `%APPDATA%\browseract`, Linux: `${XDG_DATA_HOME:-~/.local/share}/browseract`. To clean up persistent data, delete the browser with `browser-act browser delete <browser_id>` or use `browser-act browser clear-profile <browser_id>` to reset its profile.
 
 ### Real Chrome
 
 Two modes: auto-connect to your running Chrome (default), or use a BrowserAct-managed kernel.
 
 ```bash
-browser-act browser real open https://example.com                  # Auto-connect to running Chrome (reuses existing login sessions)
+browser-act browser real open https://example.com                  # Auto-connect to running Chrome 
 browser-act browser real open https://example.com --ba-kernel      # Use BrowserAct-provided browser kernel
 ```
 
@@ -114,12 +119,11 @@ Every browser automation follows this loop: **Open → Inspect → Interact → 
 4. **Verify**: `browser-act state` or `browser-act screenshot` — confirm result
 
 ```bash
-browser-act browser open <browser_id> https://example.com/login
+browser-act browser open <browser_id> https://example.com
 browser-act state
-# Output: [3] input "Email", [4] input "Password", [5] button "Sign In"
+# Output: [3] input "Search", [5] button "Go"
 
-browser-act input 3 "user@example.com"
-browser-act input 4 "password123"
+browser-act input 3 "browser automation"
 browser-act click 5
 browser-act wait stable
 browser-act state    # Always re-inspect after page changes
@@ -136,7 +140,7 @@ Commands can be chained with `&&` in a single shell invocation. The browser sess
 browser-act browser open <browser_id> https://example.com && browser-act wait stable && browser-act state
 
 # Chain multiple interactions
-browser-act input 3 "user@example.com" && browser-act input 4 "password123" && browser-act click 5
+browser-act input 3 "browser automation" && browser-act click 5
 
 # Navigate and capture
 browser-act navigate https://example.com/dashboard && browser-act wait stable && browser-act screenshot
@@ -333,4 +337,5 @@ If you encounter issues or have suggestions for improving browser-act, use `feed
 
 | Path | Description |
 |------|-------------|
+| `references/SECURITY.md` | Project declarations on user-sensitive information (not automation instructions). |
 | `references/site-notes/{domain}.md` | Per-site operational experience. Read before operating on a known site. |
