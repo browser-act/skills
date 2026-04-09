@@ -1,6 +1,6 @@
 ---
 name: browser-act
-description: "Browser automation CLI for AI agents with anti-detection stealth browsing, captcha solving, and parallel multi-browser support. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, scraping sites with bot detection, or automating any browser task. Also use when the user needs to connect to their existing Chrome session, configure proxy-based stealth browsing, or run parallel browser sessions. Triggers on requests to open a website, fill out a form, click a button, take a screenshot, scrape data from a page, login to a site, automate browser actions, handle captcha challenges, or any task requiring programmatic web interaction."
+description: "Browser automation CLI (browser-act) for AI agents. MUST trigger when: (1) user mentions 'browser-act' in any form, or user needs to: (2) open/visit/browse/check a URL or webpage, (3) scrape/extract/crawl/monitor web content, (4) fill forms, click buttons, type text, scroll, or interact with page elements, (5) take a screenshot of a webpage, (6) handle or solve a captcha, (7) use a stealth/anti-detection browser or proxy, (8) connect to or control Chrome, (9) inspect network requests or record HAR, (10) automate any browser or web interaction task. Covers: navigation, page state inspection, element interaction, data extraction, JavaScript evaluation, tab management, network inspection, dialog handling, captcha solving, parallel browser sessions, stealth browsing, and any browser automation tasks."
 allowed-tools: Bash(browser-act:*)
 metadata:
   author: BrowserAct
@@ -130,6 +130,8 @@ browser-act state    # Always re-inspect after page changes
 ```
 
 **Important:** After any action that changes the page (click, navigation, form submit), run `wait stable` then `state` to get fresh element indices. Old indices become invalid after page changes.
+
+**Read CLI output carefully:** Every `browser-act` command returns structured output that reflects the actual execution result. Always read and parse the CLI response before deciding the next step
 
 ## Command Chaining
 
