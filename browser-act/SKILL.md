@@ -245,7 +245,7 @@ browser-act dialog dismiss              # Dismiss (Cancel)
 
 ## Session Management
 
-When running multiple automations concurrently, use named sessions to avoid conflicts. Each `--session <name>` creates an isolated browser context with its own background server — commands to different sessions can execute concurrently.
+All commands target the `default` session when `--session` is not specified. For single-task automation this is sufficient — no need to name a session explicitly. When running multiple automations concurrently, use named sessions to avoid conflicts. Each `--session <name>` creates an isolated browser context with its own background server.
 
 ```bash
 # Each task gets its own isolated session
