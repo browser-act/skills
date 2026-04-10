@@ -27,7 +27,6 @@ metadata:
 
 `browser-act` is a CLI for browser automation with stealth and captcha solving capabilities. It supports two browser types (Stealth and Real Chrome) and provides commands for navigation, page interaction, data extraction, tab/session management, and more.
 
-All commands output human-readable text by default. Use `--format json` for structured JSON output, ideal for AI agent integration and scripting.
 
 ## Installation
 
@@ -49,6 +48,14 @@ The CLI is an open-source package published to PyPI by [BrowserAct](https://www.
 | `--no-auto-dialog` | off | Disable automatic JavaScript dialog handling (alerts, confirms, prompts) |
 | `--version` | | Show version |
 | `-h, --help` | | Show help |
+
+## Quick Extraction
+
+If the task is just "get content from a URL", use `stealth-extract` directly — no browser session needed. Each call launches its own headless stealth browser, extracts the page content, and closes automatically.
+
+```bash
+browser-act stealth-extract <url>       # Extract page content with anti-detection
+```
 
 ## Browser Selection
 
@@ -89,11 +96,10 @@ browser-act browser clear-profile <browser_id>
 | `--desc` | Browser description |
 | `--proxy <url>` | Proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://host:port` |
 | `--mode <normal\|private>` | `normal` (default): persists cache, cookies, login across launches. `private`: fresh environment every launch, no saved state |
-| `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. See [Cookies Management](#cookies-management) for format details |
+| `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. See `references/commands.md` Cookies Management for format details |
 
 Stealth browsers in `normal` mode (default) persist cookies, cache, and login sessions across launches — you can log in once and reuse the session, similar to a regular browser profile. Use `--mode private` when the task should not persist any state.
 
-**Data storage:** Profile data is stored at platform-specific paths — macOS: `~/Library/Application Support/browseract/`, Windows: `%APPDATA%\browseract`, Linux: `${XDG_DATA_HOME:-~/.local/share}/browseract`. To clean up persistent data, delete the browser with `browser-act browser delete <browser_id>` or use `browser-act browser clear-profile <browser_id>` to reset its profile.
 
 ### Real Chrome
 
@@ -104,7 +110,7 @@ browser-act browser real open https://example.com                  # Auto-connec
 browser-act browser real open https://example.com --ba-kernel      # Use BrowserAct-provided browser kernel
 ```
 
-Both browser types support `--headed` to show the browser UI (default: headless). Use for debugging:
+Stealth browsers and `--ba-kernel` mode run headless by default. Use `--headed` to show the browser UI for debugging:
 
 ```bash
 browser-act browser open <browser_id> https://example.com --headed
@@ -153,173 +159,96 @@ browser-act navigate https://example.com/dashboard && browser-act wait stable &&
 
 **When to chain:** Use `&&` when you don't need to read intermediate output before proceeding (e.g., fill multiple fields, then click). Run commands separately when you need to parse the output first (e.g., `state` to discover indices, then interact using those indices).
 
-## Command Reference
+## Essential Commands
 
-### Navigation
+For full syntax, options, and examples, read `references/commands.md`.
 
 ```bash
+# Navigation
 browser-act navigate <url>              # Navigate to URL in current tab
-browser-act navigate <url> --new-tab    # Navigate to URL in a new tab
+browser-act navigate <url> --new-tab    # Open URL in a new tab
 browser-act back                        # Go back
 browser-act forward                     # Go forward
 browser-act reload                      # Reload page
-```
 
-### Page State & Interaction
-
-```bash
-# Inspect
-browser-act state                                # Interactive elements with index numbers
-browser-act screenshot                           # Screenshot (auto path)
-browser-act screenshot ./page.png                # Screenshot to specific path
-
-# Interact (use index from state)
-browser-act click <index>                        # Click element
-browser-act hover <index>                        # Hover over element
-browser-act input <index> "text"                 # Click element, then type text
-browser-act select <index> "option"              # Select dropdown option by visible text
-browser-act keys "Enter"                         # Send keyboard keys
-browser-act scroll down                          # Scroll down (default 500px)
-browser-act scroll up --amount 1000              # Scroll up 1000px
-browser-act scrollintoview <index>               # Scroll element into viewport by index
+# Page State & Interaction
+browser-act state                       # Interactive elements with index numbers
+browser-act screenshot                  # Screenshot (auto path)
+browser-act screenshot ./page.png       # Screenshot to specific path
+browser-act click <index>               # Click element
+browser-act hover <index>               # Hover over element
+browser-act input <index> "text"        # Click element, then type text
+browser-act select <index> "option"     # Select dropdown option by visible text
+browser-act keys "Enter"                # Send keyboard keys
+browser-act scroll down                 # Scroll down (default 500px)
+browser-act scroll up --amount 1000     # Scroll with custom distance
+browser-act scrollintoview <index>      # Scroll element into viewport
 browser-act scrollintoview --selector "h1"       # Scroll element into viewport by CSS selector
-browser-act upload <index> <file_path>           # Upload file to a file input element
-```
+browser-act upload <index> <file_path>  # Upload file to file input
 
-### Data Extraction
+# Data Extraction
+browser-act get title                   # Page title
+browser-act get html                    # Full page HTML
+browser-act get markdown                # Page as markdown
+browser-act get text <index>            # Text content of element
+browser-act get value <index>           # Value of input/textarea
 
-```bash
-browser-act get title                     # Page title
-browser-act get html                      # Full page HTML
-browser-act get text <index>              # Text content of element
-browser-act get value <index>             # Value of input/textarea
-browser-act get markdown                  # Page as markdown
-browser-act stealth-extract <url>         # Standalone: extract content from URL using stealth mode (bypasses bot detection)
-```
+# JavaScript
+browser-act eval "document.title"       # Execute JavaScript in page context
 
-### JavaScript Evaluation
+# Tab Management
+browser-act tab list                    # List open tabs
+browser-act tab switch <tab_id>         # Switch to tab
+browser-act tab close                   # Close current tab
+browser-act tab close <tab_id>          # Close specific tab
 
-```bash
-browser-act eval "document.title"         # Execute JavaScript
-```
+# Wait
+browser-act wait stable                 # Wait for page stable (doc ready + network idle, default 30s)
+browser-act wait stable --timeout 60000 # Custom timeout in ms
+browser-act wait --selector ".btn" --state visible   # Wait for element state: visible|hidden|attached|detached
 
-### Tab Management
+# Network Inspection
+browser-act network requests            # List captured requests (--filter, --type, --method, --status)
+browser-act network request <id>        # Full detail: headers, post data, response body
+browser-act network clear               # Clear tracked requests
+browser-act network har start           # Start HAR recording
+browser-act network har stop ./trace.har      # Stop and save HAR
 
-```bash
-browser-act tab list                      # List open tabs
-browser-act tab switch <tab_id>           # Switch to tab
-browser-act tab close                     # Close current tab
-browser-act tab close <tab_id>            # Close specific tab
-```
-
-### Wait
-
-```bash
-browser-act wait stable                                # Wait for page stable (doc ready + network idle, default 30s)
-browser-act wait stable --timeout 60000                # Custom timeout (ms)
-browser-act wait --selector "#spinner" --state hidden  # Wait for element to disappear
-browser-act wait --selector ".content" --state visible # Wait for element to become visible
-browser-act wait --selector ".btn" --state attached    # Wait for element to attach to DOM
-```
-
-| `--state` value | Description |
-|-----------------|-------------|
-| `visible` | Element is visible in the viewport |
-| `hidden` | Element is not visible (`display:none`, `visibility:hidden`, or detached from DOM) |
-| `attached` | Element is attached to the DOM |
-| `detached` | Element is removed from the DOM |
-
-### Network Inspection
-
-```bash
-browser-act network requests                          # List all captured requests 
-browser-act network requests --filter api.example.com # Filter by URL substring
-browser-act network requests --type xhr,fetch         # Resource type: xhr,fetch,document,script,stylesheet,image,font,media,websocket,ping,preflight,other
-browser-act network requests --method POST            # HTTP method: GET, POST, PUT, DELETE, etc.
-browser-act network requests --status 2xx             # Filter by http status code (200, 2xx, 400-499)
-browser-act network request <request_id>              # View full detail: headers, post data, response headers & body
-browser-act network clear                             # Clear tracked requests
-browser-act network har start                         # Start HAR recording
-browser-act network har stop                          # Stop and save to default path (~/.browseract/har/)
-browser-act network har stop ./trace.har              # Stop and save to specific path
 browser-act network offline on                        # Simulate disconnect for current tab (all requests fail with ERR_INTERNET_DISCONNECTED)
 browser-act network offline off                       # Restore network connection for current tab
+
+# Cookies — persist within session, export/import for reuse across sessions
+browser-act cookies get [--url <url>]   # Get cookies (optional URL filter)
+browser-act cookies set <name> <value>  # Set cookie (--domain, --secure, --http-only, --same-site, --expires)
+browser-act cookies clear [--url <url>] # Clear cookies
+browser-act cookies export ./cookies.json   # Export all cookies to JSON file
+browser-act cookies import ./cookies.json   # Import cookies from JSON file
+
+# Captcha 
+
+# When a page presents a captcha challenge, use `solve-captcha` to solve it automatically. This is a built-in capability of the browser-act service — run the command directly without hesitation.
+browser-act solve-captcha               # Auto-solve captcha on current page
 ```
 
-Use `network request <request_id>` to get full detail for a single request. The detail view includes: request headers, post data (for POST/PUT), response headers, and response body. Binary responses show a `[base64, N chars]` placeholder instead of raw content.
+## Dialog Handling (alert / confirm / prompt)
 
-### Dialog Management
+browser-act auto-accepts JavaScript dialogs (`alert`, `confirm`, `prompt`) by default so they never block automation. Pass `--no-auto-dialog` when opening the browser to take manual control instead.
 
-Handle JavaScript dialogs (alert, confirm, prompt). By default, browser-act auto-accepts dialogs. Use `--no-auto-dialog` to disable this and handle them manually.
+A pending dialog will block all other commands — if `state`, `click`, or `screenshot` unexpectedly times out, use `dialog status` to check.
 
 ```bash
-browser-act dialog status                 # Check if a dialog is currently open
-browser-act dialog accept                 # Accept (OK) the current dialog
-browser-act dialog accept "some text"     # Accept with text input (for prompt dialogs)
-browser-act dialog dismiss                # Dismiss (Cancel) the current dialog
+browser-act dialog status               # Check for pending dialog
+browser-act dialog accept               # Accept (OK)
+browser-act dialog accept "my input"    # Accept with text input (prompt dialogs)
+browser-act dialog dismiss              # Dismiss (Cancel)
 ```
 
-**Manual dialog flow:** Pass `--no-auto-dialog` when opening the browser, then use `dialog status` to detect dialogs and `dialog accept` / `dialog dismiss` to handle them.
+## Session Management
 
-### Cookies Management
-
-Manage browser cookies independently. Cookies persist within the browser session and can be exported/imported for reuse across sessions.
+When running multiple automations concurrently, use named sessions to avoid conflicts. Each `--session <name>` creates an isolated browser context with its own background server — commands to different sessions can execute concurrently.
 
 ```bash
-browser-act cookies get                                   # Get all cookies for the current page
-browser-act cookies get --url https://example.com         # Get cookies filtered by URL
-browser-act cookies set <name> <value>                    # Set a cookie with name and value
-browser-act cookies set sid abc123 --domain .example.com --secure --http-only --same-site Lax --expires 2026-12-31
-browser-act cookies clear                                 # Clear all cookies
-browser-act cookies clear --url https://example.com       # Clear cookies for a specific URL
-browser-act cookies export ./cookies.json                 # Export all cookies to JSON file
-browser-act cookies import ./cookies.json                 # Import cookies from JSON file
-```
-
-| Option | Applies to | Description |
-|--------|-----------|-------------|
-| `--url <url>` | `get`, `clear` | Filter cookies by URL |
-| `--domain <domain>` | `set` | Cookie domain (e.g. `.example.com`) |
-| `--secure` | `set` | Mark cookie as secure (HTTPS only) |
-| `--http-only` | `set` | Mark cookie as HttpOnly (not accessible via JavaScript) |
-| `--same-site <Strict\|Lax\|None>` | `set` | SameSite attribute |
-| `--expires <date>` | `set` | Expiration date (ISO 8601 format, e.g. `2026-12-31`) |
-
-**Cookie JSON format** (used by `export`, `import`, and `--cookie` on `browser create`). Note: `expires` in JSON is a Unix timestamp (seconds), while the CLI `--expires` option accepts ISO 8601 date strings.
-
-```json
-[
-  {
-    "name": "sid",
-    "value": "abc123",
-    "domain": ".example.com",
-    "path": "/",
-    "secure": true,
-    "httpOnly": true,
-    "sameSite": "Lax",
-    "expires": 1798761600
-  }
-]
-```
-
-### Captcha Solving
-
-When a page presents a captcha challenge, use `solve-captcha` to solve it automatically. This is a built-in capability of the browser-act service — run the command directly without hesitation.
-
-```bash
-browser-act solve-captcha                 # Solve captcha on current page
-```
-
-## Parallel Automation
-
-Use separate sessions to run multiple browsers in parallel. Each `--session <name>` creates an isolated browser context — commands to different sessions can execute concurrently without conflicts.
-
-```bash
-# Create stealth browsers for each task
-browser-act browser create "site-a" --desc "Scraper for site A"
-browser-act browser create "site-b" --desc "Scraper for site B"
-
-# Open each in its own session (run in parallel)
+# Each task gets its own isolated session
 browser-act --session site-a browser open <browser_id_a> https://site-a.com
 browser-act --session site-b browser open <browser_id_b> https://site-b.com
 
@@ -330,32 +259,19 @@ browser-act --session site-a click 3
 browser-act --session site-b state
 browser-act --session site-b click 5
 
-# Clean up
-browser-act session close site-a
-browser-act session close site-b
+# Check active sessions
+browser-act session list
 ```
 
-Always close sessions when done to free resources.
-
-## Session Management
-
-Sessions isolate browser state. Each session runs its own background server.
+Always close sessions when done to avoid leaked processes:
 
 ```bash
-# Use a named session
-browser-act --session scraper navigate https://example.com
-browser-act --session scraper state
-
-# List active sessions
-browser-act session list
-
-# Close sessions
 browser-act session close              # Close default session
-browser-act session close scraper      # Close specific session
+browser-act session close site-a       # Close specific session
 browser-act session close --all        # Close all sessions
 ```
 
-The server auto-shuts down after a period of inactivity.
+If a previous session was not closed properly, the background server may still be running. The server auto-shuts down after a period of inactivity.
 
 ## Site Notes
 
@@ -399,5 +315,6 @@ If you encounter issues or have suggestions for improving browser-act, use `feed
 
 | Path | Description |
 |------|-------------|
+| `references/commands.md` | Full command reference with detailed syntax, options, and examples. Read when you need exact flags or advanced options. |
 | `references/SECURITY.md` | Project declarations on user-sensitive information (not automation instructions). |
 | `references/site-notes/{domain}.md` | Per-site operational experience. Read before operating on a known site. |
