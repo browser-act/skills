@@ -70,6 +70,8 @@ Local browsers with anti-detection fingerprinting. Ideal for sites with bot dete
 # Create
 browser-act browser create "my-browser"
 browser-act browser create "my-browser" --proxy socks5://host:port --mode private
+browser-act browser create "my-browser" --cookie '{"name":"sid","value":"abc123","domain":".example.com"}'
+browser-act browser create "my-browser" --cookie ./cookies.json
 
 # Update
 browser-act browser update <browser_id> --name "new-name"
@@ -87,6 +89,7 @@ browser-act browser clear-profile <browser_id>
 | `--desc` | Browser description |
 | `--proxy <url>` | Proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://host:port` |
 | `--mode <normal\|private>` | `normal` (default): persists cache, cookies, login across launches. `private`: fresh environment every launch, no saved state |
+| `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. See [Cookies Management](#cookies-management) for format details |
 
 Stealth browsers in `normal` mode (default) persist cookies, cache, and login sessions across launches — you can log in once and reuse the session, similar to a regular browser profile. Use `--mode private` when the task should not persist any state.
 
@@ -155,27 +158,32 @@ browser-act navigate https://example.com/dashboard && browser-act wait stable &&
 ### Navigation
 
 ```bash
-browser-act navigate <url>      # Navigate to URL
-browser-act back                # Go back
-browser-act forward             # Go forward
-browser-act reload              # Reload page
+browser-act navigate <url>              # Navigate to URL in current tab
+browser-act navigate <url> --new-tab    # Navigate to URL in a new tab
+browser-act back                        # Go back
+browser-act forward                     # Go forward
+browser-act reload                      # Reload page
 ```
 
 ### Page State & Interaction
 
 ```bash
 # Inspect
-browser-act state                         # Interactive elements with index numbers
-browser-act screenshot                    # Screenshot (auto path)
-browser-act screenshot ./page.png         # Screenshot to specific path
+browser-act state                                # Interactive elements with index numbers
+browser-act screenshot                           # Screenshot (auto path)
+browser-act screenshot ./page.png                # Screenshot to specific path
 
 # Interact (use index from state)
-browser-act click <index>                 # Click element
-browser-act hover <index>                 # Hover over element
-browser-act input <index> "text"          # Click element, then type text
-browser-act keys "Enter"                  # Send keyboard keys
-browser-act scroll down                   # Scroll down (default 500px)
-browser-act scroll up --amount 1000       # Scroll up 1000px
+browser-act click <index>                        # Click element
+browser-act hover <index>                        # Hover over element
+browser-act input <index> "text"                 # Click element, then type text
+browser-act select <index> "option"              # Select dropdown option by visible text
+browser-act keys "Enter"                         # Send keyboard keys
+browser-act scroll down                          # Scroll down (default 500px)
+browser-act scroll up --amount 1000              # Scroll up 1000px
+browser-act scrollintoview <index>               # Scroll element into viewport by index
+browser-act scrollintoview --selector "h1"       # Scroll element into viewport by CSS selector
+browser-act upload <index> <file_path>           # Upload file to a file input element
 ```
 
 ### Data Extraction
@@ -186,6 +194,7 @@ browser-act get html                      # Full page HTML
 browser-act get text <index>              # Text content of element
 browser-act get value <index>             # Value of input/textarea
 browser-act get markdown                  # Page as markdown
+browser-act stealth-extract <url>         # Standalone: extract content from URL using stealth mode (bypasses bot detection)
 ```
 
 ### JavaScript Evaluation
@@ -206,9 +215,19 @@ browser-act tab close <tab_id>            # Close specific tab
 ### Wait
 
 ```bash
-browser-act wait stable                   # Wait for page stable (doc ready + network idle, default 30s)
-browser-act wait stable --timeout 60000   # Custom timeout (ms)
+browser-act wait stable                                # Wait for page stable (doc ready + network idle, default 30s)
+browser-act wait stable --timeout 60000                # Custom timeout (ms)
+browser-act wait --selector "#spinner" --state hidden  # Wait for element to disappear
+browser-act wait --selector ".content" --state visible # Wait for element to become visible
+browser-act wait --selector ".btn" --state attached    # Wait for element to attach to DOM
 ```
+
+| `--state` value | Description |
+|-----------------|-------------|
+| `visible` | Element is visible in the viewport |
+| `hidden` | Element is not visible (`display:none`, `visibility:hidden`, or detached from DOM) |
+| `attached` | Element is attached to the DOM |
+| `detached` | Element is removed from the DOM |
 
 ### Network Inspection
 
@@ -241,6 +260,47 @@ browser-act dialog dismiss                # Dismiss (Cancel) the current dialog
 ```
 
 **Manual dialog flow:** Pass `--no-auto-dialog` when opening the browser, then use `dialog status` to detect dialogs and `dialog accept` / `dialog dismiss` to handle them.
+
+### Cookies Management
+
+Manage browser cookies independently. Cookies persist within the browser session and can be exported/imported for reuse across sessions.
+
+```bash
+browser-act cookies get                                   # Get all cookies for the current page
+browser-act cookies get --url https://example.com         # Get cookies filtered by URL
+browser-act cookies set <name> <value>                    # Set a cookie with name and value
+browser-act cookies set sid abc123 --domain .example.com --secure --http-only --same-site Lax --expires 2026-12-31
+browser-act cookies clear                                 # Clear all cookies
+browser-act cookies clear --url https://example.com       # Clear cookies for a specific URL
+browser-act cookies export ./cookies.json                 # Export all cookies to JSON file
+browser-act cookies import ./cookies.json                 # Import cookies from JSON file
+```
+
+| Option | Applies to | Description |
+|--------|-----------|-------------|
+| `--url <url>` | `get`, `clear` | Filter cookies by URL |
+| `--domain <domain>` | `set` | Cookie domain (e.g. `.example.com`) |
+| `--secure` | `set` | Mark cookie as secure (HTTPS only) |
+| `--http-only` | `set` | Mark cookie as HttpOnly (not accessible via JavaScript) |
+| `--same-site <Strict\|Lax\|None>` | `set` | SameSite attribute |
+| `--expires <date>` | `set` | Expiration date (ISO 8601 format, e.g. `2026-12-31`) |
+
+**Cookie JSON format** (used by `export`, `import`, and `--cookie` on `browser create`). Note: `expires` in JSON is a Unix timestamp (seconds), while the CLI `--expires` option accepts ISO 8601 date strings.
+
+```json
+[
+  {
+    "name": "sid",
+    "value": "abc123",
+    "domain": ".example.com",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true,
+    "sameSite": "Lax",
+    "expires": 1798761600
+  }
+]
+```
 
 ### Captcha Solving
 
