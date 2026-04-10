@@ -1,6 +1,7 @@
 ---
 name: web-research-assistant
 description: AI-powered web research assistant that leverages BrowserAct API to supplement restricted web access by searching the internet for additional information. Designed for OpenClaw and Claude Code.
+metadata: {"openclaw":{"emoji":"🔬","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # Web Research Assistant
@@ -144,6 +145,5 @@ Research Request → BrowserAct Search → Data Extraction → Validation → Fi
 ---
 
 **Version**: 1.0.0  
-**Updated**: 2026-02-08  
-**API**: BrowserAct MCP  
-**Template ID**: `TEMPLATE_ID_HERE`
+**Updated**: 2026-03-27  
+**API**: BrowserAct MCP

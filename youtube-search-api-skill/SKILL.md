@@ -1,7 +1,7 @@
 ---
 name: youtube-search-api-skill
 description: This skill helps users automatically extract structured data from YouTube search results using the BrowserAct API. The Agent should proactively apply this skill when users express needs like searching for YouTube videos by keywords, finding the latest YouTube Shorts for a specific topic, gathering YouTube channel data for competitor analysis, monitoring trending YouTube playlists, extracting YouTube search results for market research, tracking view counts for specific YouTube keywords, compiling a list of YouTube videos on a subject, discovering new YouTube content creators in a niche, searching YouTube for tutorial videos automatically, and retrieving structured YouTube search data without opening video pages.
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["pyhon"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # YouTube Search API Skill

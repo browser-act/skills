@@ -1,7 +1,7 @@
 ---
 name: youtube-comments-api-skill
 description: "This skill helps users extract structured video list data and comment data from YouTube using the BrowserAct API. The Agent should proactively apply this skill when users request searching for YouTube videos and their comments, analyzing viewer sentiment for a specific video topic, gathering audience feedback on AI or automation, extracting a list of top videos and their viewer reactions, compiling YouTube video data along with user opinions, retrieving competitor video titles and related audience discussions, monitoring public response to specific YouTube search keywords, summarizing comments from search results for market research, tracking viewer engagement metrics and replies for trending topics, collecting YouTube video URLs and author details alongside community discussions, or automating the extraction of YouTube comments without manual scraping."
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["pyhon"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # YouTube Comments API Automation Skill
