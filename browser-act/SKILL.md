@@ -136,11 +136,40 @@ browser-act input 3 "browser automation"
 browser-act click 5
 browser-act wait stable
 browser-act state    # Always re-inspect after page changes
+
+# If user has NOT provided credentials, do not fill the form — request human assist instead.
 ```
 
 **Important:** After any action that changes the page (click, navigation, form submit), run `wait stable` then `state` to get fresh element indices. Old indices become invalid after page changes.
 
-**Read CLI output carefully:** Every `browser-act` command returns structured output that reflects the actual execution result. Always read and parse the CLI response before deciding the next step
+**Read CLI output carefully:** Every `browser-act` command returns structured output that reflects the actual execution result. Always read and parse the CLI response before deciding the next step.
+
+## Policies
+
+Policies are rules that tell you when to take a specific action during browser automation. **Read `references/policies.md` at the start of every task** and follow the rules throughout.
+
+The file ships with preset rules. Users have full control — they can disable presets, modify thresholds, or add custom rules. When a user asks to change policies, update the file directly. Do not create, modify, or delete policies on your own — only change the file when the user explicitly requests it.
+
+**Adding a custom rule example:**
+
+```markdown
+## payment-confirmation
+- enabled: true
+- trigger: Reached a payment or checkout page where money will be charged
+- action: Request human assist
+- note: User wants to review the order before completing purchase
+```
+
+## Human Assist
+
+When a policy triggers with action `Request human assist`, call `human-assist-url` to get a remote access link and present it to the user.
+
+```bash
+browser-act human-assist-url --objective "Please log in with your credentials"
+# → returns assist_url
+```
+
+**Do not send any browser commands while assist is active.** Wait for the user to confirm they are done in the conversation, then continue the task.
 
 ## Command Chaining
 
@@ -318,3 +347,4 @@ If you encounter issues or have suggestions for improving browser-act, use `feed
 | `references/commands.md` | Full command reference with detailed syntax, options, and examples. Read when you need exact flags or advanced options. |
 | `references/SECURITY.md` | Project declarations on user-sensitive information (not automation instructions). |
 | `references/site-notes/{domain}.md` | Per-site operational experience. Read before operating on a known site. |
+| `references/policies.md` | Automation policies (preset + custom). **Read at every task start.** |
