@@ -30,7 +30,7 @@ def run_google_image_task(api_key, keywords, country="us", language="en", scroll
     # 1. Start Task
     print(f"Start Task", flush=True)
     try:
-        res = requests.post(f"{API_BASE_URL}/run-task-by-template", json=payload, headers=headers).json()
+        res = requests.post(f"{API_BASE_URL}/run-task-by-template", json=payload, headers=headers, timeout=30).json()
     except Exception as e:
         print(f"Error: Connection to API failed - {e}", flush=True)
         return None
@@ -43,9 +43,11 @@ def run_google_image_task(api_key, keywords, country="us", language="en", scroll
     print(f"Task started. ID: {task_id}", flush=True)
     
     # 2. Poll for Completion
-    while True:
+    max_poll_time = 300
+    poll_start = time.time()
+    while time.time() - poll_start < max_poll_time:
         try:
-            status_res = requests.get(f"{API_BASE_URL}/get-task-status?task_id={task_id}", headers=headers).json()
+            status_res = requests.get(f"{API_BASE_URL}/get-task-status?task_id={task_id}", headers=headers, timeout=30).json()
             status = status_res.get("status")
             
             timestamp = datetime.datetime.now().strftime("%H:%M:%S")
@@ -62,10 +64,12 @@ def run_google_image_task(api_key, keywords, country="us", language="en", scroll
             print(f"[{timestamp}] Polling error: {e}. Retrying...", flush=True)
             
         time.sleep(10)
+    print(f"Error: Task polling timed out after {max_poll_time} seconds.", flush=True)
+    return None
     
     # 3. Get Results
     try:
-        task_info = requests.get(f"{API_BASE_URL}/get-task?task_id={task_id}", headers=headers).json()
+        task_info = requests.get(f"{API_BASE_URL}/get-task?task_id={task_id}", headers=headers, timeout=30).json()
         
         # Extract data from output["string"] as requested
         # Usually task_info['output']['string'] contains the result

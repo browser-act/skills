@@ -5,7 +5,7 @@ Web Research Assistant - BrowserAct Skill
 This script performs web research and searches the internet for information
 when primary web access is restricted or blocked.
 
-Template ID: TEMPLATE_ID_HERE
+Template ID: BrowserAct MCP Search
 """
 
 import os
@@ -56,7 +56,7 @@ def execute_web_search(query: str, search_engine: str = "google", max_results: i
             "Content-Type": "application/json"
         },
         json=payload,
-        timeout=60000
+        timeout=60
     )
     
     if response.status_code == 200:

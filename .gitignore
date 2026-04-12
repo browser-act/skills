@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+.env
+.idea/
+.vscode/
+*.egg-info/
+dist/
+build/
+output/
+*.log

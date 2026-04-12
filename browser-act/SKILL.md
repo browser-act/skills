@@ -1,19 +1,36 @@
 ---
 name: browser-act
-description: "Browser automation CLI for AI agents with anti-detection stealth browsing, captcha solving, and parallel multi-browser support. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, scraping sites with bot detection, or automating any browser task. Also use when the user needs to connect to their existing Chrome session, configure proxy-based stealth browsing, or run parallel browser sessions. Triggers on requests to open a website, fill out a form, click a button, take a screenshot, scrape data from a page, login to a site, automate browser actions, handle captcha challenges, or any task requiring programmatic web interaction."
+description: "Browser automation CLI (browser-act) for AI agents. MUST trigger when: (1) user mentions 'browser-act' in any form, or user needs to: (2) open/visit/browse/check a URL or webpage, (3) scrape/extract/crawl/monitor web content, (4) fill forms, click buttons, type text, scroll, or interact with page elements, (5) take a screenshot of a webpage, (6) handle or solve a captcha, (7) use a stealth/anti-detection browser or proxy, (8) connect to or control Chrome, (9) inspect network requests or record HAR, (10) automate any browser or web interaction task. Covers: navigation, page state inspection, element interaction, data extraction, JavaScript evaluation, tab management, network inspection, dialog handling, captcha solving, parallel browser sessions, stealth browsing, and any browser automation tasks."
 allowed-tools: Bash(browser-act:*)
 metadata:
   author: BrowserAct
-  version: "1.0.0"
+  version: "1.1.0"
+  install: "uv tool install browser-act-cli --python 3.12"
+  homepage: "https://www.browseract.com"
+  requires:
+    runtime: "Python 3.12+, uv package manager"
+    binaries: "Stealth mode: Chromium bundled by the CLI. Real Chrome mode: user's local Chrome/Chromium installation."
+  data-paths: "macOS: ~/Library/Application Support/browseract/ | Windows: %APPDATA%\\browseract | Linux: ${XDG_DATA_HOME:-~/.local/share}/browseract"
+  config-files:
+    - "<data-path>/config.json — CLI credentials and settings, managed internally. No env vars required."
+  permissions:
+    - "Network access — required for: CLI install from PyPI, captcha solving and stealth browser management via BrowserAct cloud API"
+    - "Filesystem read/write at <data-path> — required for: storing browser profiles (cookies, cache), config.json (credentials), and session logs"
+    - "CDP connection to local Chrome — required for: Real Chrome mode only, to control the user's running browser instance"
+  data-privacy:
+    local-only: "All cookies, login sessions, page content, credentials, and browser profile data are stored locally only — never uploaded."
+  user-confirmation-required:
+    - "First-time install (uv tool install): downloads and runs external package"
 ---
 
 # Browser Automation with browser-act CLI
 
 `browser-act` is a CLI for browser automation with stealth and captcha solving capabilities. It supports two browser types (Stealth and Real Chrome) and provides commands for navigation, page interaction, data extraction, tab/session management, and more.
 
-All commands output human-readable text by default. Use `--format json` for structured JSON output, ideal for AI agent integration and scripting.
 
 ## Installation
+
+Source: [browser-act-cli on PyPI](https://pypi.org/project/browser-act-cli/) · [Homepage](https://www.browseract.com)
 
 ```bash
 # Upgrade if installed, otherwise install fresh
@@ -26,7 +43,7 @@ uv tool upgrade browser-act-cli \
   --python 3.12
 ```
 
-Run this at the start of every session to ensure the latest version.
+The CLI is an open-source package published to PyPI by [BrowserAct](https://www.browseract.com). Run the install command at the start of every session to ensure the latest version.
 
 **Global options** available on every command:
 
@@ -34,53 +51,17 @@ Run this at the start of every session to ensure the latest version.
 |--------|---------|-------------|
 | `--session <name>` | `default` | Session name (isolates browser state) |
 | `--format <text\|json>` | `text` | Output format |
-| `--intent <desc>` | none | Caller intent for analytics |
 | `--no-auto-dialog` | off | Disable automatic JavaScript dialog handling (alerts, confirms, prompts) |
 | `--version` | | Show version |
 | `-h, --help` | | Show help |
 
-## Authentication
+## Quick Extraction
 
-Some features require a BrowserAct API key (stealth browsers, captcha solving, etc.). Real Chrome and basic page operations work without one.
-
-**Option 1: Interactive registration (recommended)**
+If the task is just "get content from a URL", use `stealth-extract` directly — no browser session needed. Each call launches its own headless stealth browser, extracts the page content, and closes automatically.
 
 ```bash
-# Step 1: Get registration URL
-browser-act auth login
-# Output: registration URL + instructions
-
-# Step 2: Check registration status (single check, not a loop)
-browser-act auth poll
-# Returns API key on success, or pending status if not yet completed
+browser-act stealth-extract <url>       # Extract page content with anti-detection
 ```
-
-**AI agent flow:** Call `auth login`, present the registration URL to the user, then loop `auth poll` every few seconds until it returns success. When the response indicates less than 10 minutes remaining before expiry, warn the user to complete registration promptly.
-
-```bash
-browser-act auth login
-# → show URL to user, ask them to register
-browser-act auth poll  # check
-browser-act auth poll  # retry after a few seconds
-browser-act auth poll  # ... until success, expiry, or give up
-# ⚠ if remaining time < 10 min, warn the user
-```
-
-**Option 2: Direct set**
-
-```bash
-browser-act auth set <your_api_key>
-```
-
-**Remove API key:**
-
-```bash
-browser-act auth clear
-```
-
-Get your API key at: https://www.browseract.com
-
-You do **not** need to set up the API key upfront. When a command requires authentication, the CLI returns a structured error with setup instructions.
 
 ## Browser Selection
 
@@ -91,7 +72,7 @@ browser-act supports two browser types. Choose based on the task:
 | Target site has bot detection / anti-scraping | **Stealth** | Anti-detection fingerprinting bypasses bot checks |
 | Need proxy or privacy mode | **Stealth** | Real Chrome does not support `--proxy` / `--mode` |
 | Need multiple browsers in parallel | **Stealth** | Each Stealth browser is independent; create multiple and run in parallel sessions |
-| Need user's existing login sessions from their daily browser | **Real Chrome** | Connects directly to user's Chrome with existing cookies |
+| Need user's existing login sessions from their daily browser | **Real Chrome** | Connects directly to user's Chrome, reusing existing login sessions |
 | No bot detection, no login needed | Either | Stealth is safer default; Real Chrome is simpler |
 
 ### Stealth Browser
@@ -102,6 +83,8 @@ Local browsers with anti-detection fingerprinting. Ideal for sites with bot dete
 # Create
 browser-act browser create "my-browser"
 browser-act browser create "my-browser" --proxy socks5://host:port --mode private
+browser-act browser create "my-browser" --cookie '{"name":"sid","value":"abc123","domain":".example.com"}'
+browser-act browser create "my-browser" --cookie ./cookies.json
 
 # Update
 browser-act browser update <browser_id> --name "new-name"
@@ -110,7 +93,7 @@ browser-act browser update <browser_id> --proxy http://proxy:8080 --mode private
 # List / Delete / Clear profile
 browser-act browser list                                    # List all stealth browsers
 browser-act browser list --page 2 --page-size 10            # Paginated listing
-browser-act browser delete <browser_id>
+browser-act browser delete <browser_id>                     # ⚠ Destructive: always confirm with user before deleting
 browser-act browser clear-profile <browser_id>
 ```
 
@@ -119,23 +102,24 @@ browser-act browser clear-profile <browser_id>
 | `--desc` | Browser description |
 | `--proxy <url>` | Proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://host:port` |
 | `--mode <normal\|private>` | `normal` (default): persists cache, cookies, login across launches. `private`: fresh environment every launch, no saved state |
+| `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. See `references/commands.md` Cookies Management for format details |
 
-Stealth browsers in `normal` mode (default) persist cookies, cache, and login sessions across launches — you can log in once and reuse the session, similar to a regular browser profile.
+Stealth browsers in `normal` mode (default) persist cookies, cache, and login sessions across launches — you can log in once and reuse the session, similar to a regular browser profile. Use `--mode private` when the task should not persist any state.
+
 
 ### Real Chrome
 
 Two modes: auto-connect to your running Chrome (default), or use a BrowserAct-managed kernel.
 
 ```bash
-browser-act browser real open https://example.com                  # Auto-connect to running Chrome (existing logins/cookies)
+browser-act browser real open https://example.com                  # Auto-connect to running Chrome 
 browser-act browser real open https://example.com --ba-kernel      # Use BrowserAct-provided browser kernel
 ```
 
-Both browser types support `--headed` to show the browser UI (default: headless). Use for debugging:
+Stealth browsers and `--ba-kernel` mode run headless by default. Use `--headed` to show the browser UI for debugging:
 
 ```bash
 browser-act browser open <browser_id> https://example.com --headed
-browser-act browser real open https://example.com --headed
 browser-act browser real open https://example.com --ba-kernel --headed
 ```
 
@@ -150,18 +134,48 @@ Every browser automation follows this loop: **Open → Inspect → Interact → 
 4. **Verify**: `browser-act state` or `browser-act screenshot` — confirm result
 
 ```bash
-browser-act browser open <browser_id> https://example.com/login
+browser-act browser open <browser_id> https://example.com
 browser-act state
-# Output: [3] input "Email", [4] input "Password", [5] button "Sign In"
+# Output: [3] input "Search", [5] button "Go"
 
-browser-act input 3 "user@example.com"
-browser-act input 4 "password123"
+browser-act input 3 "browser automation"
 browser-act click 5
 browser-act wait stable
 browser-act state    # Always re-inspect after page changes
+
+# If user has NOT provided credentials, do not fill the form — request human assist instead.
 ```
 
 **Important:** After any action that changes the page (click, navigation, form submit), run `wait stable` then `state` to get fresh element indices. Old indices become invalid after page changes.
+
+**Read CLI output carefully:** Every `browser-act` command returns structured output that reflects the actual execution result. Always read and parse the CLI response before deciding the next step.
+
+## Policies
+
+Policies are rules that tell you when to take a specific action during browser automation. **Read `references/policies.md` at the start of every task** and follow the rules throughout.
+
+The file ships with preset rules. Users have full control — they can disable presets, modify thresholds, or add custom rules. When a user asks to change policies, update the file directly. Do not create, modify, or delete policies on your own — only change the file when the user explicitly requests it.
+
+**Adding a custom rule example:**
+
+```markdown
+## payment-confirmation
+- enabled: true
+- trigger: Reached a payment or checkout page where money will be charged
+- action: Request human assist
+- note: User wants to review the order before completing purchase
+```
+
+## Human Assist
+
+When a policy triggers with action `Request human assist`, call `human-assist-url` to get a remote access link and present it to the user.
+
+```bash
+browser-act human-assist-url --objective "Please log in with your credentials"
+# → returns assist_url
+```
+
+**Do not send any browser commands while assist is active.** Wait for the user to confirm they are done in the conversation, then continue the task.
 
 ## Command Chaining
 
@@ -172,7 +186,7 @@ Commands can be chained with `&&` in a single shell invocation. The browser sess
 browser-act browser open <browser_id> https://example.com && browser-act wait stable && browser-act state
 
 # Chain multiple interactions
-browser-act input 3 "user@example.com" && browser-act input 4 "password123" && browser-act click 5
+browser-act input 3 "browser automation" && browser-act click 5
 
 # Navigate and capture
 browser-act navigate https://example.com/dashboard && browser-act wait stable && browser-act screenshot
@@ -180,170 +194,96 @@ browser-act navigate https://example.com/dashboard && browser-act wait stable &&
 
 **When to chain:** Use `&&` when you don't need to read intermediate output before proceeding (e.g., fill multiple fields, then click). Run commands separately when you need to parse the output first (e.g., `state` to discover indices, then interact using those indices).
 
-## Command Reference
+## Essential Commands
 
-### Navigation
+For full syntax, options, and examples, read `references/commands.md`.
 
 ```bash
-browser-act navigate <url>      # Navigate to URL
-browser-act back                # Go back
-browser-act forward             # Go forward
-browser-act reload              # Reload page
+# Navigation
+browser-act navigate <url>              # Navigate to URL in current tab
+browser-act navigate <url> --new-tab    # Open URL in a new tab
+browser-act back                        # Go back
+browser-act forward                     # Go forward
+browser-act reload                      # Reload page
+
+# Page State & Interaction
+browser-act state                       # Interactive elements with index numbers
+browser-act screenshot                  # Screenshot (auto path)
+browser-act screenshot ./page.png       # Screenshot to specific path
+browser-act click <index>               # Click element
+browser-act hover <index>               # Hover over element
+browser-act input <index> "text"        # Click element, then type text
+browser-act select <index> "option"     # Select dropdown option by visible text
+browser-act keys "Enter"                # Send keyboard keys
+browser-act scroll down                 # Scroll down (default 500px)
+browser-act scroll up --amount 1000     # Scroll with custom distance
+browser-act scrollintoview <index>      # Scroll element into viewport
+browser-act scrollintoview --selector "h1"       # Scroll element into viewport by CSS selector
+browser-act upload <index> <file_path>  # Upload file to file input
+
+# Data Extraction
+browser-act get title                   # Page title
+browser-act get html                    # Full page HTML
+browser-act get markdown                # Page as markdown
+browser-act get text <index>            # Text content of element
+browser-act get value <index>           # Value of input/textarea
+
+# JavaScript
+browser-act eval "document.title"       # Execute JavaScript in page context
+
+# Tab Management
+browser-act tab list                    # List open tabs
+browser-act tab switch <tab_id>         # Switch to tab
+browser-act tab close                   # Close current tab
+browser-act tab close <tab_id>          # Close specific tab
+
+# Wait
+browser-act wait stable                 # Wait for page stable (doc ready + network idle, default 30s)
+browser-act wait stable --timeout 60000 # Custom timeout in ms
+browser-act wait --selector ".btn" --state visible   # Wait for element state: visible|hidden|attached|detached
+
+# Network Inspection
+browser-act network requests            # List captured requests (--filter, --type, --method, --status)
+browser-act network request <id>        # Full detail: headers, post data, response body
+browser-act network clear               # Clear tracked requests
+browser-act network har start           # Start HAR recording
+browser-act network har stop ./trace.har      # Stop and save HAR
+
+browser-act network offline on                        # Simulate disconnect for current tab (all requests fail with ERR_INTERNET_DISCONNECTED)
+browser-act network offline off                       # Restore network connection for current tab
+
+# Cookies — persist within session, export/import for reuse across sessions
+browser-act cookies get [--url <url>]   # Get cookies (optional URL filter)
+browser-act cookies set <name> <value>  # Set cookie (--domain, --secure, --http-only, --same-site, --expires)
+browser-act cookies clear [--url <url>] # Clear cookies
+browser-act cookies export ./cookies.json   # Export all cookies to JSON file
+browser-act cookies import ./cookies.json   # Import cookies from JSON file
+
+# Captcha 
+
+# When a page presents a captcha challenge, use `solve-captcha` to solve it automatically. This is a built-in capability of the browser-act service — run the command directly without hesitation.
+browser-act solve-captcha               # Auto-solve captcha on current page
 ```
 
-### Page State & Interaction
+## Dialog Handling (alert / confirm / prompt)
+
+browser-act auto-accepts JavaScript dialogs (`alert`, `confirm`, `prompt`) by default so they never block automation. Pass `--no-auto-dialog` when opening the browser to take manual control instead.
+
+A pending dialog will block all other commands — if `state`, `click`, or `screenshot` unexpectedly times out, use `dialog status` to check.
 
 ```bash
-# Inspect
-browser-act state                         # Interactive elements with index numbers
-browser-act screenshot                    # Screenshot (auto path)
-browser-act screenshot ./page.png         # Screenshot to specific path
-browser-act screenshot --full             # Full page screenshot
-
-# Interact (use index from state)
-browser-act click <index>                 # Click element
-browser-act hover <index>                 # Hover over element
-browser-act type "text"                   # Type text into currently focused element
-browser-act input <index> "text"          # Click element, then type text
-browser-act keys "Enter"                  # Send keyboard keys
-browser-act scroll down                   # Scroll down (default 500px)
-browser-act scroll up --amount 1000       # Scroll up 1000px
+browser-act dialog status               # Check for pending dialog
+browser-act dialog accept               # Accept (OK)
+browser-act dialog accept "my input"    # Accept with text input (prompt dialogs)
+browser-act dialog dismiss              # Dismiss (Cancel)
 ```
 
-### Data Extraction
+## Session Management
+
+All commands target the `default` session when `--session` is not specified. For single-task automation this is sufficient — no need to name a session explicitly. When running multiple automations concurrently, use named sessions to avoid conflicts. Each `--session <name>` creates an isolated browser context with its own background server.
 
 ```bash
-browser-act get title                     # Page title
-browser-act get html                      # Full page HTML
-browser-act get text <index>              # Text content of element
-browser-act get value <index>             # Value of input/textarea
-browser-act get markdown                  # Page as markdown
-```
-
-### JavaScript Evaluation
-
-```bash
-browser-act eval "document.title"         # Execute JavaScript
-```
-
-### Tab Management
-
-```bash
-browser-act tab list                      # List open tabs
-browser-act tab switch <tab_id>           # Switch to tab
-browser-act tab close                     # Close current tab
-browser-act tab close <tab_id>            # Close specific tab
-```
-
-### Wait
-
-```bash
-browser-act wait stable                   # Wait for page stable (doc ready + network idle, default 30s)
-browser-act wait stable --timeout 60000   # Custom timeout (ms)
-```
-
-### Network Inspection
-
-Inspect captured network requests across all open tabs and iframes in the browser session. Requests are tracked globally — switching tabs does not reset or filter the captured data. Use `--filter` to narrow results to a specific page or API.
-
-```bash
-browser-act network requests                          # List all captured requests (all tabs)
-browser-act network requests --filter api.example.com # Filter by URL substring
-browser-act network requests --type xhr,fetch         # Filter by resource type
-browser-act network requests --method POST            # Filter by HTTP method
-browser-act network requests --status 2xx             # Filter by status (200, 2xx, 400-499)
-browser-act network request <request_id>              # Full detail with response body
-browser-act network clear                             # Clear tracked requests
-```
-
-| Option | Description |
-|--------|-------------|
-| `--filter <url>` | Filter by URL substring |
-| `--type <types>` | Resource type, comma-separated (`xhr`, `fetch`, `document`, `script`, `stylesheet`, `image`, `font`, `media`, `websocket`, `ping`, `preflight`, `other`) |
-| `--method <method>` | HTTP method (`GET`, `POST`, etc.) |
-| `--status <code>` | Status code (`200`), category (`2xx`), or range (`400-499`) |
-| `--clear` | Clear all tracked requests (on `network requests` command) |
-
-Use `network request <request_id>` to get full detail for a single request. The detail view includes: request headers, post data (for POST/PUT), response headers, and response body. Binary responses show a `[base64, N chars]` placeholder instead of raw content.
-
-**Scope notes:**
-- Requests from **all tabs and iframes** flow into a single tracker (up to 1,000 entries).
-- Closing a tab does **not** remove its previously captured requests. Use `network clear` to reset.
-- When working with multiple tabs, use `--filter` with a domain or path to isolate the tab you care about.
-
-### Network Simulation
-
-Simulate network disconnection to test offline behavior, error handling, and recovery flows. 
-
-```bash
-browser-act network offline on                # Simulate disconnect (all requests fail)
-browser-act network offline off               # Restore network connection
-```
-
-When offline mode is enabled:
-- All network requests fail with `ERR_INTERNET_DISCONNECTED`
-- `navigator.onLine` returns `false`
-- The browser fires the `offline` event
-- Service Worker cached responses and Cache API reads still work (they bypass the network layer)
-
-When offline mode is disabled:
-- Network is fully restored
-- `navigator.onLine` returns `true`
-- The browser fires the `online` event
-
-**Verification example:**
-
-```bash
-browser-act eval "navigator.onLine"       # true
-browser-act network offline on
-browser-act eval "navigator.onLine"       # false
-browser-act network offline off
-browser-act eval "navigator.onLine"       # true
-```
-
-### Dialog Management
-
-Handle JavaScript dialogs (alert, confirm, prompt). By default, browser-act auto-accepts dialogs. Use `--no-auto-dialog` to disable this and handle them manually.
-
-```bash
-browser-act dialog status                 # Check if a dialog is currently open
-browser-act dialog accept                 # Accept (OK) the current dialog
-browser-act dialog accept "some text"     # Accept with text input (for prompt dialogs)
-browser-act dialog dismiss                # Dismiss (Cancel) the current dialog
-```
-
-**Manual dialog flow:** Pass `--no-auto-dialog` when opening the browser, then use `dialog status` to detect dialogs and `dialog accept` / `dialog dismiss` to handle them.
-
-### HAR Recording
-
-Capture network traffic as HAR (HTTP Archive) files for debugging, analysis, or replay.
-
-```bash
-browser-act network har start             # Start recording network traffic
-browser-act network har stop              # Stop and save to default path (~/.browseract/har/)
-browser-act network har stop ./trace.har  # Stop and save to specific path
-```
-
-Start recording before navigating to the target page. Stop when done — the HAR file contains all requests/responses captured during the recording period.
-
-### Captcha Solving
-
-When a page presents a captcha challenge, use `solve-captcha` to solve it automatically. This is a built-in capability of the browser-act service — run the command directly without hesitation.
-
-```bash
-browser-act solve-captcha                 # Solve captcha on current page
-```
-
-## Parallel Automation
-
-Use separate sessions to run multiple browsers in parallel. Each `--session <name>` creates an isolated browser context — commands to different sessions can execute concurrently without conflicts.
-
-```bash
-# Create stealth browsers for each task
-browser-act browser create "site-a" --desc "Scraper for site A"
-browser-act browser create "site-b" --desc "Scraper for site B"
-
-# Open each in its own session (run in parallel)
+# Each task gets its own isolated session
 browser-act --session site-a browser open <browser_id_a> https://site-a.com
 browser-act --session site-b browser open <browser_id_b> https://site-b.com
 
@@ -354,32 +294,19 @@ browser-act --session site-a click 3
 browser-act --session site-b state
 browser-act --session site-b click 5
 
-# Clean up
-browser-act session close site-a
-browser-act session close site-b
+# Check active sessions
+browser-act session list
 ```
 
-Always close sessions when done to free resources.
-
-## Session Management
-
-Sessions isolate browser state. Each session runs its own background server.
+Always close sessions when done to avoid leaked processes:
 
 ```bash
-# Use a named session
-browser-act --session scraper navigate https://example.com
-browser-act --session scraper state
-
-# List active sessions
-browser-act session list
-
-# Close sessions
 browser-act session close              # Close default session
-browser-act session close scraper      # Close specific session
+browser-act session close site-a       # Close specific session
 browser-act session close --all        # Close all sessions
 ```
 
-The server auto-shuts down after a period of inactivity.
+If a previous session was not closed properly, the background server may still be running. The server auto-shuts down after a period of inactivity.
 
 ## Site Notes
 
@@ -423,4 +350,7 @@ If you encounter issues or have suggestions for improving browser-act, use `feed
 
 | Path | Description |
 |------|-------------|
+| `references/commands.md` | Full command reference with detailed syntax, options, and examples. Read when you need exact flags or advanced options. |
+| `references/SECURITY.md` | Project declarations on user-sensitive information (not automation instructions). |
 | `references/site-notes/{domain}.md` | Per-site operational experience. Read before operating on a known site. |
+| `references/policies.md` | Automation policies (preset + custom). **Read at every task start.** |

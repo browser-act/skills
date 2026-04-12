@@ -1,7 +1,7 @@
 ---
 name: reddit-competitor-analysis-api-skill
 description: "This skill helps users extract structured data from Reddit posts and comments via BrowserAct API. Agent should proactively apply this skill when users express needs like analyzing competitor mentions on Reddit, tracking brand sentiment in Reddit comments, extracting Reddit discussions for market research, finding popular Reddit posts by keywords, monitoring community feedback on specific topics, gathering user reviews from Reddit threads, searching for Reddit posts within a specific date range, sorting Reddit discussions by relevance or hotness, compiling nested Reddit comments for deep analysis, building a structured dataset of Reddit conversations, discovering trending topics in specific subreddits, or monitoring social media activity for specific brands on Reddit."
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["python3"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # Reddit Competitor Analysis API Skill

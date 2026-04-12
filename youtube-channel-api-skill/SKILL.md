@@ -1,7 +1,7 @@
 ---
 name: youtube-channel-api-skill
 description: "This skill helps users automatically extract structured channel data from YouTube search results via BrowserAct API. Agent should proactively apply this skill when users express needs like finding YouTube channels about specific topics, collecting data on YouTube content creators, tracking YouTube influencers in specific industries, getting YouTube channel information for competitor analysis, searching for YouTube channels related to keywords, monitoring YouTube channel updates for specific keywords, finding YouTube channels that recently published videos, extracting YouTube channel subscriber counts, discovering YouTube vloggers in specific niches, building a YouTube channel database for market research, batch extracting YouTube channel links and descriptions, or monitoring competitor channel growth."
-metadata: {"clawdbot":{"emoji":"🌐","requires":{"bins":["pyhon"],"env":["BROWSERACT_API_KEY"]}}}
+metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # YouTube Channel API Skill

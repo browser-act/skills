@@ -1,8 +1,7 @@
 ---
 name: amazon-competitor-analyzer
 description: Scrapes Amazon product data from ASINs using browseract.com automation API and performs surgical competitive analysis. Compares specifications, pricing, review quality, and visual strategies to identify competitor moats and vulnerabilities.
-env:
-  - BROWSERACT_API_KEY
+metadata: {"openclaw":{"emoji":"📊","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # Amazon Competitor Analyzer

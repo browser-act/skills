@@ -239,7 +239,7 @@ class AmazonCompetitorAnalyzer:
                             product.get('specifications', {}).get('weight', 'N/A'),
                             ', '.join(product.get('specifications', {}).get('features', [])[:5])
                         ])
-                    except:
+                    except Exception:
                         writer.writerow([asin, 'Error', '', '', '', '', '', '', '', ''])
                 else:
                     writer.writerow([asin, 'Failed', '', '', '', '', '', '', '', ''])
@@ -270,7 +270,7 @@ class AmazonCompetitorAnalyzer:
                                f"${pricing.get('current_price', 'N/A')} | "
                                f"{reviews.get('average_rating', 'N/A')}/5 | "
                                f"{reviews.get('total_count', 'N/A'):,} |\n")
-                    except:
+                    except Exception:
                         f.write(f"| {asin} | Error | - | - | - |\n")
                 else:
                     f.write(f"| {asin} | Failed | - | - | - |\n")
@@ -346,15 +346,21 @@ def main():
     
     args = parser.parse_args()
     
-    # Initialize with custom API key if provided
-    if args.api_key:
-        global BROWSERACT_API_KEY
-        BROWSERACT_API_KEY = args.api_key
-    
     # Run analysis
-    products = analyze_asins(args.asins, args.output)
+    api_key = args.api_key or BROWSERACT_API_KEY
+    analyzer = AmazonCompetitorAnalyzer(api_key=api_key)
     
-    print(f"\nAnalysis complete! Analyzed {len(products)} products.")
+    print(f"Analyzing {len(args.asins)} ASINs...")
+    products = analyzer.scrape_multiple_products(args.asins)
+    
+    if args.output:
+        os.makedirs(args.output, exist_ok=True)
+        base_path = os.path.join(args.output, "amazon_analysis")
+        analyzer.generate_csv_report(products, f"{base_path}.csv")
+        analyzer.generate_markdown_report(products, f"{base_path}.md")
+        analyzer.generate_json_report(products, f"{base_path}.json")
+    
+    print(f"\nAnalysis complete! Analyzed {len(args.asins)} products.")
 
 
 if __name__ == "__main__":
