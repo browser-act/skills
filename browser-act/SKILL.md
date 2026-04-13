@@ -344,7 +344,7 @@ If you encounter issues or have suggestions for improving browser-act, use `feed
 
 ## Troubleshooting
 
-- **`browser-act: command not found`** — Run `uv tool install browser-act-cli --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple --python 3.12`
+- **`browser-act: command not found`** — Run the install command from the Installation section above
 
 ## References
 
