@@ -108,6 +108,9 @@ browser-act browser create "my-browser" --proxy socks5://user:pass@host:port  # 
 browser-act browser update <browser_id> --name "new-name"
 browser-act browser update <browser_id> --proxy http://proxy:8080 --mode private
 
+# 查看可用代理区域
+browser-act browser regions                                 # 列出 --official-proxy 可用的区域码
+
 # 列表 / 删除 / 清除 Profile
 browser-act browser list                                    # 列出所有 Stealth 浏览器
 browser-act browser list --page 2 --page-size 10            # 分页列表

@@ -91,6 +91,9 @@ browser-act browser create "my-browser" --cookie ./cookies.json
 browser-act browser update <browser_id> --name "new-name"
 browser-act browser update <browser_id> --proxy http://proxy:8080 --mode private
 
+# Available proxy regions
+browser-act browser regions                                 # List available regions for --official-proxy
+
 # List / Delete / Clear profile
 browser-act browser list                                    # List all stealth browsers
 browser-act browser list --page 2 --page-size 10            # Paginated listing
