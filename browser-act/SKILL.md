@@ -238,7 +238,11 @@ browser-act wait --selector ".btn" --state visible   # Wait for element state: v
 
 # Network Inspection
 browser-act network requests            # List captured requests (--filter, --type, --method, --status)
-browser-act network request <id>        # Full detail: headers, post data, response body
+browser-act network requests --filter api.example.com # Filter by URL substring
+browser-act network requests --type xhr,fetch         # Resource type: xhr,fetch,document,script,stylesheet,image,font,media,websocket,ping,preflight,other
+browser-act network requests --method POST            # HTTP method: GET, POST, PUT, DELETE, etc.
+browser-act network requests --status 2xx             # Filter by http status code (200, 2xx, 400-499)
+browser-act network request <id>        # Full detail for a single request: headers, post data, response body
 browser-act network clear               # Clear tracked requests
 browser-act network har start           # Start HAR recording
 browser-act network har stop ./trace.har      # Stop and save HAR
