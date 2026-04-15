@@ -82,7 +82,8 @@ Local browsers with anti-detection fingerprinting. Ideal for sites with bot dete
 ```bash
 # Create
 browser-act browser create "my-browser"
-browser-act browser create "my-browser" --proxy socks5://host:port --mode private
+browser-act browser create "my-browser" --official-proxy US              # Official proxy (region code, e.g. US, JP, DE)
+browser-act browser create "my-browser" --proxy socks5://user:pass@host:port  # Custom proxy
 browser-act browser create "my-browser" --cookie '{"name":"sid","value":"abc123","domain":".example.com"}'
 browser-act browser create "my-browser" --cookie ./cookies.json
 
@@ -100,7 +101,8 @@ browser-act browser clear-profile <browser_id>
 | Option | Description |
 |--------|-------------|
 | `--desc` | Browser description |
-| `--proxy <url>` | Proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://host:port` |
+| `--official-proxy <region>` | Official proxy with region code (e.g. `US`, `JP`, `DE`). **Mutually exclusive with `--proxy`** |
+| `--proxy <url>` | Custom proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://user:pass@host:port`. **Mutually exclusive with `--official-proxy`** |
 | `--mode <normal\|private>` | `normal` (default): persists cache, cookies, login across launches. `private`: fresh environment every launch, no saved state |
 | `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. See `references/commands.md` Cookies Management for format details |
 
