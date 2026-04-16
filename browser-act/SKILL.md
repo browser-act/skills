@@ -154,21 +154,6 @@ browser-act state    # Always re-inspect after page changes
 
 Policies are trigger-action rules that govern your behavior during browser automation. **Read `references/policies.md` at the start of every task**, and evaluate triggers continuously throughout execution.
 
-**Policy structure — each policy has these fields:**
-
-| Field | Description |
-|-------|-------------|
-| `enabled` | `true` = active, `false` = skip this policy entirely |
-| `trigger` | Condition to evaluate. When this condition is met, execute the action |
-| `action` | What to do when triggered (see actions below) |
-| `note` | Extra context to help you judge edge cases |
-
-**Available actions:**
-
-| Action | Behavior |
-|--------|----------|
-| `Request human assist` | Stop automation, call `human-assist-url` (see Human Assist section below), and wait for the user to finish before continuing |
-
 **How to evaluate:** After every browser action, check all enabled policies. If a trigger condition matches the current state, execute its action immediately — do not continue the automation flow until the action is resolved.
 
 **Policy discovery:** When human assist occurs during a task and it was **not** triggered by an existing policy in `references/policies.md`, suggest saving it as a new policy after the user finishes:
