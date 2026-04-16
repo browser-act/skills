@@ -54,7 +54,10 @@ The CLI is an open-source package published to PyPI by [BrowserAct](https://www.
 If the task is just "get content from a URL", use `stealth-extract` directly — no browser session needed. Each call launches its own headless stealth browser, extracts the page content, and closes automatically.
 
 ```bash
-browser-act stealth-extract <url>       # Extract page content with anti-detection
+browser-act stealth-extract <url>                          # Extract rendered content as markdown (default)
+browser-act stealth-extract <url> --content-type html      # Extract HTML instead of markdown
+browser-act stealth-extract <url> --proxy http://host:port # Use a proxy
+browser-act stealth-extract <url> --timeout 60 --output    # Save to outputs/ instead of printing
 ```
 
 ## Browser Selection
@@ -96,7 +99,7 @@ browser-act browser clear-profile <browser_id>
 | `--desc` | Browser description |
 | `--proxy <url>` | Proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://host:port` |
 | `--mode <normal\|private>` | `normal` (default): persists cache, cookies, login across launches. `private`: fresh environment every launch, no saved state |
-| `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. See `references/commands.md` Cookies Management for format details |
+| `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. Each cookie must include `name`, `value`, and `domain`. See `references/commands.md` Cookies Management for format details |
 
 Stealth browsers in `normal` mode (default) persist cookies, cache, and login sessions across launches — you can log in once and reuse the session, similar to a regular browser profile. Use `--mode private` when the task should not persist any state.
 
@@ -216,7 +219,6 @@ browser-act select <index> "option"     # Select dropdown option by visible text
 browser-act keys "Enter"                # Send keyboard keys
 browser-act scroll down                 # Scroll down (default 500px)
 browser-act scroll up --amount 1000     # Scroll with custom distance
-browser-act scrollintoview <index>      # Scroll element into viewport
 browser-act scrollintoview --selector "h1"       # Scroll element into viewport by CSS selector
 browser-act upload <index> <file_path>  # Upload file to file input
 
@@ -239,28 +241,31 @@ browser-act tab close <tab_id>          # Close specific tab
 # Wait
 browser-act wait stable                 # Wait for page stable (doc ready + network idle, default 30s)
 browser-act wait stable --timeout 60000 # Custom timeout in ms
-browser-act wait --selector ".btn" --state visible   # Wait for element state: visible|hidden|attached|detached
+browser-act wait --selector ".btn" --state visible --timeout 10000   # CSS selector wait
+browser-act wait selector <index> --state hidden                     # Wait by state index
+browser-act wait selector --selector "#login-btn" --state attached   # States: visible|hidden|attached|detached
 
 # Network Inspection
-browser-act network requests            # List captured requests (--filter, --type, --method, --status)
+browser-act network requests            # List captured requests (--filter, --type, --method, --status, --clear)
 browser-act network requests --filter api.example.com # Filter by URL substring
-browser-act network requests --type xhr,fetch         # Resource type: xhr,fetch,document,script,stylesheet,image,font,media,websocket,ping,preflight,other
-browser-act network requests --method POST            # HTTP method: GET, POST, PUT, DELETE, etc.
-browser-act network requests --status 2xx             # Filter by http status code (200, 2xx, 400-499)
+browser-act network requests --type xhr,fetch         # Resource type filter (comma-separated)
+browser-act network requests --method POST            # HTTP method filter
+browser-act network requests --status 2xx --clear     # Status filter, then clear tracked requests
 browser-act network request <id>        # Full detail for a single request: headers, post data, response body
 browser-act network clear               # Clear tracked requests
 browser-act network har start           # Start HAR recording
-browser-act network har stop ./trace.har      # Stop and save HAR
+browser-act network har stop ./trace.har      # Stop and save HAR (path optional)
 
+browser-act network offline                           # Simulate disconnect for current tab (same as "on")
 browser-act network offline on                        # Simulate disconnect for current tab (all requests fail with ERR_INTERNET_DISCONNECTED)
 browser-act network offline off                       # Restore network connection for current tab
 
 # Cookies — persist within session, export/import for reuse across sessions
 browser-act cookies get [--url <url>]   # Get cookies (optional URL filter)
-browser-act cookies set <name> <value>  # Set cookie (--domain, --secure, --http-only, --same-site, --expires)
+browser-act cookies set <name> <value> [--domain <domain>] [--path /] [--secure] [--http-only] [--same-site <Strict|Lax|None>] [--expires <timestamp>]
 browser-act cookies clear [--url <url>] # Clear cookies
-browser-act cookies export ./cookies.json   # Export all cookies to JSON file
-browser-act cookies import ./cookies.json   # Import cookies from JSON file
+browser-act cookies export <file> [--url <url>]   # Export cookies to JSON file
+browser-act cookies import <file>                 # Import cookies from JSON file
 
 # Captcha 
 
@@ -277,7 +282,7 @@ A pending dialog will block all other commands — if `state`, `click`, or `scre
 ```bash
 browser-act dialog status               # Check for pending dialog
 browser-act dialog accept               # Accept (OK)
-browser-act dialog accept "my input"    # Accept with text input (prompt dialogs)
+browser-act dialog accept "my input"    # Accept with prompt text
 browser-act dialog dismiss              # Dismiss (Cancel)
 ```
 
