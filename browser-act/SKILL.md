@@ -34,7 +34,13 @@ Source: [browser-act-cli on PyPI](https://pypi.org/project/browser-act-cli/) · 
 
 ```bash
 # Upgrade if installed, otherwise install fresh
-uv tool upgrade browser-act-cli || uv tool install browser-act-cli --python 3.12
+uv tool upgrade browser-act-cli \
+  --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple \
+  --python 3.12 || uv tool install browser-act-cli \
+  --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple \
+  --python 3.12
 ```
 
 The CLI is an open-source package published to PyPI by [BrowserAct](https://www.browseract.com). Run the install command at the start of every session to ensure the latest version.
