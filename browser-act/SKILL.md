@@ -70,7 +70,7 @@ browser-act supports two browser types. Choose based on the task:
 | Scenario | Use | Why |
 |----------|-----|-----|
 | Target site has bot detection / anti-scraping | **Stealth** | Anti-detection fingerprinting bypasses bot checks |
-| Need proxy or privacy mode | **Stealth** | Real Chrome does not support `--proxy` / `--mode` |
+| Need proxy or privacy mode | **Stealth** | Real Chrome does not support `--dynamic-proxy` / `--custom-proxy` / `--mode` |
 | Need multiple browsers in parallel | **Stealth** | Each Stealth browser is independent; create multiple and run in parallel sessions |
 | Need user's existing login sessions from their daily browser | **Real Chrome** | Connects directly to user's Chrome, reusing existing login sessions |
 | No bot detection, no login needed | Either | Stealth is safer default; Real Chrome is simpler |
@@ -82,17 +82,18 @@ Local browsers with anti-detection fingerprinting. Ideal for sites with bot dete
 ```bash
 # Create
 browser-act browser create "my-browser"
-browser-act browser create "my-browser" --official-proxy US              # Official proxy (region code, e.g. US, JP, DE)
-browser-act browser create "my-browser" --proxy socks5://user:pass@host:port  # Custom proxy
+browser-act browser create "my-browser" --dynamic-proxy US                    # Dynamic proxy (region code, e.g. US, JP, DE)
+browser-act browser create "my-browser" --custom-proxy socks5://user:pass@host:port  # Custom proxy
 browser-act browser create "my-browser" --cookie '{"name":"sid","value":"abc123","domain":".example.com"}'
 browser-act browser create "my-browser" --cookie ./cookies.json
 
 # Update
 browser-act browser update <browser_id> --name "new-name"
-browser-act browser update <browser_id> --proxy http://proxy:8080 --mode private
+browser-act browser update <browser_id> --custom-proxy http://proxy:8080 --mode private
+browser-act browser update <browser_id> --no-proxy                              # Remove proxy
 
 # Available proxy regions
-browser-act browser regions                                 # List available regions for --official-proxy
+browser-act browser regions                                 # List available regions for --dynamic-proxy
 
 # List / Delete / Clear profile
 browser-act browser list                                    # List all stealth browsers
@@ -104,8 +105,9 @@ browser-act browser clear-profile <browser_id>
 | Option | Description |
 |--------|-------------|
 | `--desc` | Browser description |
-| `--official-proxy <region>` | Official proxy with region code (e.g. `US`, `JP`, `DE`). **Mutually exclusive with `--proxy`** |
-| `--proxy <url>` | Custom proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://user:pass@host:port`. **Mutually exclusive with `--official-proxy`** |
+| `--dynamic-proxy <region>` | Dynamic proxy with region code (e.g. `US`, `JP`, `DE`). **Mutually exclusive with `--custom-proxy`** |
+| `--custom-proxy <url>` | Custom proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://user:pass@host:port`. **Mutually exclusive with `--dynamic-proxy`** |
+| `--no-proxy` | Remove proxy (use with `browser update`) |
 | `--mode <normal\|private>` | `normal` (default): persists cache, cookies, login across launches. `private`: fresh environment every launch, no saved state |
 | `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. See `references/commands.md` Cookies Management for format details |
 
