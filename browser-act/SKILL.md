@@ -182,15 +182,7 @@ Policies are trigger-action rules that govern your behavior during browser autom
 
 **Ownership:** The file ships with preset rules. Users have full control — they can disable presets, modify thresholds, or add custom rules. When a user asks to change policies, update the file directly. Do not create, modify, or delete policies on your own — only change the file when the user explicitly requests it (or agrees to save one via policy discovery above).
 
-**Adding a custom rule example:**
-
-```markdown
-## payment-confirmation
-- enabled: true
-- trigger: Reached a payment or checkout page where money will be charged
-- action: Request human assist
-- note: User wants to review the order before completing purchase
-```
+**Adding a custom rule example:** See `references/policies.md` for the format, then append a new `## rule-name` section.
 
 ## Human Assist
 

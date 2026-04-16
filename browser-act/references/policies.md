@@ -23,3 +23,10 @@ description: Trigger-action rules for browser automation
 - action: Request human assist
 - note: Do not keep retrying — hand off to the user.
 
+## payment-confirmation
+
+- enabled: true
+- trigger: Reached a payment or checkout page where money will be charged
+- action: Request human assist
+- note: User wants to review the order before completing purchase
+
