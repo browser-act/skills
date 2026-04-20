@@ -210,7 +210,7 @@ browser-act reload                      # Reload page
 
 # Page State & Interaction
 browser-act state                       # Interactive elements with index numbers
-browser-act screenshot                  # Screenshot (auto path)
+browser-act screenshot                  # Screenshot (--full for full page)
 browser-act screenshot ./page.png       # Screenshot to specific path
 browser-act click <index>               # Click element
 browser-act hover <index>               # Hover over element
