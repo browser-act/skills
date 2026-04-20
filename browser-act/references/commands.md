@@ -18,6 +18,7 @@ browser-act reload                      # Reload page
 # Inspect
 browser-act state                                # Interactive elements with index numbers
 browser-act screenshot                           # Screenshot (auto path)
+browser-act screenshot --full                    # Screenshot for full page
 browser-act screenshot ./page.png                # Screenshot to specific path
 
 # Interact (use index from state)
