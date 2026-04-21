@@ -34,13 +34,7 @@ Source: [browser-act-cli on PyPI](https://pypi.org/project/browser-act-cli/) · 
 
 ```bash
 # Upgrade if installed, otherwise install fresh
-uv tool upgrade browser-act-cli \
-  --index-url https://test.pypi.org/simple/ \
-  --extra-index-url https://pypi.org/simple \
-  --python 3.12 || uv tool install browser-act-cli \
-  --index-url https://test.pypi.org/simple/ \
-  --extra-index-url https://pypi.org/simple \
-  --python 3.12
+uv tool upgrade browser-act-cli || uv tool install browser-act-cli --python 3.12
 ```
 
 The CLI is an open-source package published to PyPI by [BrowserAct](https://www.browseract.com). Run the install command at the start of every session to ensure the latest version.
@@ -145,11 +139,45 @@ browser-act input 3 "browser automation"
 browser-act click 5
 browser-act wait stable
 browser-act state    # Always re-inspect after page changes
+
+# If user has NOT provided credentials, do not fill the form — request human assist instead.
 ```
 
 **Important:** After any action that changes the page (click, navigation, form submit), run `wait stable` then `state` to get fresh element indices. Old indices become invalid after page changes.
 
 **Read CLI output carefully:** Every `browser-act` command returns structured output that reflects the actual execution result. Always read and parse the CLI response before deciding the next step.
+
+## Policies
+
+Policies are trigger-action rules that govern your behavior during browser automation. **Read `references/policies.md` at the start of every task**, and evaluate triggers continuously throughout execution.
+
+**How to evaluate:** After every browser action, check all enabled policies. If a trigger condition matches the current state, execute its action immediately — do not continue the automation flow until the action is resolved.
+
+**Policy discovery:** When human assist occurs during a task and it was **not** triggered by an existing policy in `references/policies.md`, suggest saving it as a new policy after the user finishes:
+
+1. Human assist happens (for any reason — user's intent requires confirmation, you judge that a step needs human involvement, etc.)
+2. Check whether this scenario is already covered by an existing enabled policy
+3. If **already covered** — it was the policy that triggered the assist, no need to ask
+4. If **not covered** — after the user completes the assist, ask: **"Want me to save this as a policy? Next time I'll automatically pause at this point."**
+5. If the user agrees, write the policy to `references/policies.md` following the standard format
+6. If the user declines, continue the task — do not ask again for the same scenario
+
+**Ownership:** The file ships with preset rules. Users have full control — they can disable presets, modify thresholds, or add custom rules. When a user asks to change policies, update the file directly. Do not create, modify, or delete policies on your own — only change the file when the user explicitly requests it (or agrees to save one via policy discovery above).
+
+**Adding a custom rule example:** See `references/policies.md` for the format, then append a new `## rule-name` section.
+
+## Human Assist
+
+When a policy triggers with action `Request human assist`, call `human-assist-url` to get a remote access link and present it to the user.
+
+```bash
+browser-act human-assist-url --objective "Please log in with your credentials"
+# → returns assist_url
+```
+
+**Do not send any browser commands while assist is active.** Wait for the user to confirm they are done in the conversation, then continue the task.
+
+**When to use human-assist-url vs conversational confirmation:** During browser automation, if the user needs to review or confirm something that is on the page (a filled form, a checkout summary, a settings change), use `human-assist-url` — the user needs to see and potentially interact with the actual browser page. Do not extract page content and show it in conversation as a substitute, because that bypasses the human assist flow and prevents policy discovery from working. Conversational confirmation (showing text in chat) is only appropriate when the content has not yet been entered into the browser (e.g., drafting text before any browser interaction).
 
 ## Command Chaining
 
@@ -333,3 +361,4 @@ If you encounter issues or have suggestions for improving browser-act, use `feed
 | `references/commands.md` | Full command reference with detailed syntax, options, and examples. Read when you need exact flags or advanced options. |
 | `references/SECURITY.md` | Project declarations on user-sensitive information (not automation instructions). |
 | `references/site-notes/{domain}.md` | Per-site operational experience. Read before operating on a known site. |
+| `references/policies.md` | Automation policies (preset + custom). **Read at every task start.** |
