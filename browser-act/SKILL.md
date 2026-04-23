@@ -34,13 +34,7 @@ Source: [browser-act-cli on PyPI](https://pypi.org/project/browser-act-cli/) · 
 
 ```bash
 # Upgrade if installed, otherwise install fresh
-uv tool upgrade browser-act-cli \
-  --index-url https://test.pypi.org/simple/ \
-  --extra-index-url https://pypi.org/simple \
-  --python 3.12 || uv tool install browser-act-cli \
-  --index-url https://test.pypi.org/simple/ \
-  --extra-index-url https://pypi.org/simple \
-  --python 3.12
+uv tool upgrade browser-act-cli || uv tool install browser-act-cli --python 3.12
 ```
 
 The CLI is an open-source package published to PyPI by [BrowserAct](https://www.browseract.com). Run the install command at the start of every session to ensure the latest version.
@@ -60,7 +54,10 @@ The CLI is an open-source package published to PyPI by [BrowserAct](https://www.
 If the task is just "get content from a URL", use `stealth-extract` directly — no browser session needed. Each call launches its own headless stealth browser, extracts the page content, and closes automatically.
 
 ```bash
-browser-act stealth-extract <url>       # Extract page content with anti-detection
+browser-act stealth-extract <url>                          # Extract rendered content as markdown (default)
+browser-act stealth-extract <url> --content-type html      # Extract HTML instead of markdown
+browser-act stealth-extract <url> --proxy http://host:port # Use a proxy
+browser-act stealth-extract <url> --timeout 60 --output    # Save to outputs/ instead of printing
 ```
 
 ## Browser Selection
@@ -109,7 +106,7 @@ browser-act browser clear-profile <browser_id>
 | `--custom-proxy <url>` | Custom proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://user:pass@host:port`. **Mutually exclusive with `--dynamic-proxy`** |
 | `--no-proxy` | Remove proxy (use with `browser update`) |
 | `--mode <normal\|private>` | `normal` (default): persists cache, cookies, login across launches. `private`: fresh environment every launch, no saved state |
-| `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. See `references/commands.md` Cookies Management for format details |
+| `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. Each cookie must include `name`, `value`, and `domain`. See `references/commands.md` Cookies Management for format details |
 
 Stealth browsers in `normal` mode (default) persist cookies, cache, and login sessions across launches — you can log in once and reuse the session, similar to a regular browser profile. Use `--mode private` when the task should not persist any state.
 
@@ -159,19 +156,22 @@ browser-act state    # Always re-inspect after page changes
 
 ## Policies
 
-Policies are rules that tell you when to take a specific action during browser automation. **Read `references/policies.md` at the start of every task** and follow the rules throughout.
+Policies are trigger-action rules that govern your behavior during browser automation. **Read `references/policies.md` at the start of every task**, and evaluate triggers continuously throughout execution.
 
-The file ships with preset rules. Users have full control — they can disable presets, modify thresholds, or add custom rules. When a user asks to change policies, update the file directly. Do not create, modify, or delete policies on your own — only change the file when the user explicitly requests it.
+**How to evaluate:** After every browser action, check all enabled policies. If a trigger condition matches the current state, execute its action immediately — do not continue the automation flow until the action is resolved.
 
-**Adding a custom rule example:**
+**Policy discovery:** When human assist occurs during a task and it was **not** triggered by an existing policy in `references/policies.md`, suggest saving it as a new policy after the user finishes:
 
-```markdown
-## payment-confirmation
-- enabled: true
-- trigger: Reached a payment or checkout page where money will be charged
-- action: Request human assist
-- note: User wants to review the order before completing purchase
-```
+1. Human assist happens (for any reason — user's intent requires confirmation, you judge that a step needs human involvement, etc.)
+2. Check whether this scenario is already covered by an existing enabled policy
+3. If **already covered** — it was the policy that triggered the assist, no need to ask
+4. If **not covered** — after the user completes the assist, ask: **"Want me to save this as a policy? Next time I'll automatically pause at this point."**
+5. If the user agrees, write the policy to `references/policies.md` following the standard format
+6. If the user declines, continue the task — do not ask again for the same scenario
+
+**Ownership:** The file ships with preset rules. Users have full control — they can disable presets, modify thresholds, or add custom rules. When a user asks to change policies, update the file directly. Do not create, modify, or delete policies on your own — only change the file when the user explicitly requests it (or agrees to save one via policy discovery above).
+
+**Adding a custom rule example:** See `references/policies.md` for the format, then append a new `## rule-name` section.
 
 ## Human Assist
 
@@ -183,6 +183,8 @@ browser-act human-assist-url --objective "Please log in with your credentials"
 ```
 
 **Do not send any browser commands while assist is active.** Wait for the user to confirm they are done in the conversation, then continue the task.
+
+**When to use human-assist-url vs conversational confirmation:** During browser automation, if the user needs to review or confirm something that is on the page (a filled form, a checkout summary, a settings change), use `human-assist-url` — the user needs to see and potentially interact with the actual browser page. Do not extract page content and show it in conversation as a substitute, because that bypasses the human assist flow and prevents policy discovery from working. Conversational confirmation (showing text in chat) is only appropriate when the content has not yet been entered into the browser (e.g., drafting text before any browser interaction).
 
 ## Command Chaining
 
@@ -215,7 +217,7 @@ browser-act reload                      # Reload page
 
 # Page State & Interaction
 browser-act state                       # Interactive elements with index numbers
-browser-act screenshot                  # Screenshot (auto path)
+browser-act screenshot                  # Screenshot (--full for full page)
 browser-act screenshot ./page.png       # Screenshot to specific path
 browser-act click <index>               # Click element
 browser-act hover <index>               # Hover over element
@@ -224,7 +226,6 @@ browser-act select <index> "option"     # Select dropdown option by visible text
 browser-act keys "Enter"                # Send keyboard keys
 browser-act scroll down                 # Scroll down (default 500px)
 browser-act scroll up --amount 1000     # Scroll with custom distance
-browser-act scrollintoview <index>      # Scroll element into viewport
 browser-act scrollintoview --selector "h1"       # Scroll element into viewport by CSS selector
 browser-act upload <index> <file_path>  # Upload file to file input
 
@@ -247,24 +248,31 @@ browser-act tab close <tab_id>          # Close specific tab
 # Wait
 browser-act wait stable                 # Wait for page stable (doc ready + network idle, default 30s)
 browser-act wait stable --timeout 60000 # Custom timeout in ms
-browser-act wait --selector ".btn" --state visible   # Wait for element state: visible|hidden|attached|detached
+browser-act wait --selector ".btn" --state visible --timeout 10000   # CSS selector wait
+browser-act wait selector <index> --state hidden                     # Wait by state index
+browser-act wait selector --selector "#login-btn" --state attached   # States: visible|hidden|attached|detached
 
 # Network Inspection
-browser-act network requests            # List captured requests (--filter, --type, --method, --status)
-browser-act network request <id>        # Full detail: headers, post data, response body
+browser-act network requests            # List captured requests (--filter, --type, --method, --status, --clear)
+browser-act network requests --filter api.example.com # Filter by URL substring
+browser-act network requests --type xhr,fetch         # Resource type filter (comma-separated)
+browser-act network requests --method POST            # HTTP method filter
+browser-act network requests --status 2xx --clear     # Status filter, then clear tracked requests
+browser-act network request <id>        # Full detail for a single request: headers, post data, response body
 browser-act network clear               # Clear tracked requests
 browser-act network har start           # Start HAR recording
-browser-act network har stop ./trace.har      # Stop and save HAR
+browser-act network har stop ./trace.har      # Stop and save HAR (path optional)
 
+browser-act network offline                           # Simulate disconnect for current tab (same as "on")
 browser-act network offline on                        # Simulate disconnect for current tab (all requests fail with ERR_INTERNET_DISCONNECTED)
 browser-act network offline off                       # Restore network connection for current tab
 
 # Cookies — persist within session, export/import for reuse across sessions
 browser-act cookies get [--url <url>]   # Get cookies (optional URL filter)
-browser-act cookies set <name> <value>  # Set cookie (--domain, --secure, --http-only, --same-site, --expires)
+browser-act cookies set <name> <value> [--domain <domain>] [--path /] [--secure] [--http-only] [--same-site <Strict|Lax|None>] [--expires <timestamp>]
 browser-act cookies clear [--url <url>] # Clear cookies
-browser-act cookies export ./cookies.json   # Export all cookies to JSON file
-browser-act cookies import ./cookies.json   # Import cookies from JSON file
+browser-act cookies export <file> [--url <url>]   # Export cookies to JSON file
+browser-act cookies import <file>                 # Import cookies from JSON file
 
 # Captcha 
 
@@ -281,7 +289,7 @@ A pending dialog will block all other commands — if `state`, `click`, or `scre
 ```bash
 browser-act dialog status               # Check for pending dialog
 browser-act dialog accept               # Accept (OK)
-browser-act dialog accept "my input"    # Accept with text input (prompt dialogs)
+browser-act dialog accept "my input"    # Accept with prompt text
 browser-act dialog dismiss              # Dismiss (Cancel)
 ```
 
@@ -351,7 +359,7 @@ If you encounter issues or have suggestions for improving browser-act, use `feed
 
 ## Troubleshooting
 
-- **`browser-act: command not found`** — Run the install command from the Installation section above
+- **`browser-act: command not found`** — Run `uv tool install browser-act-cli --python 3.12`
 
 ## References
 

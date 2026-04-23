@@ -118,7 +118,7 @@ Here are some of the highlighted skills you can use right away:
 - **Google Maps API Skill**: Scrape local business data and contact info.
 - **YouTube Transcript Extractor**: Extract transcripts and metadata from YouTube videos automatically.
 
-[**Browse all available Skills in the `skills` directory →**](https://github.com/browser-act/skills)
+[**Browse all available Skills in the `solutions` directory →**](https://github.com/browser-act/skills/tree/main/solutions)
 
 *Works with any scenario. Can't find what you need? [Join Discord](https://discord.com/invite/UpnCKd7GaU) and request a Skill.*
 
