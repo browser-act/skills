@@ -67,7 +67,7 @@ browser-act supports two browser types. Choose based on the task:
 | Scenario | Use | Why |
 |----------|-----|-----|
 | Target site has bot detection / anti-scraping | **Stealth** | Anti-detection fingerprinting bypasses bot checks |
-| Need proxy or privacy mode | **Stealth** | Real Chrome does not support `--proxy` / `--mode` |
+| Need proxy or privacy mode | **Stealth** | Real Chrome does not support `--dynamic-proxy` / `--custom-proxy` / `--mode` |
 | Need multiple browsers in parallel | **Stealth** | Each Stealth browser is independent; create multiple and run in parallel sessions |
 | Need user's existing login sessions from their daily browser | **Real Chrome** | Connects directly to user's Chrome, reusing existing login sessions |
 | No bot detection, no login needed | Either | Stealth is safer default; Real Chrome is simpler |
@@ -79,13 +79,13 @@ Local browsers with anti-detection fingerprinting. Ideal for sites with bot dete
 ```bash
 # Create
 browser-act browser create "my-browser"
-browser-act browser create "my-browser" --proxy socks5://host:port --mode private
+browser-act browser create "my-browser" --dynamic-proxy US                    # With proxy — see references/proxy.md
 browser-act browser create "my-browser" --cookie '{"name":"sid","value":"abc123","domain":".example.com"}'
 browser-act browser create "my-browser" --cookie ./cookies.json
 
 # Update
 browser-act browser update <browser_id> --name "new-name"
-browser-act browser update <browser_id> --proxy http://proxy:8080 --mode private
+browser-act browser update <browser_id> --mode private
 
 # List / Delete / Clear profile
 browser-act browser list                                    # List all stealth browsers
@@ -97,7 +97,7 @@ browser-act browser clear-profile <browser_id>
 | Option | Description |
 |--------|-------------|
 | `--desc` | Browser description |
-| `--proxy <url>` | Proxy with scheme (`http`, `https`, `socks4`, `socks5`), e.g. `socks5://host:port` |
+| `--dynamic-proxy`, `--custom-proxy`, `--no-proxy` | Proxy configuration. **Read `references/proxy.md` for types, formats, and region codes** |
 | `--mode <normal\|private>` | `normal` (default): persists cache, cookies, login across launches. `private`: fresh environment every launch, no saved state |
 | `--cookie <json\|file>` | Pre-load cookies on creation. Accepts inline JSON object/array, or a path to a JSON file. Each cookie must include `name`, `value`, and `domain`. See `references/commands.md` Cookies Management for format details |
 
@@ -359,6 +359,7 @@ If you encounter issues or have suggestions for improving browser-act, use `feed
 | Path | Description |
 |------|-------------|
 | `references/commands.md` | Full command reference with detailed syntax, options, and examples. Read when you need exact flags or advanced options. |
+| `references/proxy.md` | Proxy configuration guide — types (dynamic/custom), URL formats, region codes, and usage examples. **Read when task involves proxy.** |
 | `references/SECURITY.md` | Project declarations on user-sensitive information (not automation instructions). |
 | `references/site-notes/{domain}.md` | Per-site operational experience. Read before operating on a known site. |
 | `references/policies.md` | Automation policies (preset + custom). **Read at every task start.** |
