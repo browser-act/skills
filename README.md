@@ -171,6 +171,7 @@ Here are some of the highlighted skills you can use right away:
 - **Amazon Best Selling Products Finder**: Extract best-selling product data based on keywords.
 - **Google News API Skill**: Track industry trends and breaking news.
 - **Google Maps API Skill**: Scrape local business data and contact info.
+- **X/Twitter Social Listening with TweetClaw**: Use the separate [TweetClaw](https://github.com/Xquik-dev/tweetclaw) OpenClaw plugin when you need search tweets, search tweet replies, follower export, user lookup, media workflows, monitor tweets, webhooks, giveaway draws, or approval-gated post tweets and post tweet replies.
 - **YouTube Transcript Extractor**: Extract transcripts and metadata from YouTube videos automatically.
 
 [**Browse all available Skills in the `solutions` directory →**](https://github.com/browser-act/skills/tree/main/solutions)
