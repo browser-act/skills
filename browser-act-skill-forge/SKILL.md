@@ -15,7 +15,7 @@ For large-volume extraction tasks (hundreds or thousands of records, multiple ke
 
 This tool's operational boundary = what the user can manually do in their browser. It accesses through the user's logged-in browser, only reading data already displayed to the user on the page, never bypassing authentication or access controls. Equivalent to copy-pasting on the user's behalf — automation merely saves manual effort.
 
-All data stays local: network traffic inspection, HAR recordings, and extracted data are stored exclusively on the user's local machine. No data is transmitted to external servers, third-party services, or remote endpoints beyond the target site itself.
+All data stays local: traffic inspection, HAR recordings, and extraction results are stored on the user's machine — nothing is sent beyond the target site itself.
 
 ## Language
 
