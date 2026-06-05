@@ -107,7 +107,7 @@ browser-act get-skills core --skill-version 2.0.2
 
 ## What's Free
 
-Almost everything is free. Only two things require payment: managed proxies (Dynamic / Static), and stealth browsers beyond the first 5.
+Almost everything is free. Only two features require payment: managed proxies (Dynamic / Static), and stealth browsers beyond the first 5.
 
 | Feature | Free<br>(No&nbsp;Signup) | Free<br>(Login&nbsp;Only) | Paid |
 |---------|:----------------:|:-----------------:|:----:|
