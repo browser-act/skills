@@ -109,8 +109,8 @@ browser-act get-skills core --skill-version 2.0.2
 
 Almost everything is free. Only two things require payment: managed proxies (Dynamic / Static), and stealth browsers beyond the first 5.
 
-| Feature | No Signup | Login Only | Paid |
-|---------|:---------:|:----------:|:----:|
+| Feature | Free (No Signup) | Free (Login Only) | Paid |
+|---------|:----------------:|:-----------------:|:----:|
 | Basic automation (state, click, input, screenshot), Chrome / Chrome-direct | ✓ | ✓ | ✓ |
 | Stealth browser (≤ 5), stealth-extract, solve-captcha, remote-assist, privacy mode, Skill Forge | — | ✓ | ✓ |
 | Stealth browser (> 5), Dynamic / Static proxy | — | — | ✓ |
