@@ -173,10 +173,10 @@ BrowserAct Skills is **free and open source**. If it saves you time, please give
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=browser-act%2Fskills&type=timeline&legend=top-left">
+<a href="https://www.star-history.com/?repos=browser-act%2Fskills&type=date&logscale=&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=browser-act/skills&type=timeline&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=browser-act/skills&type=timeline&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=browser-act/skills&type=timeline&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=browser-act/skills&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=browser-act/skills&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=browser-act/skills&type=date&legend=top-left" />
  </picture>
 </a>
