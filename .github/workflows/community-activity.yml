@@ -174,8 +174,17 @@ jobs:
             });
 
             const responseText = await response.text();
-            if (!response.ok) {
-              throw new Error(`Activity webhook failed with HTTP ${response.status}: ${responseText}`);
+
+            let result = {};
+            try {
+              result = JSON.parse(responseText);
+            } catch (error) {
+              // Non-JSON response body; fall back to HTTP status handling below.
+            }
+
+            // Some webhook endpoints return HTTP 200 even on failure; a non-zero `code` means it was rejected.
+            if (!response.ok || (result.code !== undefined && result.code !== 0)) {
+              throw new Error(`Activity webhook failed (HTTP ${response.status}): ${responseText}`);
             }
 
             console.log(`Activity webhook accepted: ${response.status}`);
