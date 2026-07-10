@@ -31,11 +31,39 @@ Phase 0 (Tool Detection) → Phase 1 (Requirements Analysis & Confirmation) → 
 
 ## Phase 0 — Tool Detection
 
-Already completed in current session → skip.
+### 0.1 Verify CLI Availability
 
-Invoke `browser-act` via Skill tool to load usage. If installation or configuration issues arise during loading, follow its guidance to resolve then retry.
+Run `browser-act --version`:
 
-After successful loading, confirm API Key is configured (if not → guide user through registration and configuration, then retry).
+- **Success (version >= 2.0.0)** → proceed to 0.2
+- **Success (version < 2.0.0)** → prompt user: "BrowserAct CLI v{actual} 已安装，但当前 SKILL.md 适配 v2.0.0+，建议升级", ask whether to upgrade (`uv tool install browser-act-cli==2.0.2 --python 3.12`), proceed after user confirms
+- **`command not found`** → install:
+  ```bash
+  uv tool install browser-act-cli==2.0.2 --python 3.12
+  ```
+  - Install succeeds → proceed to 0.2
+  - Install fails (`uv tool install` not available) → guide user:
+    1. Install uv: `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"`
+    2. Then retry CLI install
+    3. Still fails → report "BrowserAct CLI 安装失败，请检查网络环境或手动安装" and **STOP**
+- **`browser-act` exists but `--version` errors** → prompt user: "CLI 可能损坏，建议重新安装: `uv tool install browser-act-cli==2.0.2 --python 3.12`", wait for user to confirm before proceeding
+
+### 0.2 Load Usage Guide
+
+Invoke `browser-act` via Skill tool to load usage guidance.
+
+- Load succeeds → proceed to 0.3
+- Load fails → retry once after 5s, if still fails → inform user "browser-act skill 加载失败，请检查是否已安装" and **STOP**
+
+### 0.3 API Key Verification
+
+Run `browser-act auth poll`:
+- **Key configured** → proceed to Phase 1
+- **No key** → guide user through registration at `https://www.browseract.com` and configuration:
+  ```bash
+  browser-act auth set <api_key>
+  ```
+  Wait for user to provide key, then retry. If user declines → **STOP** (forge requires API key)
 
 ---
 
@@ -239,13 +267,86 @@ If no execution intent was identified (user only wanted to build a Skill for lat
 
 ---
 
+## Failure Modes
+
+### FM-F1: browser-act CLI not available
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Phase 0.1 version check returns `command not found` |
+| **Symptom** | No forge execution possible |
+| **Diagnosis** | `which browser-act` returns empty |
+| **Recovery** | Follow Phase 0.1 install flow |
+| **Fallback** | User manually installs browser-act-cli, then retry Phase 0 |
+
+### FM-F2: API key missing and user declines
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Phase 0.3: `auth poll` fails + user refuses to provide key |
+| **Symptom** | Forge cannot use stealth-extract or privacy mode browsers |
+| **Diagnosis** | No API key set |
+| **Recovery** | Inform user: "forge 需要 API Key 才能使用云端 stealth 浏览器能力，如果只使用本地 chrome-direct 模式，可以继续" |
+| **Fallback** | User switches to `chrome-direct` mode (uses local Chrome, no API key needed). If user declines both → STOP |
+
+### FM-F3: Exploration cap hit without result
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Phase 2 reaches 100 tool call steps without meeting success criteria |
+| **Symptom** | No API endpoint or DOM path discovered |
+| **Diagnosis** | Explicit check: count tool calls since Phase 2 start; if >= 100 → FM-F3 |
+| **Recovery** | Report to user: known obstacles, remaining unexplored approaches, guessed root cause (anti-bot / complex auth / dynamic content) |
+| **Fallback** | Ask user: "想继续手动探索还是放弃这个目标?", wait for response |
+
+### FM-F4: Skill generation verification failure
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Phase 3b: `python scripts/{feature}.py {params}` produces invalid JS or `eval` execution fails |
+| **Symptom** | Generated script cannot be used |
+| **Diagnosis** | Check script output: is it valid JS? Does browser eval return expected data? |
+| **Recovery** | Fix: check JS curly brace escaping (`{{` `}}`), check argument parsing, check selector stability. Retry after fix |
+| **Fallback** | If 3 retries all fail → mark this capability as `[generation failed]`, proceed to next capability |
+
+### FM-F5: Automated testing fails
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Delivery step 1: sub-agent test reports failures |
+| **Symptom** | Generated Skill does not work end-to-end |
+| **Diagnosis** | Inspect failure reasons per component |
+| **Recovery** | Fix the underlying issue (wrong selector, unstable endpoint, missing parameter) and retest |
+| **Fallback** | If 2 retries still fail → output Skill as `[untested]` with clear note of known failures, do not discard |
+
+### FM-F6: tmp/ directory contention
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Another forge instance writes to same `tmp/` directory |
+| **Symptom** | HAR files overwritten, stale data mixed in |
+| **Diagnosis** | `tmp/` contains files from different timestamps/task names |
+| **Recovery** | Use `tmp/{skill-name}-{YYYYMMDD-HHMMSS}/` per instance (see Tool Constraints) |
+| **Fallback** | Create unique tmp dir per run: `tmp/$(uuidgen \| head -c 8)/` |
+
+---
+
 ## Tool Constraints
 
 Phase 2 (Capability Exploration), Phase 3 (Skill Generation), and Delivery testing must follow these rules.
 
 ### File Management
 
-All intermediate artifacts (HAR files, temp records, debug output) go in the `tmp/` directory. Create it first if it doesn't exist.
+All intermediate artifacts (HAR files, temp records, debug output) go in a **per-instance** directory under `tmp/`. The directory name must include the skill name and a timestamp to prevent concurrent forge instances from overwriting each other:
+
+```bash
+TMP_DIR="tmp/${skill-name}-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$TMP_DIR"
+```
+
+- Reference with `$TMP_DIR` throughout the session
+- At session end: `rm -rf "$TMP_DIR"` (optional, for large runs)
+- Never write directly to `tmp/` root — always use a unique subdirectory
 
 ### browser-act
 - Network data is page-scoped — must re-wait and re-read after navigating to a new page

@@ -282,6 +282,18 @@ Quantifiable dimension references:
 - Data consistency: `matches the first N items displayed on the page`
 - Operation result: `response status 200 with no error field`
 
+## Session Cleanup
+
+After completing the workflow (normal completion, user abort, or error), close the session to release resources:
+
+```bash
+browser-act session close $SESSION
+```
+
+Do not close if the user explicitly requests to keep the session open for manual inspection.
+
+---
+
 ## Known Limitations
 
 - {e.g., rate limited to 60 requests per minute}
