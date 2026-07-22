@@ -208,6 +208,29 @@ Output example:
 }
 ```
 
+### CDP Direct: {capability description, e.g., "extract virtual-scroll list inside cross-origin iframe"}
+
+<!-- Assembly guidance: Use this type when the target data is inside a cross-origin iframe and JS execution is required (virtual scrolling, DOM querying, reading non-accessible attributes). The Python script connects directly to the iframe's CDP WebSocket target and executes JS there — it does NOT output a JS string for eval. Invoke with `python scripts/{name}.py {params}` (no eval wrapper). Chrome must be running with --remote-debugging-port=9222. -->
+
+`python scripts/{capability-name}.py '{param1}' --param2 {param2}`
+
+Parameters:
+- {param1}: {description}
+- --param2: {description}, default {default-value}
+
+Output example:
+```json
+{
+  "{field-name}": "{example-value}",  // {description}
+  "{field-name}": 0,                  // {description}
+  "{field-name}": null                // {description}, null when no data
+}
+```
+
+Error handling: If the target iframe is not found in `http://localhost:9222/json`, verify the page is fully loaded and Chrome was started with `--remote-debugging-port=9222`. Re-run after confirming the iframe is visible on screen.
+
+---
+
 ### Composite: {full capability description, e.g., "get complete product data (API + DOM supplement)"}
 
 <!-- Assembly guidance: Used when a single atomic component cannot provide complete data; can combine across pages (e.g., list page capture + detail page extraction + merge). Combinations that are entirely same-page JS should be merged into one Python script; when navigation or non-JS steps are involved, list steps sequentially, which may include page navigation and loops. Atomic components are still retained for individual invocation. -->
@@ -346,6 +369,63 @@ if __name__ == '__main__':
 
 <!-- Assembly guidance: Python files only handle parameterized assembly of JS strings. Verified JS goes into the f-string as-is; only business parameters (keywords, page numbers, sort order, etc.) are replaced with argparse parameters. Selectors, field mappings, endpoint URLs, and other fixed values are hardcoded directly in the JS. -->
 
+**CDP Direct scripts follow a different pattern** — they do not output a JS string. They connect to the iframe's CDP WebSocket target, execute JS inside it, and print the result directly. Use this template when the component type is `CDP Direct`:
+
+```python
+import argparse
+import asyncio
+import json
+import sys
+import urllib.request
+import websockets
+
+def main():
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('{positional-param}')                           # {description}
+    parser.add_argument('--{named-param}', default='{default-value}')  # {description}
+    parser.add_argument('--iframe-fragment', default='{domain-fragment}')  # substring to identify iframe target URL
+    args = parser.parse_args()
+
+    targets = json.loads(urllib.request.urlopen('http://localhost:9222/json').read())
+    iframe_target = next(
+        (t for t in targets if args.iframe_fragment in t.get('url', '')),
+        None
+    )
+    if not iframe_target:
+        print(json.dumps({{'error': True, 'message': f'iframe target not found for fragment: {{args.iframe_fragment}}'}}))
+        sys.exit(1)
+
+    ws_url = iframe_target['webSocketDebuggerUrl']
+
+    expression = f"""
+(function() {{
+  try {{
+    // Verified JS from exploration phase — business params injected via f-string
+    // e.g.: const keyword = '{args.positional_param}';
+    return JSON.stringify({{ /* normal result */ }});
+  }} catch(e) {{
+    return JSON.stringify({{ error: true, message: e.message }});
+  }}
+}})()
+"""
+
+    async def run():
+        async with websockets.connect(ws_url) as ws:
+            await ws.send(json.dumps({{
+                'id': 1,
+                'method': 'Runtime.evaluate',
+                'params': {{'expression': expression, 'returnByValue': True}}
+            }}))
+            resp = json.loads(await ws.recv())
+            print(resp.get('result', {{}}).get('result', {{}}).get('value', ''))
+
+    asyncio.run(run())
+
+if __name__ == '__main__':
+    main()
+```
+
 ---
 
 ## Filling Specifications
@@ -366,7 +446,7 @@ if __name__ == '__main__':
 14. **Python only does assembly**: `.py` files do not make network requests, do not operate the filesystem, do not call browser-act; they only output JS strings via `print()`
 15. **Parameter names align with business semantics**: argparse parameter names use business terms (keyword, page, sort), not technical terms (selector, xpath)
 16. **Output format must be defined**: All components that return data must provide annotated JSON examples, ensuring consistent output format across executions
-17. **Component titles accurately reflect implementation method**: API = fetch call; Network Capture = read from browser traffic; DOM = obtained via DOM API; AI Workflow = visual operations; Composite = multi-component orchestration. Labels must match the actual retrieval method; do not mix them up just because the invocation format is the same
+17. **Component titles accurately reflect implementation method**: API = fetch call; Network Capture = read from browser traffic; DOM = obtained via DOM API; AI Workflow = visual operations; CDP Direct = JS executed inside a cross-origin iframe via CDP WebSocket (invoked with `python scripts/{name}.py`, never with `eval "$(...)"` wrapping); Composite = multi-component orchestration. Labels must match the actual retrieval method; do not mix them up just because the invocation format is the same
 18. **JSON output should be compact and efficient**: Key-value pairs are preferred over name/value arrays — e.g., use `{"Brand": "xxx", "Weight": "30 lbs"}` for specifications instead of `[{"name": "Brand", "value": "xxx"}]`, reducing redundant structure
 19. **JS code must include error handling**: All JS is wrapped in try/catch, with structural-level validation (selector hits empty, data source unreachable, results empty, page structure does not match expectations, etc.). On error, uniformly return `{"error": true, "message": "..."}` format. Individual field values being null is a normal data characteristic and does not count as an error
 20. **Network Capture must guide error handling**: Network Capture steps in the Skill must explain: how to handle when the target request is not found (e.g., wait and retry, check page status), and the basis for judging response anomalies

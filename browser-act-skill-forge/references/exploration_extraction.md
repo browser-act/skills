@@ -250,6 +250,77 @@ If interaction is too complex (CAPTCHA, complex dynamic rendering, visual judgme
 
 ---
 
+## Cross-Origin iframe
+
+Enter this sub-path when the target data is rendered inside a cross-origin iframe — identifiable by: `eval` returning a cross-origin access error (`Blocked a frame with origin...`), `iframe.contentDocument` returning `null`, or `state` showing the target elements but `eval` unable to reach them.
+
+**browser-act capability boundary in this context**:
+
+| Command | Works in cross-origin iframe? | Notes |
+|---------|-------------------------------|-------|
+| `state` | Yes | Reads accessibility tree at OS level; same-origin policy does not apply |
+| `click <index>` | Yes | Uses the index returned by `state`; no JS execution required |
+| `eval` | No | Blocked by the browser's same-origin policy at the JS layer |
+
+When `state` + `click` cover the full task (purely visual navigation, clicking buttons, reading text already visible in the a11y tree) → use them directly, no CDP connection needed.
+
+When JS execution inside the iframe is required (virtual scroll, DOM querying, reading non-accessible attributes, triggering programmatic events) → use the CDP WebSocket direct-connect path below.
+
+### CDP WebSocket Direct Connect
+
+Chrome exposes every frame as an independent debugging target. Connecting directly to the iframe's target bypasses the browser's cross-origin policy entirely, allowing arbitrary JS execution inside the iframe.
+
+**Step 1 — Enumerate targets and locate the iframe's WebSocket URL**:
+
+```python
+import urllib.request, json
+
+targets = json.loads(urllib.request.urlopen("http://localhost:9222/json").read())
+# Match by a known substring of the iframe's origin or URL
+iframe_target = next(t for t in targets if "expected-iframe-domain.com" in t.get("url", ""))
+ws_url = iframe_target["webSocketDebuggerUrl"]
+```
+
+**Step 2 — Connect and execute JS inside the iframe**:
+
+```python
+import asyncio, json, websockets
+
+async def eval_in_iframe(ws_url: str, expression: str):
+    async with websockets.connect(ws_url) as ws:
+        await ws.send(json.dumps({
+            "id": 1,
+            "method": "Runtime.evaluate",
+            "params": {"expression": expression, "returnByValue": True}
+        }))
+        resp = json.loads(await ws.recv())
+        return resp["result"]["result"]["value"]
+
+result = asyncio.run(eval_in_iframe(ws_url, """
+(function() {
+    try {
+        const items = Array.from(document.querySelectorAll('.item-row')).map(el => ({
+            title: el.querySelector('.title')?.textContent?.trim(),
+            value: el.querySelector('.value')?.textContent?.trim()
+        }));
+        return JSON.stringify(items);
+    } catch(e) {
+        return JSON.stringify({ error: true, message: e.message });
+    }
+})()
+"""))
+```
+
+**Decision rule**:
+- Use `state` + `click` when: data is already readable from the a11y tree, no JS execution needed.
+- Use CDP WebSocket when: data requires JS to extract (virtual scrolling, non-accessible DOM attributes, programmatic event triggers).
+
+**For Skill generation**: encapsulate the CDP connection logic into a standalone `scripts/*.py` file. The script connects to CDP and prints the result directly — it does **not** output a JS string for `eval`. Label the component `CDP Direct` in SKILL.md (see output template) and invoke it with `python scripts/{name}.py {params}` without `eval "$(...)"` wrapping. Requires `websockets` Python package.
+
+> **Verification failure**: CDP target not found at `localhost:9222` → confirm Chrome was started with `--remote-debugging-port=9222`. iframe URL changed between page loads (dynamic token) → re-discover the target via `/json` on each run, never hardcode the WebSocket URL.
+
+---
+
 ## Pagination Verification (Required for List Data)
 
 Skip this section for non-list types.
