@@ -197,3 +197,13 @@ BrowserAct Skills is **free and open source**. If it saves you time, please give
 - 🌐 [BrowserAct Website](https://www.browseract.com/?co-from=github)
 
 <p align="center"><em>Built with ❤️ by the BrowserAct Team</em></p>
+
+## Star History
+
+<a href="https://star-history.dera.page/#browser-act/skills&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=browser-act/skills&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=browser-act/skills&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=browser-act/skills&type=date&legend=top-left" />
+ </picture>
+</a>
