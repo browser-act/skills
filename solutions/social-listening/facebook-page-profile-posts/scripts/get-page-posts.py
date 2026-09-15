@@ -29,6 +29,22 @@ def main():
     const lsdM = allScripts.match(/"LSD"[^}}]*"token":"([^"]+)"/);
     if (lsdM) lsd = lsdM[1];
 
+    // Facebook rotates the persisted query doc_id and its provided (__relay_internal__pv__*) variables
+    // on deploys. Read both from the page's own Relay modules at runtime; the hard-coded values below
+    // are only a fallback for when the modules are not loaded.
+    let docId = '29183747561227112';
+    let providedVars = {{}};
+    try {{
+      const liveDocId = require('ProfileCometTimelineFeedRefetchQuery_facebookRelayOperation');
+      if (typeof liveDocId === 'string' && liveDocId) docId = liveDocId;
+    }} catch(e) {{}}
+    try {{
+      const op = require('ProfileCometTimelineFeedRefetchQuery.graphql');
+      for (const [k, p] of Object.entries(op?.params?.providedVariables || {{}})) {{
+        try {{ providedVars[k] = typeof p?.get === 'function' ? p.get() : p; }} catch(e) {{ providedVars[k] = null; }}
+      }}
+    }} catch(e) {{}}
+
     const variables = {{
       afterTime: {after_val},
       beforeTime: {before_val},
@@ -50,33 +66,14 @@ def main():
       trackingCode: null,
       useDefaultActor: false,
       id: '{args.page_id}',
-      '__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider': true,
-      '__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider': true,
-      '__relay_internal__pv__IsWorkUserrelayprovider': false,
-      '__relay_internal__pv__IsMergQAPollsrelayprovider': false,
-      '__relay_internal__pv__FBReelsEnableVideoWindowedReplayrelayprovider': false,
-      '__relay_internal__pv__StoriesArmadilloReplyEnabledrelayprovider': false,
-      '__relay_internal__pv__EventCometCardImage_prefetchEventImagerelayprovider': false,
-      '__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider': false,
-      '__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider': false,
-      '__relay_internal__pv__CometUFIShareActionMigrationrelayprovider': true,
-      '__relay_internal__pv__IncludeCommentWithAttachmentrelayprovider': true,
-      '__relay_internal__pv__GHLShouldUpdateVideoPreviewImagerelayprovider': false,
-      '__relay_internal__pv__GHLVideoTimestampOnShortsrelayprovider': false,
-      '__relay_internal__pv__CometFeedStoryDangerouslySetInnerFeedItemDisplayContentrelayprovider': false,
-      '__relay_internal__pv__StoriesRingrelayprovider': false,
-      '__relay_internal__pv__UseCometRouter_cometRouterrelayprovider': false,
-      '__relay_internal__pv__FBReelsFeedbackActionsrelayprovider': false,
-      '__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkv2relayprovider': false,
-      '__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNameForFeedV2relayprovider': true,
-      '__relay_internal__pv__GHLShouldChangeAdIdFieldNameForFeedV2relayprovider': true
+      ...providedVars
     }};
 
     const bodyParams = new URLSearchParams({{
       fb_dtsg: fbDtsg,
       lsd: lsd,
       variables: JSON.stringify(variables),
-      doc_id: '27278869228466784',
+      doc_id: docId,
       server_timestamps: 'true',
       fb_api_caller_class: 'RelayModern',
       fb_api_req_friendly_name: 'ProfileCometTimelineFeedRefetchQuery'
@@ -136,14 +133,23 @@ def main():
     function extractMedia(node) {{
       const atts = node?.attachments;
       if (!atts || atts.length === 0) return [];
-      return atts.map(att => {{
-        const m = att?.styles?.attachment?.media;
+      // Multi-photo posts (StoryAttachmentAlbumFrameStyleRenderer) list each photo under a per-layout
+      // subattachments list; frame_sublayout_subattachments only carries dimensions, so prefer the others.
+      const subLists = ['five_photos_subattachments', 'four_photos_subattachments', 'three_photos_subattachments',
+                        'two_photos_subattachments', 'all_subattachments', 'frame_sublayout_subattachments'];
+      const mediaItems = atts.flatMap(att => {{
+        const sa = att?.styles?.attachment;
+        const listKey = subLists.find(k => sa?.[k]?.nodes?.some(n => n?.media?.image?.uri || n?.media?.viewer_image?.uri));
+        if (listKey) return sa[listKey].nodes.map(n => n?.media);
+        return [sa?.media || att?.media];
+      }});
+      return mediaItems.map(m => {{
         if (!m) return null;
         const t = m.__typename;
         const base = {{ __typename: t, id: m.id || null }};
 
         if (t === 'Photo') {{
-          const pi = m.photo_image;
+          const pi = m.photo_image || m.viewer_image || m.image;
           return Object.assign(base, {{
             thumbnail:  pi?.uri       || null,
             photo_image: pi ? {{ uri: pi.uri, width: pi.width, height: pi.height }} : null,
@@ -212,9 +218,14 @@ def main():
       }}));
       const flat = flatReactions(topReactions);
 
-      const likes    = renderers?.[0]?.feedback?.reaction_count?.count ?? null;
-      const comments = renderers?.[1]?.feedback?.comment_rendering_instance?.comments?.total_count ?? null;
-      const shares   = renderers?.[2]?.feedback?.share_count?.count ?? null;
+      // Counts now live directly on the UFI feedback object; the per-action renderer paths are older fallbacks
+      const likes    = ufi?.reaction_count?.count
+                    ?? renderers?.[0]?.feedback?.reaction_count?.count ?? null;
+      const comments = ufi?.comment_rendering_instance?.comments?.total_count
+                    ?? ufi?.comments_count_summary_renderer?.feedback?.comment_rendering_instance?.comments?.total_count
+                    ?? renderers?.[1]?.feedback?.comment_rendering_instance?.comments?.total_count ?? null;
+      const shares   = ufi?.share_count?.count
+                    ?? renderers?.[2]?.feedback?.share_count?.count ?? null;
 
       const creationTime = node?.comet_sections?.timestamp?.story?.creation_time || null;
       const facebookId   = actor0?.id || null;

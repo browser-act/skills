@@ -173,12 +173,11 @@ Error handling: If response contains `"error": true`, check that the target page
 - `viewsCount` for video posts is always `null` — Facebook does not include video view counts in the timeline feed GraphQL response; this field requires a separate video-specific API call not covered by this Skill
 - `media.playableUrlSd/Hd` requires the user to be logged in; unauthenticated sessions may return null
 - `collaborators` is an empty array for most posts (only populated when the post has tagged co-authors)
-- The `doc_id: 27278869228466784` is a Facebook internal query ID that may change when Facebook deploys updates; if all calls return `"Unexpected response format"` errors, recapture via:
-  1. Open any Facebook page while logged in
-  2. Scroll down to trigger a new batch of posts
-  3. `network requests --filter api/graphql --method POST`
-  4. Find the request with `X-FB-Friendly-Name: ProfileCometTimelineFeedRefetchQuery`
-  5. Extract `doc_id` from the POST body and update the value in `scripts/get-page-posts.py`
+- The persisted query `doc_id` and its `__relay_internal__pv__*` provided variables change when Facebook deploys updates (a stale set fails with `missing_required_variable_value`). `scripts/get-page-posts.py` reads both at runtime from the page's own Relay modules, so no manual recapture is normally needed:
+  - `require('ProfileCometTimelineFeedRefetchQuery_facebookRelayOperation')` → current `doc_id` string
+  - `require('ProfileCometTimelineFeedRefetchQuery.graphql').params.providedVariables` → provider objects; call `.get()` on each for its value
+  - The hard-coded `doc_id` in the script is only a fallback for when those modules aren't loaded — open the target page (not a bare facebook.com tab) before calling
+- If the query succeeds but fields come back `null` (e.g. likes/comments/shares, media), Facebook changed the response shape rather than the query — inspect a raw node and re-map the paths in `extractPost`
 - `pageName` is derived from the URL path and may be incorrect for profile pages with numeric IDs (e.g., `https://www.facebook.com/100012345` → pageName = `100012345`)
 - Requires an active Facebook login session; public/unauthenticated access is not supported
 - Date filtering (`afterTime`/`beforeTime`) applies to the timeline cursor position, not a strict server-side filter; posts near the boundary may occasionally appear outside the specified range
