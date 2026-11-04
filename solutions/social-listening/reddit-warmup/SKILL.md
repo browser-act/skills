@@ -1,6 +1,6 @@
-﻿---
+---
 name: reddit-warmup
-description: "Runtime-neutral Reddit account warm-up and brand promotion skill for AI agents. Systematically grow newly registered or existing Reddit accounts into credible identities, then organically plant brand content in target subreddits to eventually promote products or tools. Use for: register or take over a Reddit account and start the full warm-up cycle, build a credible Reddit account from scratch, run automated daily tasks on a schedule, camp on a post after publishing to reply, run multiple accounts sequentially. Triggers: reddit warmup / 30-day warmup / start warmup / build reddit karma / reddit brand promotion / reddit automated posting / today's task - reddit warmup <user> / Day N warmup / enter brand phase / refresh subreddit pool / camp <user> / stop camping / pause warmup / resume warmup / delete account / promote on reddit. EXECUTION RULE: before taking any action, load the reference files listed in the Phase Router section of this skill. Do not call browser-act, write any state file, or execute any step until the required reference files have been loaded."
+description: "Reddit account onboarding and a staged 30-day warm-up workflow through BrowserAct CLI. Use for Reddit warmup, daily browsing and engagement, account handover, reviewing pending comments/posts, and configured brand-promotion workflows. Requires a logged-in Reddit account, a persistent browser profile with a fixed proxy, and an agent that can manage local state and follow approval policies. The skill defines agent workflows; daily scheduling is configured separately."
 ---
 
 # Reddit Account Warm-up (30-Day Brand Promotion)
@@ -20,6 +20,14 @@ Builds authentic-looking Reddit accounts through a 30-day progression, then uses
 
 ---
 
+## Requirements and installation
+
+Install this entire directory, including `references/` and `assets/`; installing only `SKILL.md` is incomplete. Also install the [BrowserAct entry skill](https://github.com/browser-act/skills/tree/main/browser-act) and its CLI using the official installation instructions. This package is an agent workflow, not a standalone unattended program.
+
+Before the first browser or proxy command, load the BrowserAct entry skill and its current runtime guide. Onboarding needs both `browser-act get-skills core --skill-version 2.0.2` and `browser-act get-skills advanced`. Missing CLI/authentication, an unavailable fixed proxy, or a Reddit login requirement is a setup prerequisite to resolve, not a successful run. Keep credentials out of chat and state logs.
+
+Resolve `~` using the current operating-system user's home directory for every state lookup and write, including pending approvals. Do not substitute a Windows-only path on other systems.
+
 ## Step 0 -Load Reference Files (required before any action)
 
 Instructions live in separate files loaded on demand. Load the files for the current context before taking any action. Prior knowledge does not substitute for loading the current reference files.
@@ -33,6 +41,7 @@ Instructions live in separate files loaded on demand. Load the files for the cur
 | Stage 3 (Day 30+) execution | `references/stage3-promote.md` ->`references/approval-rules.md` |
 | Notification / inbox check | `references/notification-check.md` (called from phase2-preflight Step 6) |
 | Daily tail recon + feedback | `references/end-of-day-recon.md` ->`references/comment-follow-up.md` |
+| Existing-account migration run | `references/migration.md` (after login and account-health checks) |
 | Daily report + anomaly check | `references/anomaly-detection.md` |
 
 ---
@@ -124,7 +133,7 @@ Write back to `progress.json` at the end of the run.
 
 ## Core Principles
 
-1. **Strictly stage-gated.** `current_day = (today - start_date).days + 1` decides the stage. No jumping ahead.
+1. **Strictly stage-gated.** `current_day = (today - start_date).days + 1` decides the stage. Onboarding backdates `start_date` by `initial_day - 1` days for an existing account; `onboarding_date` records the actual setup date. Reddit account age is independent of this workflow calendar. No jumping ahead.
 2. **Preview first, execute immediately.** Show today's plan as one short message, then start -don't wait for "go".
 3. **Auto-execute safe actions, pause for publishing.** Browse / upvote / subscribe / scrape run non-stop. These pause for explicit user ack: CAPTCHA / bot challenge, email verification, every comment/post publish (per approval_policy), inbox reply, brand exposure warning, Stage 3 entry decision card.
 4. **Once per scheduler day.** If `progress.json.last_run_scheduler_date == today_scheduler`, show cached report and exit. Approval publish flows do not update this field and do not count as the daily run.
@@ -223,7 +232,7 @@ Skeleton steps (detail in `phase1-onboarding.md`):
 
 Load `config.yaml` and `progress.json`. Compute `current_day`. Show a one-line preview, then:
 
-**->Load `references/browser-act-rules.md`**  
+**->Load `references/browser-act-rules.md`**
 **->Load `references/phase2-preflight.md`** -contains all pre-flight steps (0a-), stage determination, and milestone checks.
 
 After pre-flight, proceed to the stage-specific reference file per the Phase Router table above.
@@ -312,6 +321,7 @@ List the account directories that contain `config.yaml`. For each where `paused 
 ## References
 
 - `references/browser-act-rules.md` -**Always load first** in Phase 2: No Screenshot rule, Browser Profile + Headed Mode, Authoritative Username, Rule-Reading Gate, CLI idx-selection, UI Drift Fallback, When to ask for help
+- `references/migration.md` -Existing-account migration restrictions, clean-login counters, and completion
 - `references/phase2-preflight.md` -**Always load second** in Phase 2: Prerequisites, Execution Proof, Rate Limit, Pre-flight Steps 0a-, Stage Determination, Milestone Checks
 - `references/notification-check.md` -Cross-stage Notification + Inbox Check (called from phase2-preflight Step 6)
 - `references/stage1-lurk.md` -Stage 1 lurk flow (Days 2-14)
@@ -336,5 +346,3 @@ List the account directories that contain `config.yaml`. For each where `paused 
 - `assets/progress.json.template`
 - `assets/sub_profiles.json.template`
 - `assets/persona.json.template`
-
-

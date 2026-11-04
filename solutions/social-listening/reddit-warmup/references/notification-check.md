@@ -1,4 +1,4 @@
-﻿# Cross-Stage: Notification + Inbox Check
+# Cross-Stage: Notification + Inbox Check
 
 **Load this file from `phase2-preflight.md` Step 6** (right after login check, before stage-specific main work). Runs every daily invocation on Day 2+, all stages.
 
@@ -12,15 +12,14 @@ A real user who opens Reddit checks their notification bell / inbox almost first
 browser-act --session <run_session> navigate https://www.reddit.com/notifications/
 browser-act --session <run_session> wait stable --timeout 20000
 sleep $((RANDOM % 6 + 5))   # 5-11s dwell -"scrolling through what I missed"
-browser-act --session <run_session> scroll down --amount 2
+browser-act --session <run_session> scroll down --amount 500
 sleep $((RANDOM % 4 + 3))
 
-# Visit the messages inbox (separate panel on Reddit)
-browser-act --session <run_session> navigate https://www.reddit.com/message/inbox/
-browser-act --session <run_session> wait stable --timeout 20000
-sleep $((RANDOM % 5 + 5))
+browser-act --session <run_session> state
 browser-act --session <run_session> get markdown
 ```
+
+Read the visible Notifications main content, including the explicit empty state when present. Do not count the global Open inbox navigation link as notification content. Historical private messages at `/message/inbox/` are archived and may render in an iframe; inspect them only when specifically requested, using `state` to read the frame. Do not use the archived unread page as the source of current comment replies.
 
 **Scan the markdown for:**
 
@@ -30,19 +29,19 @@ browser-act --session <run_session> get markdown
 - **Trophy / achievement unlock / Reddit premium ad** ->ignore; just visiting the page marks them "seen".
 - **Unread comment/post reply** ->Day < 15: log count but don't engage yet. Day >=15: proceed to Step B.
 
-Screenshot the inbox page to evidence folder as proof the check happened.
+Screenshot the Notifications page to the evidence folder as proof the check happened.
 
 ---
 
 ## Step B: Inbox Reply Engagement (Day 15+ only)
 
 ```bash
-browser-act --session <run_session> navigate https://www.reddit.com/message/unread/
+browser-act --session <run_session> navigate https://www.reddit.com/notifications/
 browser-act --session <run_session> wait stable --timeout 20000
 browser-act --session <run_session> get markdown
 ```
 
-For each unread reply (not modmail, not trophy, not username mention from an old thread):
+Use current `state` and the visible Notifications list to identify unread reply rows and their permalinks. If no unread reply rows exist, skip without substituting the archived private-message view. For each unread reply (not modmail, not trophy, not username mention from an old thread):
 
 1. `navigate <reply_permalink>`, `get markdown` for full thread context.
 2. Generate 3 drafts (A/B/C), using thread context as `[post_body]` and last 3 comments as `[top-3 existing comments]`.

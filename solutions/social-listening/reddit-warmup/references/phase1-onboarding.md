@@ -1,8 +1,12 @@
-﻿# Phase 1: Account Onboarding
+# Phase 1: Account Onboarding
 
 Runs once per account. Triggered when the user says "reddit warmup" / "start warmup" / "30-day warmup" etc., AND `~/.reddit-warmup/<username>/config.yaml` does not exist locally (otherwise go straight to Phase 2).
 
 **Key principle:** regardless of new registration or existing-account takeover, **browser profile creation + proxy binding** is a mandatory step, and must be done BEFORE registration / login -both the register and login pages require an already-proxy-bound headed browser to open.
+
+## Runtime prerequisites
+
+Before any browser/proxy operation, load the BrowserAct entry skill, then the current core and advanced guides. Confirm the CLI is callable and authenticated. Use current lifecycle instructions; a returned purchase page link is not a created browser. When `config.yaml` is absent, keep all account state in pending variables until Step 6/7.5; do not rewrite an existing completed configuration.
 
 ## Step 1 -Account type + proxy setup
 
@@ -68,29 +72,32 @@ No purchased static proxy is available. Choose one:
 
 ## Step 2 -Create browser profile + bind proxy + verify IP
 
-**Profile is auto-named -no user input needed. Same for both new and existing accounts:**
+Use a unique profile name `reddit-setup-<ts>` and a temporary run session `reddit-warmup-setup-<ts>`. The name is not the persistent browser ID.
 
-- `browser_id` = `reddit-setup-<ts>` (unique temporary setup profile; finalized after Step 3 `/user/me/` confirmation)
-- run session = `reddit-warmup-setup-<ts>` (temporary; never durable)
-
-> **[Confirmation Gate]** Present the plan to the user before executing `browser create`:
-> "I'll create a stealth browser named `reddit-setup-<ts>` bound to your proxy (fixed IP for account nurturing). Confirm?"
-> Wait for user reply, then execute.
+Show the selected fixed proxy and the proposed profile purpose. Explain that a new profile starts without login state and that stealth creation completes on the returned page. Follow the current BrowserAct advanced guide for user authorization; do not repeat a confirmation the user has already supplied.
 
 ```bash
-SETUP_BROWSER_ID="reddit-setup-<ts>"
+SETUP_BROWSER_NAME="reddit-setup-<ts>"
 
-# Bind purchased static proxy (preferred -fixed IP, persistent across sessions)
-browser-act browser create --name "$SETUP_BROWSER_ID" --type stealth --desc "Reddit warmup temporary setup profile" --static-proxy <proxy_id>
+# Choose exactly ONE proxy option, using the user's selected proxy.
+browser-act browser create --name "$SETUP_BROWSER_NAME" --type stealth --desc "Reddit warmup account setup" --objective "Create a persistent fixed-proxy browser for the requested Reddit account warmup" --static-proxy <proxy_id>
+# Alternative for a user-provided fixed proxy:
+browser-act browser create --name "$SETUP_BROWSER_NAME" --type stealth --desc "Reddit warmup account setup" --objective "Create a persistent fixed-proxy browser for the requested Reddit account warmup" --custom-proxy <proxy_url>
+```
 
-# Alternative: bind custom proxy URL
-browser-act browser create --name "$SETUP_BROWSER_ID" --type stealth --desc "Reddit warmup temporary setup profile" --custom-proxy <proxy_url>
+If the result contains `purchase_url` and `request_id`, show both and wait for the user to finish on that page. Do not open a guessed name/ID, assume completion, or issue another create request. After the user confirms completion:
 
-# Verify proxy IP (no screenshot -account directory doesn't exist yet)
+```bash
+browser-act browser create-status --request-id <request_id>
+```
+
+Continue only after status reports creation completed. Read the actual persistent browser ID from the returned result; use `browser-act browser list` to resolve the completed profile if necessary. Save that ID in the onboarding variable `SETUP_BROWSER_ID`. If pending/failed/cancelled, remain in onboarding and do not write final account config.
+
+```bash
+# SETUP_BROWSER_ID is the actual ID returned after completed creation, not SETUP_BROWSER_NAME.
 browser-act --session <run_session> browser open --headed "$SETUP_BROWSER_ID" https://ipinfo.io/json
-browser-act --session <run_session> wait stable
+browser-act --session <run_session> wait stable --timeout 15000
 browser-act --session <run_session> get markdown
-# (Screenshot taken after Step 3 session formalization)
 ```
 
 Read IP + `timezone` from markdown:
@@ -149,7 +156,7 @@ browser-act --session <run_session> get markdown
    browser-act --session <run_session> state
    # Read the current URL from state and extract <actual_username>: ^https?://(www|old|new)\.reddit\.com/user/([a-zA-Z0-9_-]+)/
    ```
-   Redirects to `/login/` ->stop, tell user registration is abnormal.
+   Redirects to `/login/`, stays on `/user/me/`, or displays a network-security block/challenge ->stop; registration/login identity has not been confirmed. Do not initialize a username directory named `me`.
 
 3. **Session formalization:**
    ```bash
@@ -161,7 +168,7 @@ browser-act --session <run_session> get markdown
    ```
    From this point: `<username> = <actual_username>`, `<browser_id> = "$SETUP_BROWSER_ID"`. Future browser-act commands use fresh per-flow `<run_session>` values; do not rely on this setup session surviving.
 
-4. **Interest selection** ("What are you interested in?") ->`browser-act --session <run_session> act "click these interest topics: <inferred_topic_list>"` (based on `persona_file.interests` ->`subreddits.warmup/target` topics ->`keywords.content`). No persona ->Skip (Day 15 gate will remind).
+4. **Interest selection** ("What are you interested in?"): read `browser-act --session <run_session> state`, identify an appropriate visible topic from the user-provided interests, then `click <current_topic_idx>`. Refresh `state` after each click; use its current indices for the next choice. If interests are not yet supplied, skip optional selection rather than inventing a persona.
 
 5. **Profile completion** (birthday / gender / region) ->auto-fill required fields from persona or proxy geo; skip optional fields.
 
@@ -201,7 +208,7 @@ Still on `/login/` or `/register/` after "done" ->ask user to retry. "incorrect"
    browser-act --session <run_session> state
    # Read the current URL from state and extract <actual_username>: ^https?://(www|old|new)\.reddit\.com/user/([a-zA-Z0-9_-]+)/
    ```
-   Redirects back to `/login/` ->login did not succeed; ask user to retry from the top of Step 3B.
+   Redirects back to `/login/`, stays on `/user/me/`, or displays a network-security block/challenge ->login identity was not confirmed; do not write final state or infer a username from the self alias. Use the current page for user-directed login/access recovery.
 
 2. **Session formalization:**
    ```bash
@@ -254,9 +261,9 @@ Parse `account_age_days` and `comment_karma` from markdown; determine starting D
 | Day 4-5 | Browse + upvotes + subscribe | 15-20 min |
 | Day 6+ | Normal rhythm | Normal |
 
-Write `progress.json ->env_migration: true`, `migration_day: 1`, `migration_clean_logins: 0`. After 3 consecutive CAPTCHA-free, anomaly-free logins ->`env_migration: false`.
+Keep `env_migration_pending = true`, `migration_day_pending = 1`, and `migration_clean_logins_pending = 0` in memory. Do not write `progress.json` here. Step 6 copies these values after loading the template, so template defaults cannot overwrite them. Daily migration execution is defined in `migration.md`; three consecutive clean daily runs complete migration for subsequent runs.
 
-If the user has always been using this profile+proxy (no change), skip the migration period.
+If an explicitly reused profile+proxy is unchanged and this has been verified, set pending migration values to false/0/0. A newly created profile is always a changed environment. Initialize new-account migration values to false/0/0.
 
 ## Step 5 -Collect remaining config.yaml fields (pending only)
 
@@ -541,15 +548,17 @@ Stick to auto-unlocks from normal activity + Step 5.7a/b/c. Nothing more.
 
 Copy `assets/progress.json.template` to `~/.reddit-warmup/<username>/progress.json`, fill based on Step 3/4 conclusions:
 
-- `start_date = today (account tz)`
-- New account: `current_day = 1`, `stage = "setup"`
-- Existing account: `current_day = <starting Day from Step 4.1 table>`, `stage = <corresponding stage>`
+- `onboarding_date = today (account tz)`; `initial_day = 1` for a new account or the starting Day chosen in Step 4.1 for an existing account.
+- `start_date = onboarding_date - (initial_day - 1) calendar days`. This is the workflow calendar anchor, not the Reddit registration date. For example, onboarding at Day 30 on 2026-11-04 stores 2026-10-06, so the next date computes Day 31.
+- `current_day = initial_day` and `stage = <corresponding stage>` are initialization/display values only; later runs derive the day from the anchor.
+- Also initialize `account_age_days` and `account_age_checked_on` from the real profile/registration evidence; the checked date is onboarding_date. Store `account_age_days_at_onboarding = 0` for an account just registered here; for an existing account, use the age actually read in Step 4.1. Do not infer Reddit age from the backdated workflow anchor. If age is unavailable, store null and re-read the profile before any age-gated action.
+- Copy `env_migration_pending`, `migration_day_pending`, and `migration_clean_logins_pending` into their matching progress fields **after** loading template defaults; set `last_migration_scheduler_date = null`. Missing pending migration values for an existing account mean onboarding is incomplete, not a reason to assume migration is disabled.
 - `week_start = this Monday (account tz)`
 - `baseline_ip = baseline_ip_pending` and `baseline_ip_checked_at = now` if Step 2 captured an IP
 - `baseline_timezone = baseline_timezone_pending` if Step 2 captured a proxy timezone
 - `persona_defer_reminder_day = persona_defer_reminder_day_pending` if the user deferred persona setup
 - `profile_customized = profile_customized_pending`, `profile_customized_at = profile_customized_at_pending` if Step 5.7 succeeded; otherwise leave template defaults
-- Other fields use template defaults
+- Preserve all values collected above when applying the remaining template defaults. Never recopy the template over the populated progress object.
 
 BrowserAct may close the runtime session after the flow. Do not store or depend on this setup `<run_session>`; the durable state is the configured `browser_id`.
 
@@ -561,7 +570,8 @@ BrowserAct may close the runtime session after the flow. Do not store or depend 
 
 Detect the current machine's local timezone:
 - Windows: `powershell -c "[TimeZoneInfo]::Local.Id"` ->map Windows ID to IANA (e.g. "China Standard Time" ->"Asia/Shanghai")
-- Linux/macOS: `cat /etc/timezone` or `timedatectl show -p Timezone --value`
+- macOS: read the `/etc/localtime` symlink and take the IANA name after `/zoneinfo/` (for example Asia/Shanghai). If unavailable, ask for the scheduler IANA timezone.
+- Linux: `timedatectl show -p Timezone --value` when available, otherwise read `/etc/timezone`; validate the result as an IANA timezone.
 
 Store the detected IANA zone as `config_pending.account.scheduler_timezone`. Then confirm in chat:
 
@@ -699,4 +709,3 @@ Approval policy: <approval_policy>
 Next daily trigger:
 today's task - reddit warmup <username>
 ```
-

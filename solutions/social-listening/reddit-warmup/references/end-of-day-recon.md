@@ -1,4 +1,4 @@
-﻿# End-of-Day Recon (daily tail)
+# End-of-Day Recon (daily tail)
 
 **Purpose:** pre-warm `sub_profiles.json` for the subs likely needed in tomorrow's run. The next day's main flow can then use cached rules, AutoMod filter rate, and typical poster karma instead of doing live recon before every interaction.
 
@@ -159,7 +159,11 @@ If all gates pass:
 browser-act --session <run_session> navigate https://www.reddit.com/r/<sub>/
 browser-act --session <run_session> wait stable --timeout 15000
 browser-act --session <run_session> screenshot ~/.reddit-warmup/<username>/evidence/<ts>-subscribe-<sub>.png
-browser-act --session <run_session> act "click the Subscribe (or Join) button in the sub sidebar"
+browser-act --session <run_session> state
+# Read the current state and locate this subreddit's Join/Subscribe button.
+# If already Joined/Leave/Unsubscribe, skip the click; do not unsubscribe.
+browser-act --session <run_session> click <current_join_idx>
+browser-act --session <run_session> state
 browser-act --session <run_session> wait stable --timeout 10000
 browser-act --session <run_session> get markdown
 ```
@@ -286,4 +290,3 @@ Both routines run inside the same daily tail, with End-of-Day Recon first and Co
 - Recon first ensures the feedback loop reads fresh `sub_profiles.json` data.
 
 Insert a 90-180 second pause between the two. If recon used most of the time budget, skip Feedback Loop and record the reason.
-

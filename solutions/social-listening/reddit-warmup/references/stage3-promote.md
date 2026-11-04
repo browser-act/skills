@@ -1,10 +1,10 @@
-﻿# Stage 3 -Promote (Day 30+)
+# Stage 3 -Promote (Day 30+)
 
 SKILL.md's Stage 3 section is intentionally short. All operational detail lives here.
 
 Stage 3 **auto-entry** is gated by two hard requirements: `account_age_days >=30` AND `comment_karma >=20` -both must hold for the entry decision card to auto-fire. Manual command `enter brand phase <username>` is a separate bypass path that shows a risk warning when gates aren't met and lets the user override with explicit confirmation. See Entry Decision below.
 
-Once in promote mode, commenting continues (same flow as Stage 2 -see `stage2-comment.md`, the A/B/C/D generator, duplicate check, approval gate all apply unchanged). Posts gain two new paths: A (normal) and B (promotional). Both require explicit human approval -see `approval-rules.md` ->Part 2 Brand Approval.
+Once in promote mode, commenting continues (same flow as Stage 2 -see `stage2-comment.md`, the A/B/C/D generator, duplicate check, approval gate all apply unchanged). Posts gain two new paths: A (normal) and B (promotional). Both follow `config.yaml.approval_policy` and the master table in `approval-rules.md`: manual paths require review; explicitly configured auto paths may publish. Brand checks and community-rule gates still apply under every policy.
 
 ---
 

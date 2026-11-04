@@ -1,4 +1,4 @@
-﻿# Anomaly Detection + Daily Report
+# Anomaly Detection + Daily Report
 
 **Load this file at the end of every daily run**, after the daily tail finishes and before sending the Daily Report.
 
@@ -63,7 +63,7 @@ All computed from today's rows in `activity_log.jsonl`, filtered by `timestamp` 
 | `commented <N>` | Count of `type: "comment"` today with `visibility in {"visible","pending"}`; `reply` and `inbox_reply` count in same bucket |
 | `posted <N>` | Count of `type: "post"` today with `visibility == "visible"`; `removed_by_filter` does NOT count |
 | `Skipped` | Count + distinct reasons from `type: "skip"` today |
-| `age <N>d` | `(today - start_date).days` for new accounts; old-account: add Phase 1 Step 4.1 captured age |
+| `age <N>d` | Actual Reddit profile age, or `account_age_days_at_onboarding + (today - onboarding_date).days`. Never use the backdated workflow start_date; if baseline age is missing, re-read the profile or report unknown. |
 | `comment_karma` / `post_karma` | `progress.json` (updated by Pre-flight Step 8) |
 | `subscribed <N> subs` | `progress.json.subscribed_subs.length` |
 
@@ -96,4 +96,3 @@ Skip-line examples:
 - `audience_night_hours` -fired during audience timezone's deep night
 - `batch_stale_7d` -batch sat in pending_approval/ for 7+ days without a pick; deleted (post almost certainly dead)
 - `persona_placeholders` -persona file has unresolved `<...>`
-

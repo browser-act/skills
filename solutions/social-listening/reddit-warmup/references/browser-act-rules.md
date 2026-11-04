@@ -1,4 +1,4 @@
-﻿# browser-act Rules + Interaction Patterns
+# browser-act Rules + Interaction Patterns
 
 ## Execution Tool Boundary
 
@@ -6,7 +6,7 @@ All Reddit-facing execution must stay inside `browser-act` CLI.
 
 Allowed browser/page/network primitives are only browser-act subcommands such as `browser open`, `navigate`, `wait stable`, `state`, `get markdown`, `get title`, `click`, `input`, `upload`, `scrollintoview`, `network`, `screenshot`, `solve-captcha`, and `remote-assist`.
 
-If command usage or availability is uncertain, refresh the BrowserAct runtime guide with `browser-act get-skills core --skill-version 2.0.0`. Do not inspect, install, or try another browser execution tool.
+If command usage or availability is uncertain, refresh the BrowserAct runtime guide with `browser-act get-skills core --skill-version 2.0.2`. Do not inspect, install, or try another browser execution tool.
 
 Do not use any alternate execution method. If browser-act returns an error, times out, or cannot find an element, re-read browser-act `state`, retry with browser-act primitives, use browser-act `remote-assist`, skip, or stop with a clear log.
 
@@ -75,7 +75,7 @@ Agent reads `~/.reddit-warmup/<username>/config.yaml` with its normal local-file
 
 ### Account-to-browser binding
 
-One account is permanently bound to one browser profile + one proxy. Changing either counts as "device switch" and must go through Phase 1 Step 4.3's 5-day migration-transition period; cannot enter the normal schedule directly.
+One account is permanently bound to one browser profile + one proxy. Changing either counts as "device switch" and must go through the restricted migration runs in `references/migration.md` until three consecutive clean daily runs have completed; cannot enter the normal schedule directly.
 
 ---
 
@@ -89,6 +89,8 @@ browser-act --session <run_session> wait stable --timeout 30000
 browser-act --session <run_session> state
 PAGE_TITLE=$(browser-act --session <run_session> get title 2>&1 | tail -1)
 ```
+
+Before accepting a user URL, inspect the page text: Reddit network-security blocks or challenges mean blocked/inconclusive; an ordinary login/register page or login wall means logged_out and uses login-verification.md re-login flow. None proves authentication. The unresolved `/user/me/` alias is not a username: explicitly reject captured `me` (case-insensitive). If the route does not resolve to a concrete account, retry once and then stop writes for user-directed recovery; do not switch account/profile/proxy automatically.
 
 Read the current URL from the `browser-act state` page header / current-page line. Parse that resolved URL:
 - Matches `^https?://(?:www|old|new)\.reddit\.com/user/([a-zA-Z0-9_-]+)/?` ->authenticated as captured name

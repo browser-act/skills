@@ -1,4 +1,4 @@
-﻿# Stage Behavior Reference
+# Stage Behavior Reference
 
 Detailed parameters for each of the three stages. The main SKILL.md points here for specifics.
 
@@ -205,7 +205,7 @@ Before advancing to Stage 2, verify:
 
 ## Stage 2: Comment (Days 15-29)
 
-**Goal:** Build comment karma organically while reaching account age >=30 days. **Both `account_age_days >=30` AND `comment_karma >=20` are hard gates to Stage 3** -neither can be bypassed (manual "enter brand phase" also not allowed). Karma also governs which subs are safe to comment in within Stage 2 (see Day 21 check and **Subreddit Risk Profiling** in SKILL.md).
+**Goal:** Build comment karma organically while reaching account age >=30 days. **Automatic Stage 3 entry requires both `account_age_days >=30` AND `comment_karma >=20`.** For the existing explicit manual-entry/risk-override path, follow `stage3-promote.md ->Handling the manual command`; never infer an override from a daily trigger or an approval of unrelated content. Karma also governs which subs are safe to comment in within Stage 2 (see Day 21 check and **Subreddit Risk Profiling** in SKILL.md).
 
 **Karma-first subreddit posture:** Stage 2 is not where the account proves professional expertise. Regardless of whether the persona is technical, marketing, founder, finance, legal, medical, or another professional profile, comments should start in broad, low-context, high-interaction warmup subs where lightweight personal reactions can earn karma. Professional/domain communities are target/secondary subs for later, after recon and karma growth.
 
@@ -241,7 +241,7 @@ Day 17 / Day 19 zero-publish counters are expected. If the run reports `comments
 - `account age < 30 days` ->Do NOT advance to Stage 3; extend this stage
 - Notify user: "Account `<username>` isn't ready for brand promotion yet -account age: <N> days (need 30). Continuing the comment stage. Estimated ready date: <date>."
 - `account age >=30 days AND comment_karma >=20` ->entry decision card auto-fires; on user's choice B, advance to Stage 3.
-- `account age >=30 days AND comment_karma < 20` ->**stay in Stage 2**. Both gates are hard -below 20 karma, the entry card does not fire AND manual "enter brand phase `<username>`" command is refused with a karma-gap message (promo posts with near-zero karma look planted, and skill-level hard gate removes the decision burden from the user). The account keeps commenting in Stage 2 until it hits 20; then next run's Day-29-style check auto-fires the entry card.
+- `account age >=30 days AND comment_karma < 20` ->**stay in Stage 2**. Below 20 karma the automatic entry card does not fire. A separate explicit manual-entry command uses the warning and confirmation flow in `stage3-promote.md`; this does not authorize automatic entry or bypass content approval. The account keeps commenting in Stage 2 until it hits 20; then next run's Day-29-style check auto-fires the entry card.
 
 ### Between-Comment Timing
 

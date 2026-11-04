@@ -1,4 +1,4 @@
-﻿# Publishing a Comment -Pure browser-act CLI Flow
+# Publishing a Comment -Pure browser-act CLI Flow
 
 All comment publishing uses **`browser-act` CLI native commands** as the only execution path. No alternate execution path is allowed. The primitives: `navigate` / `wait stable` / `scrollintoview` / `state` / `click <idx>` / `input <idx> "text"` / `network requests` / `get markdown` / `get title` / `screenshot`.
 
@@ -44,7 +44,7 @@ browser-act --session <run_session> screenshot ~/.reddit-warmup/<username>/evide
 
 # Dwell 4-7s "reading title + body" on the target page.
 sleep $((RANDOM % 4 + 4))
-browser-act --session <run_session> scroll down --amount 2
+browser-act --session <run_session> scroll down --amount 500
 sleep $((RANDOM % 4 + 3))    # 3-6s reading top comments
 ```
 
@@ -88,7 +88,7 @@ browser-act --session <run_session> get markdown
 - `"you are doing that too much"` / `"Rate limit exceeded"` ->`skip("rate_limit_today")`
 - `"your session has expired"` / `"session has expired"` / `"session timed out"` / localized session-expiry equivalents ->**do NOT skip** -`browser-act reload` + `wait stable --timeout 15000`, then re-run Step 2 once. If the banner persists after reload ->`skip("session_expiry")`. This is a frontend hydration issue, not a rate-limit or removal signal; reloading recovers it without losing the target post.
 
-Match whole phrases -don't match loose `"removed by"` or `"locked"` that appear in sidebar rules text.
+Match whole phrases -don't match loose `"removed by"` or `"locked"` that appear in sidebar rules text. Normalize curly/straight apostrophes and whitespace so Reddit’s filters and Reddit's filters are treated alike; scope the finding to an actual banner on the target post.
 
 ### 3. Rate-limit floor
 
@@ -97,9 +97,9 @@ Read `progress.json.last_publish_at`. If `now - last_publish_at < 90s`, sleep th
 ### 4. Open the composer
 
 ```bash
-browser-act --session <run_session> scrollintoview --selector "comment-composer-host"
-sleep 2
 browser-act --session <run_session> state
+# If the current comment trigger is off-screen, scroll to an observed visible-thread/composer target, then refresh state.
+# Do not require a fixed comment-composer-host selector across shadow-root/UI variants.
 ```
 
 **Agent: find the composer trigger in state.** It's a collapsed textarea, typically:
@@ -137,7 +137,7 @@ sleep 2
 browser-act --session <run_session> state
 ```
 
-Only take the filled-state screenshot when `state` does not clearly show the inserted text:
+If `state` does not clearly show the inserted text, read `get text <current_lexical_idx>` and compare it with the intended text. Take a filled-state screenshot only if native text readback is also inconclusive:
 
 ```bash
 browser-act --session <run_session> screenshot ~/.reddit-warmup/<username>/evidence/<ts>-comment-filled.png
@@ -145,7 +145,7 @@ browser-act --session <run_session> screenshot ~/.reddit-warmup/<username>/evide
 
 **Agent: verify from `state` that the expanded Lexical editor contains the expected text or a clear prefix of it. Use only browser-act output for this verification.**
 
-If the state output does not show the filled text, use the screenshot as the second source. If neither source proves the text landed ->**STOP. Do not proceed to submit.** Input landed in the wrong element (likely `innerTextArea` instead of the Lexical div). Go back to step 4, re-read state, find the correct `role=textbox data-lexical-editor=true` idx, re-run `input` once. If verification is still impossible, log `skip("fill_verification_failed")`. Skipping this gate = likely empty-comment submission.
+Use native text readback or the screenshot when state is inconclusive. If none of these sources proves the text landed ->**STOP. Do not proceed to submit.** Input landed in the wrong element (likely `innerTextArea` instead of the Lexical div). Go back to step 4, re-read state, find the correct `role=textbox data-lexical-editor=true` idx, re-run `input` once. If verification is still impossible, log `skip("fill_verification_failed")`. Skipping this gate = likely empty-comment submission.
 
 ### 6. Pre-submit "checking wording" dwell
 
@@ -231,6 +231,7 @@ browser-act --session <run_session> get markdown
 
 - History match found ->capture its permalink, navigate that permalink, and verify the submitted text is visible there. For top-level comments, also return to `<post_url>` once and confirm the original thread can surface the comment or link to that permalink.
 - Only after the original thread or the verified permalink shows the submitted comment body ->update `progress.json.last_publish_at = now`, log `comment` event with `comment_id`, `permalink`, `depth`, and save an after-comment screenshot. Derive `comment_id` from the captured `t1_...` thingid or the permalink's `/comment/<id>/` segment; never guess.
+- Screenshot failure after verified submission is an evidence limitation: retain the native body readback/permalink and the accepted-attempt state; never submit again merely to obtain an image.
 - No body/permalink match after 10s ->reload `<post_url>` + retry once. Still nothing ->log `skip("original_thread_visibility_failed")` or surface `click_succeeded_but_no_comment_in_visibility_verify`; do not write a normal successful `comment` log entry.
 
 Success definition: the actual comment body, or a permalink that resolves to that body, must be visible after post-submit verification. "Submit button clicked" and "network accepted" are intermediate signals, not success.
@@ -273,7 +274,7 @@ sleep 3
 browser-act --session <run_session> state
 ```
 
-Find the nested composer's Lexical editor idx (now there will be two -top-level composer's and this reply composer's). The reply composer's host has `parent-id="t1_<target_cid>"` attribute. Pick the Lexical editor whose nearby `comment-composer-host` context has that parent-id. In state output these appear in mounting order; the newly-mounted reply composer's editor is typically the LAST `[role=textbox][name=body]` block.
+Find the nested composer's Lexical editor idx. There may be one editor if the top-level composer is collapsed, or several if other composers are open. The reply composer's host has `parent-id="t1_<target_cid>"` attribute. Pick the Lexical editor whose nearby `comment-composer-host` context has that parent-id. In state output these appear in mounting order; the newly-mounted reply composer's editor is typically the LAST `[role=textbox][name=body]` block.
 
 Fill:
 
@@ -281,12 +282,12 @@ Fill:
 browser-act --session <run_session> input <reply_lexical_idx> "<text>"
 ```
 
-**Warning: Submit -multiple submit buttons trap:** after a reply composer opens, `state` will show **two** `comment-composer-submit-button` entries -one for the top-level composer (first in state, lower idx) and one for this reply composer (last in state, higher idx). **Always pick the highest idx.** Clicking the first one submits the empty top-level composer and silently does nothing.
+**Warning: Submit -multiple submit buttons trap:** after a reply composer opens, `state` may show multiple `comment-composer-submit-button` entries if other composers are open. One can belong to a top-level editor and another to the reply; a collapsed top-level editor may not have a submit button at all. **Choose the submit button belonging to the target reply composer, using the same parent/comment context and Reply-to label as the filled editor.** The highest index is only a common layout observation, not an identity rule; if ownership is ambiguous, stop and re-read state. Clicking another composer can submit the wrong or empty content.
 
 ```bash
 browser-act --session <run_session> state
-# Two submit buttons will appear -pick the LAST (highest idx) one
-browser-act --session <run_session> click <reply_submit_idx_highest>
+# Locate the submit button in the same target-comment context as the filled reply editor.
+browser-act --session <run_session> click <target_reply_submit_idx>
 ```
 
 Log with `depth >= "1"`, `parent_id = t1_<target_cid>` (not `t3_`).

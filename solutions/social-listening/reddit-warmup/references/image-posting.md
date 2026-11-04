@@ -1,4 +1,4 @@
-﻿# Post Publishing (TEXT / LINK / IMAGE) -Pure browser-act CLI Flow
+# Post Publishing (TEXT / LINK / IMAGE) -Pure browser-act CLI Flow
 
 **All three post flows use pure `browser-act` CLI as the only execution path.** Title / link URL / body (Lexical) / image upload / submit button all go through `browser-act` subcommands.
 
@@ -54,6 +54,8 @@ browser-act --session <run_session> get markdown
 
 Don't match loose `"banned"` / `"locked"` -sidebar rules use those words too.
 
+Confirm the requested post type from the active composer's actual controls, not the `?type=` URL alone. LINK requires a visible URL field; IMAGE requires an upload control. If a type tab is available, select the requested type and refresh `state`. If Reddit shows a page-load error or the required controls are absent, reload once and inspect again; if still unavailable, stop with `skip("post_type_unavailable")`. Hidden Add Link/media templates in markdown are not usable controls. Never silently submit a TEXT post in place of the approved LINK/IMAGE type.
+
 ---
 
 ### TEXT post branch
@@ -62,7 +64,7 @@ Don't match loose `"banned"` / `"locked"` -sidebar rules use those words too.
 browser-act --session <run_session> state
 ```
 
-**Agent: read state, find two fields inside `shreddit-composer`:**
+**Agent: read current state and find the title/body inside the active post composer. Current UI may use `r-post-composer-form`; older UI may use `shreddit-composer`. Do not require one host tag:**
 
 1. **Title** -`<textarea>` with `name=title` (typically idx around 30-40), example:
    ```
@@ -82,7 +84,7 @@ browser-act --session <run_session> input <body_idx> "$BODY"
 sleep 2
 ```
 
-Verify with browser-act native output (title field + Lexical body must visibly contain the expected text or a clear prefix). Production mode reads `state` first. Only take the filled-state screenshot when `state` cannot prove the title/body/link fill.
+Verify with browser-act native output. Read current `state`, then use `get value <current_title_idx>` for the title when its value is not echoed in state. Use `get text <current_body_idx>` for Lexical text, or `get value <current_link_idx>` for a link field. Global CSS queries do not automatically cross shadow boundaries, so prefer the current indices for shadow-root fields. Compare the actual readback with the intended title/body/URL before submission; do not accept a successful input command alone. Production mode reads `state` first. Only take the filled-state screenshot when `state` cannot prove the title/body/link fill.
 
 
 ```bash
@@ -153,12 +155,13 @@ sleep $((RANDOM % 4 + 4))
 
 ```bash
 browser-act --session <run_session> network clear
-browser-act --session <run_session> scrollintoview --selector "#submit-post-button"
+# If the current Post button is outside the viewport, scroll to the observed composer/button.
+# The legacy #submit-post-button wrapper is optional; use current state when it is absent.
 sleep 2
 browser-act --session <run_session> state
 ```
 
-**Agent: find the inner submit button in state.** It's inside `#submit-post-button`'s shadow root, but `browser-act state` enumerates it:
+**Agent: find the active composer's enabled Post submit button in current state.** It may be an `inner-post-submit-button` inside a shadow root; the old outer wrapper is not required. Distinguish Post from Save Draft:
 
 ```
 [81]<button id=inner-post-submit-button type=button invalid=false />
@@ -185,9 +188,9 @@ Read the current URL from the `state` output.
 - Post submitted successfully. Reddit's standard post-submit redirect. Continue to verify.
 
 **Branch B -URL still on `/submit/`:**
-- Check `network requests --method POST` for `/svc/shreddit/submit` POST.
+- Inspect `network requests --method POST` for the actual submission initiated by this click. Reddit may use a GraphQL mutation (`/svc/shreddit/graphql`) or a submit endpoint; do not require only the legacy `/svc/shreddit/submit` URL. A 200 response is not sufficient if the JSON contains a business error. Do not mistake analytics/recaptcha requests for post submission.
 - Non-2xx ->handle by code (`reddit_400/403/429/5xx`).
-- No POST captured ->`skip("click_failed")`. Retry once.
+- No matching submission captured ->check the intended post in the account submitted list before any retry. If it already exists, verify that permalink and do not click again. Retry once only when no submission/body match exists; otherwise report an uncertain result without risking a duplicate.
 
 ---
 
@@ -216,7 +219,7 @@ browser-act --session <run_session> wait stable --timeout 10000
 browser-act --session <run_session> get markdown
 ```
 
-**Agent: check markdown for filter banners:**
+**Agent: check markdown for filter banners:** Normalize curly/straight apostrophes and whitespace before comparing phrases (for example Reddit’s and Reddit's); read the current post's banner, not unrelated navigation or quoted content.
 
 - `"removed by Reddit's filters"` ->sub-level or Reddit-level filter. `visibility: "removed_by_filter"`, `filter_banner: "<copy>"`. Still update `last_publish_at` (attempt consumed the bucket).
 - `"removed by moderators"` / `"[removed]"` ->mod removal. Same handling.
@@ -224,10 +227,11 @@ browser-act --session <run_session> get markdown
 
 ### On success
 
-- Take an after-post evidence screenshot from the verified permalink page before writing the log:
+- Take an after-post evidence screenshot from the verified permalink page:
   ```bash
   browser-act --session <run_session> screenshot ~/.reddit-warmup/<username>/evidence/<ts>-after-post.png
   ```
+- If the screenshot fails or times out, record that evidence limitation and retain the native state/readback and permalink. Do not retry submission or omit the accepted attempt from the rate-limit state because a screenshot failed.
 - Update `progress.json.last_publish_at = now`.
 - Log `post` event with `post_id`, `permalink`, `post_type_rendered`, `title`, `created_timestamp`.
 - For Stage 3: set `progress.json.post_watchtower_deadline = now + 30min`.

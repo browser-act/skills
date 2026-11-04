@@ -1,27 +1,22 @@
 {
   "_comment": "Initialized at end of Phase 1 Onboarding. Saved to ~/.reddit-warmup/<username>/progress.json. Updated at end of every daily run.",
-  "_current_day_note": "current_day below is an init placeholder only. Do NOT write it back at runtime - it is always derived on read via (today - start_date).days + 1.",
+  "_current_day_note": "current_day is an initialization/display value; derive it on every read as (today - start_date).days + 1. At onboarding set start_date = onboarding_date - (initial_day - 1) days. Workflow day is not Reddit account age.",
   "_stage_note": "The stage field is only for daily-report display and audit snapshots. Flow decisions always recompute effective_stage via the two-step rule in SKILL.md -> Stage Determination; this field is not read for that. At the end of every run, write the current run's effective_stage back to this field as a cache. Possible values: setup | lurk | comment | promote | pending_stage3_decision.",
-
   "username": "<username>",
   "start_date": "<YYYY-MM-DD>",
   "current_day": 1,
   "stage": "setup",
-
   "_status_note": "Reserved. Currently only 'active' - not consumed by any flow. `paused` / `skip_tomorrow` below are the actual pause controls. Kept for forward compat.",
   "status": "active",
   "paused": false,
   "skip_tomorrow": false,
-
   "comment_karma": 0,
   "post_karma": 0,
   "subscribed_subs": [],
-
   "_baseline_ip_note": "Captured during Phase 1 Step 2 from ipinfo.io after opening the configured browser profile through the selected proxy. Subsequent runs compare current session IP against baseline_ip to detect proxy drift or reassignment.",
   "baseline_ip": null,
   "baseline_ip_checked_at": null,
   "baseline_timezone": null,
-
   "last_run": null,
   "_last_run_scheduler_date_comment": "YYYY-MM-DD in config.yaml.account.scheduler_timezone (or account.timezone if that is blank). Idempotency key: pre-flight Step 2 compares this against today in scheduler_timezone to decide whether the day's job has already run. Decoupled from account.timezone so cross-timezone setups (e.g. Shanghai cron + LA account) don't mis-fire.",
   "last_run_scheduler_date": null,
@@ -30,50 +25,45 @@
   "last_post_time": null,
   "post_watchtower_deadline": null,
   "seen_reply_ids": [],
-
   "_last_publish_at_comment": "ISO 8601 with offset of the last successful comment OR post publish. Shared bucket (Reddit rate-limits comments+posts together). Pre-submit flow must sleep until now - last_publish_at >= 90s. Only update after the 200-OK + browser-act visibility verification passes (comment-publishing.md / image-posting.md). See SKILL.md -> Publishing Rate Limit.",
   "last_publish_at": null,
-
   "posts_this_week": 0,
   "promo_posts_this_week": 0,
   "week_start": "<this_monday>",
-
   "keyword_remind_find": true,
   "keyword_remind_brand": true,
   "last_persona_reminder_day": null,
-
   "_persona_defer_note": "Non-null day number (typically 14) set at Phase 1 Step 5.6 when the user defers filling persona. Phase 2 Milestone Check fires the dedicated persona nudge on current_day == persona_defer_reminder_day (separate from keyword_remind_find, which is about keywords.find/content). Cleared back to null once persona_file is populated OR after the reminder fires once.",
   "persona_defer_reminder_day": null,
-
   "stage3_entry_offered_day": null,
   "stage3_user_choice": null,
-
-  "_migration_note": "env_migration / migration_day / migration_clean_logins cooperate to track the device-handover period for seasoned accounts. Initialized in phase1-onboarding.md Step 4.3. In Phase 2 Pre-flight Step 4 'env_migration == true -> run migration-day task': the per-day logic for each migration-day task (look up the behavior-downgrade table by migration_day + on a CAPTCHA-free login increment migration_clean_logins +=1, and on 3 consecutive clean logins -> set env_migration back to false and zero out) is owned by each migration-day task implementation.",
+  "_migration_note": "Initialize migration fields from onboarding pending values after loading these defaults. Execute references/migration.md after successful login and account-health checks. Increment once per completed scheduled run; three consecutive clean runs finish migration for the next run. Preserve completed counters for audit.",
   "env_migration": false,
   "migration_day": 0,
   "migration_clean_logins": 0,
-
   "rate_limit_hit_today": false,
   "daily_skip_reason": null,
   "_account_risk_note": "Set by Phase 2 Avatar Menu Health Check when opening the top-right avatar/user menu shows a persistent Reddit server-error toast or similar account-health anomaly. While true, Phase 2 surfaces the reason and skips write actions until the user manually verifies the account is clean.",
   "account_risk_flagged": false,
   "account_risk_reason": null,
   "account_risk_flagged_at": null,
-
   "_profile_customized_note": "Set to true at end of Phase 1 Step 5.7 (avatar picked + bio written). If false at Day 7+ of lurk, Pre-flight surfaces a reminder in the daily preview. Empty-bio + default-avatar is the strongest new-account-farm indicator Reddit's ML detection uses; fixing it in Phase 1 materially lowers AutoMod suspicion in Stage 2.",
   "profile_customized": false,
   "profile_customized_at": null,
-
   "_last_login_verified_at_note": "Updated on every logged_in result (login-verification.md -> Log entry section). If > 7 days since last value, Pre-flight login check should surface 'stored credentials may be stale' in the skip message - implementation lives in login-verification.md, not inline here.",
   "last_login_verified_at": null,
-
   "_keyword_rotation_comment": "Daily rotation pointers. See SKILL.md -> Keyword Rotation. find_index increments once per run when Stage 2/3 search step runs; brand_index increments once per Path B draft generation. Access via list[index % len(list)] so wrap-around is automatic.",
   "keyword_rotation": {
     "find_index": 0,
     "brand_index": 0
   },
-
   "_recon_comment": "Below two fields power End-of-Day Recon + Comment Feedback Loop as the daily run tail. See references/end-of-day-recon.md and references/comment-follow-up.md.",
   "comment_metrics": [],
-  "karma_by_sub": {}
+  "karma_by_sub": {},
+  "onboarding_date": "<YYYY-MM-DD>",
+  "initial_day": 1,
+  "account_age_days_at_onboarding": null,
+  "last_migration_scheduler_date": null,
+  "account_age_days": null,
+  "account_age_checked_on": null
 }

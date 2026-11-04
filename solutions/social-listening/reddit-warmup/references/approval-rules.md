@@ -1,4 +1,4 @@
-﻿# Approval Rules -Comments & Brand Content (inviolable)
+# Approval Rules -Comments & Brand Content (inviolable)
 
 This file unifies two interdependent approval rulesets: **Comment Approval** (comment publishing follows `approval_policy`. Manual paths require user pick; auto paths let the agent select and publish with audit logging) and **Brand Approval** (brand-bearing content adds a Brand Exposure risk warning + Path B dual-approval on top of Comment Approval).
 
@@ -92,7 +92,7 @@ Resolution rules:
    - Revision wording without an item number is ambiguous; ask which item(s) to revise.
 5. If no anchor is visible, list matching local files under `~/.reddit-warmup/*/pending_approval/*/meta.json`.
 6. If exactly one pending item exists, use it.
-7. If one account has multiple pending items, run the Approval Batch Activation helper, display the batch request, and ask the user to reply against the displayed item numbers. Do not apply a bare pick from the same turn unless the user named the exact `batch_id`.
+7. If one account has multiple pending items, run the Approval Batch Activation helper and display the batch request. Exact `batch_id` references or explicitly batch-scoped requests (`all A`, `use B for all`, `publish all C`, `skip all`) resolve the selected account's eligible pending items in the same turn; follow Rule C6 and execute sequentially without asking for the same choice again. A bare A/B/C/D without a visible anchor remains ambiguous and requires a reply against the displayed batch. If more than one account is eligible, Step 8 still requires account clarification before any publishing.
 8. If multiple accounts have pending items and the target is unclear, list account-level pending summaries oldest-first. Ask which account the reply applies to.
 9. If all selected actions are clear, immediately proceed to Reply Execution Flow. Do not only acknowledge, do not only write a choice file, and do not stop after recording the pick.
 10. If any revision request is clear and item-scoped, immediately proceed to Revision Execution Flow for those items. Do not only acknowledge, do not only write a note, and do not wait for a new daily run.
@@ -451,7 +451,7 @@ When the user sends a clear approval in **any conversation** -`A` / `B` / `C` / 
 
 1. **Resolve batch context** -two sources, in order of priority:
    - **Priority 1 -Approval batch in current conversation:** if the approval notification is visible in the current conversation context, extract `username`, `platform`, `skill`, `browser_id`, each displayed item number, and each `batch_id` from the batch request. Read each targeted `~/.reddit-warmup/<username>/pending_approval/<batch_id>/meta.json` directly.
-   - **Priority 2 -local pending-approval file lookup (new conversation / anchor not visible):** list matching local files under `C:/Users/<system_user>/.reddit-warmup/*/pending_approval/*/meta.json` across all configured accounts.
+   - **Priority 2 -local pending-approval file lookup (new conversation / anchor not visible):** list matching local files under `~/.reddit-warmup/*/pending_approval/*/meta.json` across all configured accounts.
      - **Exactly one pending item across all accounts:** use it directly.
      - **One account with multiple pending items:** run the Approval Batch Activation helper for that account and display a batch request. Do not apply a bare pick from the same turn unless the user named exact `batch_id` values or the message is explicitly batch-scoped (`all A`, `skip all`).
      - **Single legacy batch with no `queue_status`:** treat it as displayed for this reply, then write queue fields back to `meta.json`.
@@ -619,4 +619,3 @@ Brand approval sits **on top of** the Rule-Reading Gate, not in place of it. Bra
 - Rules C3/C4 (comment batches) and Rule B4 (brand batches) share the same no-expiry-while-unpicked design: manual-path batches stay in `pending_approval/` only until picked/skipped or 7-day stale cleanup.
 - `drafts/` stores auto-pick audit records, published manual-path audit records, and delayed replay records. `pending_approval/` must never contain already-published or skipped batches.
 - `REDDIT_WARMUP_UNATTENDED=1` governs non-approval interactive points only -specifically the CAPTCHA Tier 3 fallback (interactive wait vs unattended abort + `daily_skip_reason: "captcha_at_preflight"` / `"captcha_on_relogin"`) and any error-recovery prompts that would otherwise hang a headless run. See `stages.md ->Rate Limit & CAPTCHA Rules`.
-

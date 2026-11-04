@@ -1,4 +1,4 @@
-﻿# Phase 2 -Pre-flight + Stage Determination
+# Phase 2 -Pre-flight + Stage Determination
 
 **Load this file immediately after `browser-act-rules.md`** at the start of every Phase 2 daily run.
 
@@ -15,7 +15,7 @@ Verify `browser-act` CLI is installed and the runtime guide loads. Running witho
 browser-act --version
 
 # 2. Load BrowserAct runtime guide
-browser-act get-skills core --skill-version 2.0.0
+browser-act get-skills core --skill-version 2.0.2
 
 # 3. Confirm version after guide load
 browser-act --version
@@ -101,8 +101,10 @@ Read `progress.json.profile_customized`. If `false` AND `current_day >= 7`: surf
 
 ### 1. Pending-batch sweep (two passes)
 
-- **Pass A -replay_after restore.** List matching local files under `C:/Users/<system_user>/.reddit-warmup/<username>/pending_approval/*/meta.json` where `replay_after` is set. For each, if `now >= replay_after` ->clear `replay_after`. Do **not** surface the batch text in today's daily report; the Daily Report only shows the total pending count. If the batch needs renewed attention, emit a standalone Approval Batch Request with the normal batch anchor and item numbers.
-- **Pass B -stale cleanup.** List matching local files under `C:/Users/<system_user>/.reddit-warmup/<username>/pending_approval/*/meta.json`. For each, if `created_at` is older than 7 days AND `replay_after` is null ->delete batch directory, append `skip("batch_stale_7d")` to log.
+Expand `~` to the current user's home directory with the host's filesystem API. Use the same resolved root as config/progress; a missing pending-approval directory means no pending batches. Do not invent a platform-specific prefix.
+
+- **Pass A -replay_after restore.** List matching local files under `~/.reddit-warmup/<username>/pending_approval/*/meta.json` where `replay_after` is set. For each, if `now >= replay_after` ->clear `replay_after`. Do **not** surface the batch text in today's daily report; the Daily Report only shows the total pending count. If the batch needs renewed attention, emit a standalone Approval Batch Request with the normal batch anchor and item numbers.
+- **Pass B -stale cleanup.** List matching local files under `~/.reddit-warmup/<username>/pending_approval/*/meta.json`. For each, if `created_at` is older than 7 days AND `replay_after` is null ->delete batch directory, append `skip("batch_stale_7d")` to log.
 
 ### 2. Idempotency
 
@@ -140,10 +142,10 @@ Do not browse, upvote, subscribe, comment, post, recon, or run feedback while th
 `paused == true` ->exit silently.
 
 ### 4. Migration
-`env_migration == true` ->run the migration-day task only, exit.
+`env_migration == true` ->set an in-memory `migration_only = true`; continue through browser open, login verification, and Avatar Menu Health Check below. Do not exit or perform migration activity before these checks. After Step 6.1 passes, load `references/migration.md`, run the restricted migration routine, and return without the normal stage flow or daily tail.
 
 ### 5. Open browser + screenshot + get title
-See Execution Proof above. Failure ->log `browser_open_failed` + stop.
+See Execution Proof above. Failure ->record `browser_open_failed` + stop. If `migration_only`, apply the failed-attempt state handling in `references/migration.md`; do not create a browser activity event without a real page/screenshot.
 
 ### 5.5. Session-expiry check
 Run `get markdown` and scan for session-expiry banners (case-insensitive): `"your session has expired"` / `"session timed out"` / `"please refresh"` (expiry context) / localized session-expiry equivalents.
@@ -157,7 +159,7 @@ browser-act --session <run_session> get markdown   # re-scan once
 Banner gone ->continue. Banner still present ->log `session_expiry_reload_failed`, screenshot, notify user, abort writes today. **One reload only.**
 
 ### 6. Login check
-Step 0 (authoritative `/user/me/` username resolution -see `browser-act-rules.md`) + four-layer verification from `login-verification.md`. Any step/layer fails ->skip write actions today. The username returned by Step 0 becomes `<current_username>` for the rest of the run.
+Step 0 (authoritative `/user/me/` username resolution -see `browser-act-rules.md`) + four-layer verification from `login-verification.md`. Any step/layer fails ->skip write actions today. If `migration_only`, apply the failed-attempt state handling in `references/migration.md` before exiting; this does not authorize another login attempt. The username returned by Step 0 becomes `<current_username>` for the rest of the run.
 
 ### 6.1. Avatar Menu Health Check (hard gate before any write action)
 
@@ -211,9 +213,11 @@ browser-act --session <run_session> wait stable --timeout 15000
 | Marker persists after retry | Set `progress.json.account_risk_flagged = true`, `account_risk_reason = "avatar_menu_server_error"`, `account_risk_flagged_at = now`, `daily_skip_reason = "account_health_avatar_server_error"`. Log `type: "account_risk_signal"`. Notify user. Skip all write actions today. |
 | Avatar button cannot be found or clicked | Treat as `uncertain`, screenshot, log `skip("avatar_menu_unavailable")`, and skip write actions today. Do not guess a different menu item. |
 
+**Migration failure:** if the avatar check fails/uncertain while `migration_only`, apply the failed-attempt handling in `references/migration.md` before exit.
+
 **Persistent flag:** if `account_risk_flagged == true` from a previous run, surface it at run start and skip write actions until the user manually verifies the account is clean. After the user confirms the avatar menu opens cleanly without the error toast, set `account_risk_flagged = false`, clear `account_risk_reason`, and resume on the next daily run.
 
-**->After Avatar Menu Health Check passes: load `references/notification-check.md` and run the Notification + Inbox Check.**
+**->After Avatar Menu Health Check passes:** if `migration_only == true`, load `references/migration.md` and return after that routine. Otherwise load `references/notification-check.md` and run the Notification + Inbox Check.
 
 ### 6.5. Overview Scan (new day only)
 After successful login and Avatar Menu Health Check, navigate to `/user/<current_username>/overview/` and scan for "Removed by Reddit" notices in the past 24 hours. If found:
@@ -228,7 +232,17 @@ Markdown contains captcha/challenge text ->use the **3-tier escalation ladder** 
 - **Tier 3 -Unavailable.** Interactive: keep waiting. Unattended (`REDDIT_WARMUP_UNATTENDED=1`): log `captcha_blocked` + `daily_skip_reason: "captcha_at_preflight"` + close + exit.
 
 ### 8. Sync karma
-`browser-act navigate https://www.reddit.com/user/me/` ->`wait stable` ->`get markdown` ->parse "X karma" from profile header ->update `progress.json.comment_karma` + `post_karma`.
+Use the current run session:
+
+```bash
+browser-act --session <run_session> navigate https://www.reddit.com/user/me/
+browser-act --session <run_session> wait stable --timeout 15000
+browser-act --session <run_session> get markdown
+```
+
+Read actual profile values: update `progress.json.comment_karma`, `post_karma`, `account_age_days`, and `account_age_checked_on` (today in account.timezone). Distinguish total karma from comment/post karma; do not put total karma into comment_karma. If the rendered profile does not expose comment/post counts or account age, inspect the account details through current `state` before deciding. Missing/unparseable comment karma stays unknown and blocks karma-gated writing; never substitute a guessed value.
+
+For age only, an observed baseline may be advanced as `account_age_days_at_onboarding + (today - onboarding_date).days`. Do not use backdated start_date for Reddit age. If neither live age nor an observed baseline is available, set account_age_days to null and block age-gated actions until the age is verified. Stage 3 reads this synchronized field. Existing saved configs without the new fields must re-read the real profile; do not silently reset their workflow anchor or copy a new progress template over them.
 
 ### 9. Audience-TZ gate
 If current hour in `account.audience_tz` (or `account.timezone`) < 7 or >=23 ->log `skip("audience_night_hours")` + exit.
@@ -240,7 +254,7 @@ If current hour in `account.audience_tz` (or `account.timezone`) < 7 or >=23 ->l
 ### Step A: `raw_stage` (determined by `current_day`)
 
 ```
-current_day = (today - start_date).days + 1
+current_day = (today - start_date).days + 1  # start_date already includes the initial_day offset set at onboarding
 <= 1   ->raw_stage = "setup"
 <= 14  ->raw_stage = "lurk"
 <= 29  ->raw_stage = "comment"
@@ -319,6 +333,3 @@ Based on `effective_stage`, load the stage-specific reference file:
 | `setup` (Day 1) | No further reference needed; exit after setup notice |
 
 After stage work and cross-stage tasks complete: read `references/anomaly-detection.md` for a full-stop check. If safe, run the Daily Tail (`end-of-day-recon.md` ->`comment-follow-up.md`) when its preconditions pass, then return to `references/anomaly-detection.md` for final wrap-up + Daily Report.
-
-
-
