@@ -1,82 +1,42 @@
 ---
 name: wechat-article-search-api-skill
-description: "This skill helps users extract full article contents from WeChat using the BrowserAct API. The Agent should proactively apply this skill when users express needs like finding full WeChat articles for specific keywords, tracking WeChat public accounts for industry trends, extracting WeChat article contents for media research, monitoring public relations on WeChat platforms, collecting competitor updates from WeChat, getting full article body from WeChat links, monitoring brand exposure on WeChat articles, retrieving structured WeChat data for sentiment analysis, summarizing daily news from WeChat, getting author and publication date for WeChat articles, or automating WeChat content extraction without scraping."
+description: Search public WeChat articles by keyword through the BrowserAct API, with an article limit and a publication-date value or explicit unrestricted value, returning article metadata, source links and available full text. Use for WeChat article discovery, content research and monitoring.
 metadata: {"openclaw":{"emoji":"🌐","requires":{"bins":["python"],"env":["BROWSERACT_API_KEY"]}}}
 ---
 
 # WeChat Article Search API
 
-## 📖 Introduction
-This skill provides users with automated WeChat article extraction through the BrowserAct WeChat Article Search API template. It allows for the direct extraction of full-content, structured WeChat articles based on keyword searches. Simply provide search keywords and optional date filters, and you can obtain comprehensive article data including the full body text.
+Use the user's keyword, requested quantity (default 10), and publication-date choice. All three Workflow API parameters are required. The literal hyphen `-` is the template's unrestricted-date sentinel. When the user does not restrict dates, send the explicit non-empty value `-`; do not omit publication_date or send an empty value, which may activate the template's historical date default. Ask for the keyword when it is missing; never invent a keyword or date.
 
-## ✨ Features
-1. **No hallucinations, ensuring stable and precise data extraction**: Pre-configured workflows avoid AI-generated hallucinations.
-2. **No CAPTCHA issues**: No need to handle reCAPTCHA or other verification challenges.
-3. **No IP restrictions or geo-blocking**: No need to handle regional IP limitations.
-4. **Faster execution**: Task execution is faster compared to pure AI-driven browser automation solutions.
-5. **Extremely high cost-effectiveness**: Significantly reduces data acquisition costs compared to AI solutions that consume a large number of tokens.
+## Credentials and runtime
 
-## 🔑 API Key Guidance Flow
-Before running, check the `BROWSERACT_API_KEY` environment variable. If not set, do not take other actions; request and wait for the user to provide it.
-**The Agent must inform the user**:
-> "Since you have not configured the BrowserAct API Key, please go to the [BrowserAct Console](https://www.browseract.com/reception/integrations) to get your Key."
+Read `BROWSERACT_API_KEY` from the execution environment. If the user has an existing local BrowserAct credential source, load it securely into this process's environment without printing or copying the secret. Ask the user to configure a local credential only when no authorized source is available; never ask them to paste the key in chat.
 
-## 🛠️ Input Parameters
-When invoking the script, the Agent should flexibly configure the following parameters based on user needs:
+The script requires Python and requests. If requests is not installed in the selected Python, invoke it with `uv run --with requests python` without modifying a managed system Python.
 
-1. **keywords (Search Keywords)**
-   - **Type**: `string`
-   - **Description**: Search keywords used to find WeChat articles. Can be an industry term, topic, or specific phrase.
-   - **Example**: `openclaw`, `AI agent`, `browser automation`
+## Execute
 
-2. **Date_limit (Extraction Limit)**
-   - **Type**: `number`
-   - **Description**: Maximum number of articles to extract. For the first run, a smaller default value is recommended.
-   - **Default Value**: `10`
-   - **Suggestions**: Use `5` to `10` for quick testing, larger numbers for batch research.
-
-3. **publication_date (Publication Date Filter)**
-   - **Type**: `string`
-   - **Description**: Filter articles by their publication date.
-   - **Example**: `3月11日`, `March 10`, `2026-03-11`
-
-## 🚀 Invocation Method
-The Agent should execute the following independent script to achieve "one command, direct results":
+From this Skill directory:
 
 ```bash
-# Example invocation
-python -u ./scripts/wechat_article_search_api.py "keywords" limit "publication_date"
+# Required date parameter: explicit non-empty unrestricted value.
+uv run --with requests python -u scripts/wechat_article_search_api.py "ai 选品" 10 "-"
+# Explicit date filter:
+uv run --with requests python -u scripts/wechat_article_search_api.py "your keyword" 10 "2026-11-04"
 ```
 
-### ⏳ Run Status Monitoring
-Because this task involves automated browser operations, it may take a long time (several minutes). While running, the script will **continuously output timestamped status logs** (e.g., `[14:30:05] Task Status: running`).
-**Agent Instructions**:
-- Keep monitoring the terminal output while waiting for the script to return results.
-- As long as the terminal continues to output new status logs, it means the task is running normally; do not misjudge it as deadlocked or unresponsive.
-- Only consider triggering the retry mechanism if the status remains unchanged for a long time, or the script stops outputting without returning results.
+The client starts one task and prints its ID, then waits up to 30 minutes. Continue observing while the server reports created/running. Client wait expiration does not mean that the server task failed and does not authorize another POST. Resume the same task:
 
-## 📊 Output Data Explanation
-Upon successful execution, the script will parse and print the results directly from the API response. The results include:
-- `url_link`: Original article URL
-- `publication_date`: Article publication date
-- `author`: Article author or publishing account name
-- `image_url`: Main image URL or article cover image URL
-- `body_content`: Full body content of the article
-- `title`: Full article title
+```bash
+uv run --with requests python -u scripts/wechat_article_search_api.py "ai 选品" 10 "-" --task-id "EXISTING_TASK_ID" --timeout 1800
+```
 
-## ⚠️ Error Handling & Retry
-During script execution, if an error occurs (such as network fluctuation or task failure), the Agent should follow this logic:
+Failed, canceled, paused, HTTP errors, an unverified query, absent output or too few usable records produce a nonzero exit. Inspect the existing task before deciding on a new run. Do not retry authentication errors or uncertain task creation automatically. A definite failed task may be retried once for a demonstrated transient cause; a known wrong query or input mapping must be corrected before another run.
 
-1. **Check the output content**:
-   - If the output **contains** `"Invalid authorization"`, it means the API Key is invalid or expired. In this case, **do not retry**; guide the user to re-check and provide the correct API Key.
-   - If the output **does not contain** `"Invalid authorization"` but the task fails (e.g., output starts with `Error:` or returns an empty result), the Agent should **automatically try to execute the script one more time**.
+## Verify and deliver
 
-2. **Retry limit**:
-   - Automatic retry is limited to **once**. If the second attempt still fails, stop retrying and report the specific error message to the user.
+A terminal finished status alone is insufficient. Compare requested inputs, the task's actual search step, and the returned records. Parameter echo alone does not prove that the template used those parameters. Verify the keyword and date restriction were applied. The workflow processes whole result pages and can return more than Date_limit, which is a target count rather than a strict server-side ceiling. The client validates records, removes duplicate articles and records missing any whitespace-separated keyword term in the title/body (case-insensitive), and selects the first requested number in server order. It prints a run summary to stderr with server, usable, selected and rejected counts; stdout contains only the selected article JSON. This literal term check does not interpret search operators or prove topic relevance; review article coverage before delivery. Always disclose over-fetching instead of describing a larger server response as exactly the requested size. Do not accept placeholder URLs or present a verification page as article text. Report partial results honestly when the source is exhausted or inaccessible; do not label them a full pass.
 
-## 🌟 Typical Use Cases
-1. **Content Monitoring**: Track mentions of specific brands or topics across WeChat articles.
-2. **Media Research**: Analyze full text of articles published by top WeChat accounts.
-3. **Trend Tracking**: Collect articles about rising industry trends (e.g., AI agents) for comprehensive reading.
-4. **Knowledge Base Building**: Extract deep-dive articles into an internal repository.
-5. **Competitor Analysis**: Review full-length posts released by competitor accounts.
+Expected article fields are title, full body, publisher/author, publication date, source URL and optional image URL. The legacy template may return `Title`, `Body Content`, `Author`, `Publication Date`, `URL Link`, and `Image URL`; preserve the actual response field names when saving raw output.
+
+Save the task ID, requested inputs, observed execution steps and acceptance result locally without credentials or temporary private access URLs. Return useful article links and a concise description of the verified coverage. Site verification, access restrictions and missing source fields remain possible; this Skill does not guarantee uninterrupted access.
