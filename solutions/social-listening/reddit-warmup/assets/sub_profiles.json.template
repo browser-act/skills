@@ -1,0 +1,32 @@
+{
+  "_comment": "Per-account sub risk profile cache. Built lazily by the skill - starts empty, grows as each configured sub is first touched. Saved to ~/.reddit-warmup/<username>/sub_profiles.json. Entries re-recon after 14 days. Full schema and recon routine documented in references/stage2-comment.md -> Subreddit Risk Profiling.",
+
+  "r/<configured_sub_name>": {
+    "recon_at": "<YYYY-MM-DD>",
+    "karma_gate": null,
+    "age_gate_days": null,
+    "automod_filter_rate": "low",
+    "median_recent_poster_karma": 0,
+    "prefers_image": false,
+    "rules_summary": "",
+    "moderator_bots": [],
+    "has_strict_bot_bouncer": false,
+
+    "restrictions": {
+      "forbids_self_promo": false,
+      "requires_post_flair": false,
+      "flair_options": [],
+      "forbids_urls_in_posts": false,
+      "forbids_image_posts": false,
+      "forbids_text_posts": false,
+      "weekday_only_topics": [],
+      "minimum_post_length_words": null,
+      "maximum_post_length_words": null,
+      "other_notes": ""
+    },
+
+    "last_verdict": null,
+    "verdict_at": null,
+    "retry_when_comment_karma": null
+  }
+}

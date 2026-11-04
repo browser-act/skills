@@ -1,0 +1,133 @@
+# Reddit Warmup - per-account config
+# Saved to: ~/.reddit-warmup/<username>/config.yaml
+#
+# Onboarding collects these in Phase 1 Step 3.
+# Leave `find` / `content` / `brand` empty if unsure - the skill prompts you
+# to fill them at Day 14 (find/content) and Day 29 (brand).
+
+account:
+  username: ""                    # Reddit username (same as directory name)
+  browser_id: ""                  # Persistent browser profile ID bound to this account; created in Phase 1 Step 2 as reddit-setup-<ts>
+  proxy: ""                       # Proxy bound exclusively to this account. Use static-proxy:<proxy_id> for BrowserAct purchased static proxy, or the custom proxy URL / redacted host:port fingerprint for user-provided proxy.
+  timezone: ""                    # IANA zone (account's "local") - e.g. "America/Los_Angeles", "Asia/Shanghai".
+                                  # Default to the proxy geo's timezone from ipinfo.io (Phase 1 Step 4).
+                                  # All date/time logic in the skill uses this zone - NOT machine TZ or UTC.
+  audience_tz: ""                 # IANA zone of the *target audience* (can differ from timezone above).
+                                  # Example: operator in China, proxy shows US East Coast, but target is
+                                  # US West Coast -> audience_tz = "America/Los_Angeles".
+                                  # Used for the 07:00-23:00 active-hours gate. Defaults to timezone if unset.
+  schedule_profile: ""            # Free-text note recording the trigger window picked in Phase 1 Step 7,
+                                  # e.g. "proxy-morning 09:30-10:30" or "target-peak 20:00-21:00".
+                                  # Informational - the actual scheduler lives outside the skill.
+  scheduler_timezone: ""          # IANA timezone of the machine running the scheduler (cron / Task Scheduler).
+                                  # Used ONLY for idempotency: "has today's job already fired?" is answered
+                                  # in scheduler-local date, not account timezone.
+                                  # Auto-detected and written during Phase 1 Step 7. Correct if wrong.
+                                  # account.timezone continues to own ALL rhythm decisions:
+                                  # current_day, Wednesday check, week_start, active-hours gate.
+                                  # If blank, idempotency falls back to account.timezone (safe for
+                                  # single-region setups where scheduler and account tz match).
+
+subreddits:
+  warmup:                         # 2-3 broad, newbie-friendly subs for Days 2-21 lurk + practice comments
+    # Pick 2 from Tier 1 (broad, low-friction defaults) + 0-1 broad-interest karma builder.
+    # Do NOT use professional / domain-expert / career / business / technical / marketing
+    # / brand-adjacent subs for warmup, regardless of the persona.
+    # Professional or brand-relevant subs belong in target.primary / target.secondary
+    # after recon + karma growth.
+    #
+    # Tier 1 (broad defaults; still recon before writing):
+    #   r/CasualConversation  r/NoStupidQuestions  r/AskReddit
+    #   r/Showerthoughts  r/mildlyinteresting  r/LifeProTips  r/todayilearned
+    #
+    # Tier 2 (social-resonance karma builders; pick for easy reactions, not expertise):
+    #   humor/life:      r/funny  r/MadeMeSmile  r/wholesomememes  r/meirl
+    #   style/trends:    r/Outfits  r/fashion  r/streetwear
+    #   pop culture:     r/popculturechat  r/entertainment  r/movies  r/television  r/Music
+    #   food/home:       r/cooking  r/food  r/MealPrepSunday  r/houseplants
+    #   pets/visual:     r/cats  r/dogs  r/aww
+    #   gaming/hobbies:  r/gaming  r/patientgamers  r/books
+    #
+    # AVOID during warmup:
+    #   r/learnprogramming  r/webdev  r/SideProject  r/selfhosted
+    #   r/programming  r/MachineLearning  r/devops  r/sysadmin  language-specific expert subs
+    #   r/marketing  r/socialmedia  r/SEO  r/PPC  r/advertising  r/sales
+    #   r/startups  r/indiehackers  r/Entrepreneur  r/smallbusiness  r/Technology
+    #   r/science  r/news  r/worldnews  any sub with "no new accounts" in sidebar
+    #
+    # Full rationale: phase1-onboarding.md -> Newbie-friendly warmup sub shortlist
+    - r/???                       # e.g. r/CasualConversation
+    - r/???                       # e.g. r/NoStupidQuestions
+    - r/???                       # e.g. r/mildlyinteresting or r/MadeMeSmile
+
+  target:
+    # Two-tier target sub structure (based on Backlinko / Sprout Social best practice):
+    # Total cap across primary + secondary: 12 subs
+    # (Industry "sweet spot" is 10-15; 12 is conservative for automation risk control)
+    #
+    # SUBSCRIPTION TIMELINE (built into the main flow):
+    #   Day 12-14 (Stage 1 main flow): 1st-2nd primary sub - subscribed during lurk phase
+    #   Day 15-20 (Stage 2 early): 3rd-5th primary sub - added by main flow / daily tail as karma grows
+    #   Day 21+   (daily tail):    secondary subs - added 1/day as discovered
+    #
+    # FALLBACK RULE: if a primary sub is karma-gated / banned / automod-hostile on a given
+    # run, the candidate pool automatically falls back to secondary subs for that day's quota.
+
+    primary:                      # 3-5 subs - build influence here; get 80% of comment quota
+      # Must configure at least 2 before onboarding is complete.
+      # Hard cap: 5. Adding a 6th requires manually removing one existing entry.
+      # These are your "home" subs - where the account should become a recognized contributor.
+      - r/???
+      - r/???
+      - r/???                     # optional 3rd (strongly recommended for fallback redundancy)
+
+    secondary:                    # 3-7 subs - karma building, monitoring, fallback pool
+      # Configure 0 at start; add gradually via daily-tail discovery or manually.
+      # Hard cap: 7. Purely for: (a) fallback when primary blocked, (b) trend monitoring,
+      # (c) karma top-up in low-competition threads.
+      # These subs receive comments only when primary pool is exhausted or blocked.
+      # - r/???                   # uncomment and fill as you discover relevant subs
+
+keywords:
+  find: []          # Search terms to discover posts worth commenting on
+  content: []       # Persona keywords - who this account presents as (job, background, experience)
+  brand: []         # Brand name + key phrases, activated Day 30+
+
+# Optional: point at a persona JSON for richer voice shaping.
+# If omitted, the skill falls back to the `keywords.content` list above.
+# Template: assets/persona.json.template
+persona_file: ""    # Absolute path, e.g. ~/.reddit-ops/personas/<username>.json
+
+# Optional: Stage 3 post options. Defaults are safe (text-only, no image search).
+# See references/image-posting.md for the full image attachment flow.
+post_options:
+  allow_images: false            # true to let Stage 3 suggest image attachment for visual-friendly subs
+  image_source: "ask"            # "ask" | "user_only" (never search Google) | "search_ok"
+
+# Approval policy - single source of truth for ALL content (comments, posts, brand or not).
+# Set during Phase 1 Step 7.5. To change it:
+#   "set approval to manual / auto / auto_stage2 for <username>"
+# The agent must first warn that switching between auto-publish and approval paths changes
+# the account's behavior pattern and may increase account risk. If the user confirms after
+# the warning, the agent writes the new policy. Missed/stale approvals must not trigger an
+# automatic recommendation to enable auto mode.
+#
+# "manual"
+#   Everything requires your explicit review. Each comment/post shows A/B/C(/D) variants
+#   in chat. You can reply naturally, e.g. "use D", "pick the second one",
+#   "skip", or "make it shorter". A clear pick immediately continues into
+#   publish + verification; the approval checkpoint alone is not completion.
+#   Brand Exposure warning shown before variants.
+#
+# "auto"
+#   Agent auto-selects and publishes ALL content - comments, posts, brand-bearing included.
+#   Brand Exposure check runs but is logged silently (no chat interruption).
+#   Sub verification for Path B still runs (blocked sub = no post).
+#   You see only the daily summary report.
+#
+# "auto_stage2"
+#   Stage 2 (Days 15-29): fully auto - agent handles everything including brand content.
+#   Stage 3 (Day 30+):    non-brand auto; brand-bearing content (D variants, Path B posts)
+#                         requires your explicit approval (same as "manual" for those).
+#   Designed for hands-off warmup with manual control when brand promotion begins.
+approval_policy: "manual"

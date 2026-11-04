@@ -1,0 +1,21 @@
+{
+  "_comment": "Rich persona file for voice shaping. The skill reads this verbatim - all persona content comes from the user, never from the skill itself. Referenced from config.yaml -> persona_file. Convention: ~/.reddit-ops/personas/<username>.json.",
+
+  "identity": "<who this account is - job, years of experience, relevant expertise. 1 sentence>",
+  "tone": "<how the account sounds - e.g. casual, blunt, dry, self-deprecating>",
+  "interests": ["<topic 1>", "<topic 2>", "<topic 3>"],
+  "backstory_keywords": [
+    "<concrete past experience 1>",
+    "<concrete past experience 2>",
+    "<concrete past experience 3>"
+  ],
+
+  "brand_story": "<1-3 sentence first-person anecdote the account can reference in Stage 3 promotional posts. Keep it believable and specific to the user's actual product and experience. Written by the user; the skill does not supply this.>",
+
+  "never_say": [
+    "as an AI",
+    "I hope this helps",
+    "Great post!",
+    "<any other phrase the user wants blocked>"
+  ]
+}
